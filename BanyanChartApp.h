@@ -1,0 +1,21 @@
+/***************************************************************
+ * Name:      BanyanChartApp.h
+ * Purpose:   Defines Application Class
+ * Author:    lunanerdderg ()
+ * Created:   2026-09-16
+ * Copyright: lunanerdderg (https://github.com/lunanerdderg)
+ * License:
+ **************************************************************/
+
+#ifndef BANYANCHARTAPP_H
+#define BANYANCHARTAPP_H
+
+#include <wx/app.h>
+
+class BanyanChartApp : public wxApp
+{
+    public:
+        virtual bool OnInit();
+};
+
+#endif // BANYANCHARTAPP_H
