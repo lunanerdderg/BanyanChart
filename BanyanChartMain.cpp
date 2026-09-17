@@ -82,6 +82,7 @@ BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id)
 
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&BanyanChartFrame::OnQuit);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&BanyanChartFrame::OnAbout);
+    Connect(wxID_ANY,wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&BanyanChartFrame::OnClose);
     //*)
 }
 
@@ -100,4 +101,8 @@ void BanyanChartFrame::OnAbout(wxCommandEvent& event)
 {
     wxString msg = wxbuildinfo(long_f);
     wxMessageBox(msg, _("Welcome to..."));
+}
+
+void BanyanChartFrame::OnClose(wxCloseEvent& event)
+{
 }
