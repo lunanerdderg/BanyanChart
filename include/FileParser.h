@@ -1,5 +1,8 @@
 #ifndef FILEPARSER_H
 #define FILEPARSER_H
+
+#include <iostream> // Remember to remove
+
 #include <string>
 
 
