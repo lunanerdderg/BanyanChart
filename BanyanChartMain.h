@@ -2,7 +2,7 @@
  * Name:      BanyanChartMain.h
  * Purpose:   Defines Application Frame
  * Author:    lunanerdderg ()
- * Created:   2026-09-16
+ * Created:   2026-09-19
  * Copyright: lunanerdderg (https://github.com/lunanerdderg)
  * License:
  **************************************************************/
@@ -28,7 +28,6 @@ class BanyanChartFrame: public wxFrame
         //(*Handlers(BanyanChartFrame)
         void OnQuit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);
-        void OnClose(wxCloseEvent& event);
         //*)
 
         //(*Identifiers(BanyanChartFrame)
