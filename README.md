@@ -3,12 +3,6 @@
 
 # Building
 
-This project requires installation of `libwxgtk3.2-dev` if you run Ubuntu. It is available with this command: 
-
-```
-sudo apt update && sudo apt install -y libwxgtk3.2-dev
-```
-
 `BanyanChart.cbp` is a [Code::Blocks](https://www.codeblocks.org/downloads/binaries/) solution file, so you will need that software to open the project. You can try a converter, but I don't know how effective they are.
 
 **Solution conversion software:**
@@ -16,6 +10,14 @@ sudo apt update && sudo apt install -y libwxgtk3.2-dev
 | - | - |
 | cmake | [cbp2cmake](https://codeberg.org/Hesti/cbp2cmake) |
 | GNU make | [cbp2make](https://github.com/mirai-computing/cbp2make) |
+
+## Ubuntu
+
+This project requires installation of `libwxgtk3.2-dev` if you run Ubuntu. It is available with this command: 
+
+```
+sudo apt update && sudo apt install -y libwxgtk3.2-dev
+```
 
 # License
 
