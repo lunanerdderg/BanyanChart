@@ -11,7 +11,7 @@
 | cmake | [cbp2cmake](https://codeberg.org/Hesti/cbp2cmake) |
 | GNU make | [cbp2make](https://github.com/mirai-computing/cbp2make) |
 
-### Ubuntu
+## Ubuntu
 
 This project requires installation of `libwxgtk3.2-dev` if you run Ubuntu. It is available with this command: 
 
