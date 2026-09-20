@@ -3,7 +3,7 @@
 
 # Building
 
-`BanyanChart.cbp` is a [Code::Blocks](https://www.codeblocks.org/downloads/binaries/) solution file, so you will need that software to open the project. Converters probably won't work, since this project uses the Code::Blocks-exclusive plugin [wxSmith](#Dependencies:).
+`BanyanChart.cbp` is a [Code::Blocks](https://www.codeblocks.org/downloads/binaries/) solution file, so you will need that software to open the project. Converters probably won't work, since this project uses the Code::Blocks-exclusive plugin [wxSmith](#Dependencies).
 
 ## Ubuntu
 
