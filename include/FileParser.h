@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <cmath>
 
 
 class FileParser
@@ -17,7 +18,11 @@ class FileParser
         std::vector<std::vector<std::string>> getBlockTextList();
         std::vector<std::vector<size_t>> getBlockAddressList();
 
+        size_t getSize_tFromBinaryFile(std::ifstream&);
+        void writeSize_tToBinaryFile(std::ofstream&, size_t);
+
     private:
+
         std::string filePath;
         std::vector<std::vector<std::string>> blockTextList;
         std::vector<std::vector<size_t>> blockAddressList;
