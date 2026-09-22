@@ -27,7 +27,6 @@ You may view the The Clear BSD License [here](https://github.com/lunanerdderg/Re
   
 ```
 BanyanChart Copyright (C) 2026 lunanerdderg
-All rights reserved.
 
 DISCLAIMER
 
