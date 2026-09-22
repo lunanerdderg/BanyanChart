@@ -25,10 +25,10 @@ class FileParser
         std::vector<std::vector<std::string>> blockTextList;
         std::vector<std::vector<size_t>> blockAddressList;
 
-        size_t getSize_tFromBinaryFile(std::ifstream&);
-        size_t getSize_tFromBinaryFile(std::istringstream&);
-        void writeSize_tToBinaryFile(std::ofstream&, size_t);
-        void writeSize_tToBinaryFile(std::ostringstream&, size_t);
+        size_t getSize_tFromBinary(std::ifstream&);
+        size_t getSize_tFromBinary(std::istringstream&);
+        void writeSize_tToBinary(std::ofstream&, size_t);
+        void writeSize_tToBinary(std::ostringstream&, size_t);
 };
 
 #endif // FILEPARSER_H

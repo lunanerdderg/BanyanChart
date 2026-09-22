@@ -29,7 +29,7 @@ void FileParser::update() {
         std::getline(sin, element, '\t');
         newBlockTextList.back().at(0) = element;
         while (sin.peek() != -1) {
-            newBlockAddressList.back().push_back(this->getSize_tFromBinaryFile(sin));
+            newBlockAddressList.back().push_back(this->getSize_tFromBinary(sin));
             if (std::getline(sin, element, '\t')) {
                 newBlockAddressList.back().push_back(element); // BOOKMARK
             }
@@ -53,19 +53,19 @@ std::vector<std::vector<size_t>> FileParser::getBlockAddressList() {
 
 
 
-size_t FileParser::getSize_tFromBinaryFile(std::ifstream& fin) {
+size_t FileParser::getSize_tFromBinary(std::ifstream& fin) {
     size_t result;
     fin.read((char*)&result, 4);
     return result;
 }
-size_t FileParser::getSize_tFromBinaryFile(std::istringstream& sin) {
+size_t FileParser::getSize_tFromBinary(std::istringstream& sin) {
     size_t result;
     sin.read((char*)&result, 4);
     return result;
 }
-void FileParser::writeSize_tToBinaryFile(std::ofstream& fout, size_t input) {
+void FileParser::writeSize_tToBinary(std::ofstream& fout, size_t input) {
     fout.write(reinterpret_cast<const char *>(&input), 4);
 }
-void FileParser::writeSize_tToBinaryFile(std::ostringstream& sout, size_t input) {
+void FileParser::writeSize_tToBinary(std::ostringstream& sout, size_t input) {
     sout.write(reinterpret_cast<const char *>(&input), 4);
 }
