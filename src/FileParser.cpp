@@ -21,14 +21,20 @@ void FileParser::update() {
         if (line.at(0) == ( (char)1 ) ) {
             newBlockAddressList.back().at(0) = 1;
         }
+        std::istringstream sin(line.substr(newBlockAddressList.back().at(0)));
 
-        size_t prevIndex = newBlockAddressList.back().at(0);
-        for (size_t index = prevIndex; index < line.size(); ++index) {
-            if (line.at(index) == '\t') {
-                index += 5;
-                prevIndex = index;
-            }
+        std::string element;
+        while (std::getline(sin, element, '\t')) { // BOOKMARK, Get text and address in each element
         }
+
+
+//        size_t prevIndex = newBlockAddressList.back().at(0);
+//        for (size_t index = prevIndex; index < line.size(); ++index) {
+//            if (line.at(index) == '\t') {
+//                index += 5;
+//                prevIndex = index;
+//            }
+//        }
     }
 }
 
