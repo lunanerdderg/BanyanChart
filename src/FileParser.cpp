@@ -4,12 +4,14 @@
 
 FileParser::FileParser(std::string file) {
     this->filePath = file;
+    this->update();
 }
 
 FileParser::~FileParser() {
 }
 
 void FileParser::update() {
+    size_t counter = 0;
     std::string line;
     std::ifstream fin(this->filePath, std::ios::binary);
     std::vector<std::vector<std::string>> newBlockTextList;
@@ -17,25 +19,29 @@ void FileParser::update() {
 
     while(std::getline(fin, line)) {
         newBlockTextList.push_back( { { "" } } );
-        newBlockAddressList.push_back( { { 0 } } );
+        newBlockAddressList.push_back( { { } } );
         if (line.at(0) == ( (char)1 ) ) {
-            newBlockAddressList.back().at(0) = 1;
+            this->firstBlock = counter;
         }
-        std::istringstream sin(line.substr(newBlockAddressList.back().at(0)));
+        std::istringstream sin(line.substr((line.at(0) == ( (char)1 ))));
 
         std::string element;
-        while (std::getline(sin, element, '\t')) { // BOOKMARK, Get text and address in each element
+        std::getline(sin, element, '\t');
+        newBlockTextList.back().at(0) = element;
+        while (sin.peek() != -1) {
+            newBlockAddressList.back().push_back(this->getSize_tFromBinaryFile(sin));
+            if (std::getline(sin, element, '\t')) {
+                newBlockAddressList.back().push_back(element); // BOOKMARK
+            }
+            else {
+                newBlockAddressList.back().push_back("");
+            }
         }
-
-
-//        size_t prevIndex = newBlockAddressList.back().at(0);
-//        for (size_t index = prevIndex; index < line.size(); ++index) {
-//            if (line.at(index) == '\t') {
-//                index += 5;
-//                prevIndex = index;
-//            }
-//        }
+        ++counter;
     }
+
+    this->blockTextList = newBlockTextList;
+    this->blockAddressList newBlockAddressList;
 }
 
 std::vector<std::vector<std::string>> FileParser::getBlockTextList() {
@@ -46,11 +52,20 @@ std::vector<std::vector<size_t>> FileParser::getBlockAddressList() {
 }
 
 
+
 size_t FileParser::getSize_tFromBinaryFile(std::ifstream& fin) {
     size_t result;
     fin.read((char*)&result, 4);
     return result;
 }
+size_t FileParser::getSize_tFromBinaryFile(std::istringstream& sin) {
+    size_t result;
+    sin.read((char*)&result, 4);
+    return result;
+}
 void FileParser::writeSize_tToBinaryFile(std::ofstream& fout, size_t input) {
     fout.write(reinterpret_cast<const char *>(&input), 4);
+}
+void FileParser::writeSize_tToBinaryFile(std::ostringstream& sout, size_t input) {
+    sout.write(reinterpret_cast<const char *>(&input), 4);
 }
