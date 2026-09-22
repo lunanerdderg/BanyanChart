@@ -18,6 +18,7 @@ void FileParser::update() {
     std::vector<std::vector<size_t>> newBlockAddressList;
 
     while(std::getline(fin, line)) {
+        std::cout << counter << std::endl; // TESTING
         newBlockTextList.push_back( { { "" } } );
         newBlockAddressList.push_back( { { } } );
         if (line.at(0) == ( (char)1 ) ) {
@@ -28,20 +29,27 @@ void FileParser::update() {
         std::string element;
         std::getline(sin, element, '\t');
         newBlockTextList.back().at(0) = element;
+        std::cout << newBlockTextList.back().at(0) << std::endl; // TESTING
         while (sin.peek() != -1) {
             newBlockAddressList.back().push_back(this->getSize_tFromBinary(sin));
             if (std::getline(sin, element, '\t')) {
-                newBlockAddressList.back().push_back(element); // BOOKMARK
+                newBlockTextList.back().push_back(element);
             }
             else {
-                newBlockAddressList.back().push_back("");
+                newBlockTextList.back().push_back("");
             }
         }
         ++counter;
     }
 
     this->blockTextList = newBlockTextList;
-    this->blockAddressList newBlockAddressList;
+    this->blockAddressList = newBlockAddressList;
+    for (size_t lineIndex; lineIndex < this->blockTextList.size(); ++lineIndex) {
+        std::cout << std::endl;
+        for (size_t elementIndex; elementIndex < this->blockTextList.at(lineIndex).size(); ++elementIndex) {
+            std::cout << this->blockTextList.at(lineIndex).at(elementIndex) << '/' << this->blockAddressList.at(lineIndex).at(elementIndex) << ", ";
+        }
+    }
 }
 
 std::vector<std::vector<std::string>> FileParser::getBlockTextList() {
@@ -54,13 +62,14 @@ std::vector<std::vector<size_t>> FileParser::getBlockAddressList() {
 
 
 size_t FileParser::getSize_tFromBinary(std::ifstream& fin) {
-    size_t result;
+    unsigned long long int result;
     fin.read((char*)&result, 4);
     return result;
 }
 size_t FileParser::getSize_tFromBinary(std::istringstream& sin) {
-    size_t result;
+    unsigned int result;
     sin.read((char*)&result, 4);
+    std::cout << result; // TESTING
     return result;
 }
 void FileParser::writeSize_tToBinary(std::ofstream& fout, size_t input) {
