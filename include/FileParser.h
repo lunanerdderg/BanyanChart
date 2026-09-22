@@ -3,8 +3,9 @@
 
 #include <iostream> // Remember to remove
 
-#include <string>
 #include <vector>
+#include <string>
+#include <sstream>
 #include <fstream>
 #include <cmath>
 
