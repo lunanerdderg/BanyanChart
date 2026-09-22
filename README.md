@@ -15,39 +15,41 @@ sudo apt update && sudo apt install -y libwxgtk3.2-dev
 
 # License
 
-You may view the GNU General Public License v3.0 [here](https://github.com/lunanerdderg/Reefbackend/blob/main/LICENSE), but the TL;DR is that you can use this project for whatever you like, as long as:
+You may view the The Clear BSD License [here](https://github.com/lunanerdderg/Reefbackend/blob/main/LICENSE), but the TL;DR is that you can use this project for whatever you like except for patents, as long as:
 
-* You credit me by including a copyright notice and warranty information
+* You retain the copyright notice and disclaimer
 
 <sub>
 
 <details>
 
-  <summary>(Expand notice + Warranty)</summary>
+  <summary>(Expand notice + Disclaimer)</summary>
   
 ```
 BanyanChart Copyright (C) 2026 lunanerdderg
 All rights reserved.
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+DISCLAIMER
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details. <https://www.gnu.org/licenses/>
+NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY
+THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
 ```
 
 </details>
 
 </sub>
 
-* Your project is open-source
-* Your project uses a [GPL](https://choosealicense.com/licenses/gpl-3.0/) or [AGPL](https://choosealicense.com/licenses/agpl-3.0/) GNU license
-* You state the changes you made
-* You don't infringe on any relevant trademarks
+* You do not use my name to endorse or promote anything without my permission
 
 _(This is a simplified summary of the license and should not be taken as legal advice. Please consult a lawyer before taking any action.)_
 
