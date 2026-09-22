@@ -17,7 +17,32 @@ sudo apt update && sudo apt install -y libwxgtk3.2-dev
 
 You may view the GNU General Public License v3.0 [here](https://github.com/lunanerdderg/Reefbackend/blob/main/LICENSE), but the TL;DR is that you can use this project for whatever you like, as long as:
 
-* You credit me by including a copyright notice
+* You credit me by including a copyright notice and warranty information
+
+<sub>
+
+<details>
+
+  <summary>(Expand notice + Warranty)</summary>
+  
+```
+BanyanChart Copyright (C) 2026  lunanerdderg
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details. <https://www.gnu.org/licenses/>
+```
+
+</details>
+
+</sub>
+
 * Your project is open-source
 * Your project uses a [GPL](https://choosealicense.com/licenses/gpl-3.0/) or [AGPL](https://choosealicense.com/licenses/agpl-3.0/) GNU license
 * You state the changes you made
