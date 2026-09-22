@@ -1,6 +1,8 @@
 <sub>_[(How version numbering works in all my programs.)](https://github.com/lunanerdderg/lunanerdderg.github.io/blob/main/version-numbering.md)_</sub> | 
 <sub>_[(My policy on A.I. in my programs.)](https://github.com/lunanerdderg/lunanerdderg.github.io/blob/main/ai-use-policy.txt)_</sub>
 
+Creates a `.byfc` (Banyan Flowchart) file.
+
 # Building
 
 `BanyanChart.cbp` is a [Code::Blocks](https://www.codeblocks.org/downloads/binaries/) solution file, so you will need that software to open the project. Converting to another solution format probably won't work, since this project uses the Code::Blocks-exclusive plugin [wxSmith](#Uses).
