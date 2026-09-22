@@ -1,6 +1,7 @@
 reset-pull.sh
 upload.sh
 BanyanChart.layout
+template.tsv
 
 # Prerequisites
 *.d
