@@ -26,7 +26,7 @@ You may view the GNU General Public License v3.0 [here](https://github.com/lunan
   <summary>(Expand notice + Warranty)</summary>
   
 ```
-BanyanChart Copyright (C) 2026  lunanerdderg
+BanyanChart Copyright (C) 2026 lunanerdderg
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
