@@ -5,7 +5,7 @@
 
 `BanyanChart.cbp` is a [Code::Blocks](https://www.codeblocks.org/downloads/binaries/) solution file, so you will need that software to open the project. Converting to another solution format probably won't work, since this project uses the Code::Blocks-exclusive plugin [wxSmith](#Uses).
 
-## Ubuntu
+### Ubuntu
 
 This project requires installation of `libwxgtk3.2-dev` if you run Ubuntu. It is available with this command: 
 
