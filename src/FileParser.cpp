@@ -228,7 +228,7 @@ void FileParser::save(fs::path file) {
     std::ofstream fout(file.c_str(), std::ios::binary | std::ios::trunc);
     for (size_t lineIndex = 0; lineIndex < this->blockTextList.size(); ++lineIndex) {
         if (lineIndex != 0) {
-            fout << '\n';
+            fout << '\x{04}';
         }
         if (lineIndex == this->firstBlock) {
             fout << '\x{01}';
@@ -252,7 +252,7 @@ void FileParser::update() {
     std::vector<std::vector<std::string>> newBlockTextList;
     std::vector<std::vector<size_t>> newBlockAddressList;
 
-    while(std::getline(fin, line)) {
+    while(std::getline(fin, line, '\x{04}')) {
         newBlockTextList.push_back( { { "" } } );
         newBlockAddressList.push_back( { { } } );
         if (line.at(0) == ( (char)1 ) ) {

@@ -57,7 +57,7 @@ class FileParser
         std::vector<std::vector<std::string>> blockTextList;
         std::vector<std::vector<size_t>> blockAddressList;
 
-        void initialize(bool=false); void initialize(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
+        void initialize(fs::path, bool=false); void initialize(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
         // Streams
         size_t getSize_tFromBinary(std::ifstream&); size_t getSize_tFromBinary(std::istringstream&);
         void writeSize_tToBinary(std::ofstream&, size_t); void writeSize_tToBinary(std::ostringstream&, size_t);
