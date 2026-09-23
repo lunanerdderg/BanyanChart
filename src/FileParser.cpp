@@ -57,6 +57,8 @@ std::vector<std::vector<size_t>> FileParser::getBlockAddressList() {
 ======================================================
 */
 
+void FileParser::save() {}
+
 size_t FileParser::getSize_tFromBinary(std::ifstream& fin) {
     size_t result;
     fin.read((char*)&result, sizeof(size_t));
@@ -70,7 +72,7 @@ size_t FileParser::getSize_tFromBinary(std::ifstream& fin) {
 
     return result;
 }
-size_t FileParser::getSize_tFromBinary(std::istringstream& sin) { // BOOKMARK
+size_t FileParser::getSize_tFromBinary(std::istringstream& sin) {
     size_t result;
     sin.read((char*)&result, sizeof(size_t));
 
