@@ -8,7 +8,6 @@ template.byfc
 
 # Compiled Object files
 obj/
-obj/*
 *.slo
 *.lo
 *.o
@@ -48,7 +47,6 @@ obj/*
 
 # Build directories
 bin/
-bin/*
 build/
 Build/
 build-*/
