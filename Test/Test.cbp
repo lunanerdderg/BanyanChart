@@ -31,7 +31,17 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add directory="../include" />
+			<Add directory="../src" />
 		</Compiler>
+		<ResourceCompiler>
+			<Add directory="../include" />
+			<Add directory="../src" />
+		</ResourceCompiler>
+		<Linker>
+			<Add directory="../include" />
+			<Add directory="../src" />
+		</Linker>
 		<Unit filename="../include/FileParser.h" />
 		<Unit filename="../src/FileParser.cpp" />
 		<Unit filename="main.cpp" />
