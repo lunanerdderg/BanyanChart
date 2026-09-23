@@ -1,4 +1,1 @@
-git reset d94097f
-git push --force
-
 git config --global user.name "lunanerdderg"; git config --global user.email "None"; echo "-= Git status =-"; git status; echo "" ; echo "-= Pushing to Github =-"; git add -A; git commit -a -m "Update"; git push; git submodule update --remote; echo ""; echo "-= Git status =-"; git status
