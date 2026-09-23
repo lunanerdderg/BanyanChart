@@ -1,0 +1,17 @@
+# depslib dependency file v1.0
+1790174942 source:/home/luna/Documents/Programming/Apps/BanyanChart/Testing/main.cpp
+	"../include/FileParser.h"
+
+1790174959 /home/luna/Documents/Programming/Apps/BanyanChart/include/FileParser.h
+	<iostream>
+	<vector>
+	<string>
+	<sstream>
+	<fstream>
+	<cmath>
+	<algorithm>
+	<filesystem>
+
+1790174894 source:/home/luna/Documents/Programming/Apps/BanyanChart/src/FileParser.cpp
+	"../include/FileParser.h"
+
