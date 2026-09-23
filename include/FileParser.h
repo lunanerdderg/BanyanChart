@@ -8,20 +8,26 @@
 #include <sstream>
 #include <fstream>
 #include <cmath>
+#include <filesystem>
+namespace fs = std::filesystem;
 
+void newFile(fs::path);
 
 class FileParser
 {
     public:
-        FileParser(std::string);
+        FileParser(fs::path);
         virtual ~FileParser();
-        void update();
+        void coutBlockLists();
+        // Get
+        fs::path getPath();
+        size_t getFirstBlock();
         std::vector<std::vector<std::string>> getBlockTextList();
         std::vector<std::vector<size_t>> getBlockAddressList();
 
     private:
         size_t firstBlock;
-        std::string filePath;
+        fs::path filePath;
         std::vector<std::vector<std::string>> blockTextList;
         std::vector<std::vector<size_t>> blockAddressList;
 
@@ -29,6 +35,8 @@ class FileParser
         size_t getSize_tFromBinary(std::istringstream&);
         void writeSize_tToBinary(std::ofstream&, size_t);
         void writeSize_tToBinary(std::ostringstream&, size_t);
+
+        void update();
 };
 
 #endif // FILEPARSER_H
