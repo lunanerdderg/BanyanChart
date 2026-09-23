@@ -18,23 +18,18 @@ void FileParser::coutBlockLists() { // TESTING
     }
 }
 
+FileParser::FileParser(bool startEmpty) {
+    this->initialize(fs::path(), startEmpty);
+}
 FileParser::FileParser(fs::path file, bool startEmpty) {
-    this->filePath = file;
-    if (!fs::exists(file)) {
-        if (startEmpty) {
-            newFile(file, "");
-        }
-        else {
-            newFile(file);
-        }
-    }
+    this->initialize(file, startEmpty);
     this->update();
 }
+FileParser::FileParser(std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
+    this->initialize(fs::path(), blockTextLists, blockAddressLists, topBlock);
+}
 FileParser::FileParser(fs::path file, std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
-    this->filePath = file;
-    this->firstBlock = topBlock;
-    this->blockTextList = blockTextLists;
-    this->blockAddressList = blockAddressLists;
+    this->initialize(file, blockTextLists, blockAddressLists, topBlock);
     this->save();
 }
 
@@ -290,6 +285,24 @@ void FileParser::update() {
 
 ======================================================
 */
+
+void FileParser::initialize(fs::path file, bool startEmpty) {
+    this->filePath = file;
+    if (!fs::exists(file)) {
+        if (startEmpty) {
+            newFile(file, "");
+        }
+        else {
+            newFile(file);
+        }
+    }
+}
+void FileParser::initialize(fs::path file, std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
+    this->filePath = file;
+    this->firstBlock = topBlock;
+    this->blockTextList = blockTextLists;
+    this->blockAddressList = blockAddressLists;
+}
 
 // Streams
 

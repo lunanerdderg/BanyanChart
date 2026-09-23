@@ -18,7 +18,7 @@ class FileParser
 {
     public:
         void coutBlockLists(); // TESTING
-        FileParser(fs::path, bool=false); FileParser(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
+        FileParser(bool=false); FileParser(fs::path, bool=false); FileParser(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); FileParser(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
         virtual ~FileParser();
         // Get
         fs::path getPath();
@@ -56,6 +56,8 @@ class FileParser
         fs::path filePath;
         std::vector<std::vector<std::string>> blockTextList;
         std::vector<std::vector<size_t>> blockAddressList;
+
+        void initialize(bool=false); void initialize(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
         // Streams
         size_t getSize_tFromBinary(std::ifstream&); size_t getSize_tFromBinary(std::istringstream&);
         void writeSize_tToBinary(std::ofstream&, size_t); void writeSize_tToBinary(std::ostringstream&, size_t);
