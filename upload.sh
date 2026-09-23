@@ -2,6 +2,9 @@
 
 cd $HOME/Documents/Programming/Apps/BanyanChart
 echo
+echo "-= Git fetch =-"
+git fetch --all
+echo
 echo "-= Git status =-"
 git status
 echo
