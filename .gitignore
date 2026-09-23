@@ -16,6 +16,7 @@ obj/
 *.obj
 
 # Precompiled Headers
+wx_pch.h.gch/
 *.gch
 *.pch
 
