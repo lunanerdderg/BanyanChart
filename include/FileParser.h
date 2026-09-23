@@ -1,7 +1,7 @@
 #ifndef FILEPARSER_H
 #define FILEPARSER_H
 
-//#include <iostream> // TESTING
+#include <iostream> // TESTING
 
 #include <vector>
 #include <string>
@@ -17,7 +17,7 @@ void newFile(fs::path, std::string="Example body");
 class FileParser
 {
     public:
-//        void coutBlockLists(); // TESTING
+        void coutBlockLists(); // TESTING
         FileParser(fs::path, bool=false); FileParser(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
         virtual ~FileParser();
         // Get

@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="Testing" />
+		<Option title="Test" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -36,6 +36,11 @@
 		<Unit filename="../src/FileParser.cpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
+			<code_completion>
+				<search_path add="/home/luna/Documents/Programming/Apps/BanyanChart/" />
+				<search_path add="../src" />
+				<search_path add="../include" />
+			</code_completion>
 			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>

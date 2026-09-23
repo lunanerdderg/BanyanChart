@@ -1,4 +1,4 @@
-#include "../include/FileParser.h"
+#include "FileParser.h"
 
 int main() {
     FileParser file("");

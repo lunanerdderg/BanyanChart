@@ -1,5 +1,4 @@
 #include "FileParser.h"
-//#include "../include/FileParser.h"
 
 // Don't forget to always include "std::ios::binary | std::ios::trunc" in fstreams
 
@@ -8,16 +7,16 @@ void newFile(fs::path file, std::string body) {
     fout << "\x{01}" << body;
 }
 
-//void FileParser::coutBlockLists() { // TESTING
-//    for (size_t lineIndex = 0; lineIndex < this->blockTextList.size(); ++lineIndex) {
-//        if (lineIndex != 0) {
-//            std::cout << std::endl;
-//        }
-//        for (size_t elementIndex = 0; elementIndex < this->blockTextList.at(lineIndex).size(); ++elementIndex) {
-//            std::cout << this->blockTextList.at(lineIndex).at(elementIndex) << '/' << this->blockAddressList.at(lineIndex).at(elementIndex) << ", ";
-//        }
-//    }
-//}
+void FileParser::coutBlockLists() { // TESTING
+    for (size_t lineIndex = 0; lineIndex < this->blockTextList.size(); ++lineIndex) {
+        if (lineIndex != 0) {
+            std::cout << std::endl;
+        }
+        for (size_t elementIndex = 0; elementIndex < this->blockTextList.at(lineIndex).size(); ++elementIndex) {
+            std::cout << this->blockTextList.at(lineIndex).at(elementIndex) << '/' << this->blockAddressList.at(lineIndex).at(elementIndex) << ", ";
+        }
+    }
+}
 
 FileParser::FileParser(fs::path file, bool startEmpty) {
     this->filePath = file;
