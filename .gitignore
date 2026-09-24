@@ -4,6 +4,8 @@
 # Testing/
 BanyanChart.layout
 template.byfc
+tutorial
+tutorial/
 
 # Prerequisites
 *.d
