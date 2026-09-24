@@ -28,6 +28,7 @@ class BanyanChartFrame: public wxFrame
         //(*Handlers(BanyanChartFrame)
         void OnQuit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);
+        void OnClose(wxCloseEvent& event);
         //*)
 
         //(*Identifiers(BanyanChartFrame)
