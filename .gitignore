@@ -2,7 +2,7 @@
 # upload.sh
 # windows-upload.txt
 # Test/
-BanyanChart.layout
+*.layout
 template.byfc
 .tutorial
 .tutorial/
