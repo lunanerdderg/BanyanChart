@@ -1640,7 +1640,7 @@
 1783353135 /usr/include/wx-3.2/wx/gtk/mdi.h
 	"wx/frame.h"
 
-1790660833 source:/home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartApp.cpp
+1790750940 source:/home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartApp.cpp
 	"wx_pch.h"
 	"BanyanChartApp.h"
 	"BanyanChartMain.h"
@@ -1650,26 +1650,27 @@
 	<wx/wxprec.h>
 	<wx/wx.h>
 
-1790660833 /home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartApp.h
+1790749266 /home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartApp.h
+	"wx/wx.h"
+	"wx/sizer.h"
 	<wx/app.h>
 
-1790745608 /home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartMain.h
+1790750605 /home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartMain.h
 	"FileParser.h"
 	<wx/frame.h>
 	<wx/menu.h>
 	<wx/panel.h>
 	<wx/sizer.h>
 	<wx/statusbr.h>
-	<wx/wfstream.h>
 
-1790718021 source:/home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartMain.cpp
+1790750551 source:/home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartMain.cpp
 	"wx_pch.h"
 	"BanyanChartMain.h"
 	<wx/msgdlg.h>
 	<wx/intl.h>
 	<wx/string.h>
 
-1790745418 source:/home/luna/Documents/Programming/Apps/BanyanChart/src/FileParser.cpp
+1790745690 source:/home/luna/Documents/Programming/Apps/BanyanChart/src/FileParser.cpp
 	"FileParser.h"
 
 1790745425 /home/luna/Documents/Programming/Apps/BanyanChart/include/FileParser.h
@@ -1832,4 +1833,181 @@
 	"wx/filefn.h"
 	"wx/convauto.h"
 	<stdio.h>
+
+1783353135 /usr/include/wx-3.2/wx/glcanvas.h
+	"wx/defs.h"
+	"wx/app.h"
+	"wx/palette.h"
+	"wx/window.h"
+	"wx/msw/glcanvas.h"
+	"wx/x11/glcanvas.h"
+	"wx/gtk/glcanvas.h"
+	"wx/gtk1/glcanvas.h"
+	"wx/osx/glcanvas.h"
+	"wx/qt/glcanvas.h"
+
+1783353135 /usr/include/wx-3.2/wx/gtk/glcanvas.h
+	"wx/setup.h"
+	"wx/unix/glegl.h"
+	"wx/unix/glx11.h"
+
+1783353135 /usr/include/wx-3.2/wx/unix/glegl.h
+	<GL/gl.h>
+
+1783353135 /usr/include/wx-3.2/wx/unix/glx11.h
+	<GL/gl.h>
+
+1783353135 /usr/include/wx-3.2/wx/qt/glcanvas.h
+	<GL/gl.h>
+
+1783353135 /usr/include/wx-3.2/wx/dataview.h
+	"wx/defs.h"
+	"wx/textctrl.h"
+	"wx/headercol.h"
+	"wx/variant.h"
+	"wx/dnd.h"
+	"wx/dynarray.h"
+	"wx/icon.h"
+	"wx/itemid.h"
+	"wx/weakref.h"
+	"wx/vector.h"
+	"wx/dataobj.h"
+	"wx/withimages.h"
+	"wx/systhemectrl.h"
+	"wx/vector.h"
+	"wx/dvrenderers.h"
+	"wx/generic/dataview.h"
+	"wx/gtk/dataview.h"
+	"wx/osx/dataview.h"
+	"wx/qt/dataview.h"
+
+1783353135 /usr/include/wx-3.2/wx/headercol.h
+	"wx/bmpbndl.h"
+
+1783353135 /usr/include/wx-3.2/wx/dnd.h
+	"wx/defs.h"
+	"wx/dataobj.h"
+	"wx/cursor.h"
+	"wx/msw/ole/dropsrc.h"
+	"wx/msw/ole/droptgt.h"
+	"wx/motif/dnd.h"
+	"wx/x11/dnd.h"
+	"wx/gtk/dnd.h"
+	"wx/gtk1/dnd.h"
+	"wx/osx/dnd.h"
+	"wx/qt/dnd.h"
+
+1783353135 /usr/include/wx-3.2/wx/gtk/dnd.h
+	"wx/icon.h"
+
+1783353135 /usr/include/wx-3.2/wx/qt/dnd.h
+
+1783353135 /usr/include/wx-3.2/wx/itemid.h
+
+1783353135 /usr/include/wx-3.2/wx/dvrenderers.h
+	"wx/gtk/dvrenderer.h"
+	"wx/osx/dvrenderer.h"
+	"wx/qt/dvrenderer.h"
+	"wx/generic/dvrenderer.h"
+	"wx/generic/dvrenderers.h"
+	"wx/gtk/dvrenderers.h"
+	"wx/osx/dvrenderers.h"
+	"wx/qt/dvrenderers.h"
+
+1783353135 /usr/include/wx-3.2/wx/gtk/dvrenderer.h
+
+1783353135 /usr/include/wx-3.2/wx/qt/dvrenderer.h
+
+1783353135 /usr/include/wx-3.2/wx/generic/dvrenderer.h
+
+1783353135 /usr/include/wx-3.2/wx/generic/dvrenderers.h
+
+1783353135 /usr/include/wx-3.2/wx/gtk/dvrenderers.h
+
+1783353135 /usr/include/wx-3.2/wx/qt/dvrenderers.h
+
+1783353135 /usr/include/wx-3.2/wx/generic/dataview.h
+	"wx/defs.h"
+	"wx/object.h"
+	"wx/compositewin.h"
+	"wx/control.h"
+	"wx/scrolwin.h"
+	"wx/icon.h"
+	"wx/vector.h"
+	"wx/access.h"
+
+1783353135 /usr/include/wx-3.2/wx/compositewin.h
+	"wx/window.h"
+	"wx/containr.h"
+
+1783353135 /usr/include/wx-3.2/wx/gtk/dataview.h
+	"wx/list.h"
+
+1783353135 /usr/include/wx-3.2/wx/qt/dataview.h
+
+1783353135 /usr/include/wx-3.2/wx/treebook.h
+	"wx/defs.h"
+	"wx/bookctrl.h"
+	"wx/containr.h"
+	"wx/treebase.h"
+	"wx/vector.h"
+
+1783353135 /usr/include/wx-3.2/wx/bookctrl.h
+	"wx/defs.h"
+	"wx/control.h"
+	"wx/vector.h"
+	"wx/withimages.h"
+	"wx/notebook.h"
+	"wx/choicebk.h"
+
+1783353135 /usr/include/wx-3.2/wx/notebook.h
+	"wx/defs.h"
+	"wx/bookctrl.h"
+	"wx/univ/notebook.h"
+	"wx/msw/notebook.h"
+	"wx/generic/notebook.h"
+	"wx/gtk/notebook.h"
+	"wx/gtk1/notebook.h"
+	"wx/osx/notebook.h"
+	"wx/qt/notebook.h"
+
+1783353135 /usr/include/wx-3.2/wx/generic/notebook.h
+	"wx/event.h"
+	"wx/control.h"
+
+1783353135 /usr/include/wx-3.2/wx/gtk/notebook.h
+	"wx/list.h"
+
+1783353135 /usr/include/wx-3.2/wx/qt/notebook.h
+
+1783353135 /usr/include/wx-3.2/wx/choicebk.h
+	"wx/defs.h"
+	"wx/bookctrl.h"
+	"wx/choice.h"
+	"wx/containr.h"
+
+1783353135 /usr/include/wx-3.2/wx/treebase.h
+	"wx/defs.h"
+	"wx/window.h"
+	"wx/event.h"
+	"wx/dynarray.h"
+	"wx/itemid.h"
+
+1783353135 /usr/include/wx-3.2/wx/treectrl.h
+	"wx/defs.h"
+	"wx/control.h"
+	"wx/treebase.h"
+	"wx/textctrl.h"
+	"wx/systhemectrl.h"
+	"wx/withimages.h"
+	"wx/generic/treectlg.h"
+	"wx/msw/treectrl.h"
+	"wx/qt/treectrl.h"
+
+1783353135 /usr/include/wx-3.2/wx/generic/treectlg.h
+	"wx/brush.h"
+	"wx/pen.h"
+	"wx/scrolwin.h"
+
+1783353135 /usr/include/wx-3.2/wx/qt/treectrl.h
 

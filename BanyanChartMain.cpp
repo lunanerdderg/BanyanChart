@@ -43,7 +43,6 @@ wxString wxbuildinfo(wxbuildinfoformat format)
 }
 
 //(*IdInit(BanyanChartFrame)
-const wxWindowID BanyanChartFrame::ID_RIBBON = wxNewId();
 const wxWindowID BanyanChartFrame::ID_CANVAS = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuNew = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuOpen = wxNewId();
@@ -59,24 +58,19 @@ BEGIN_EVENT_TABLE(BanyanChartFrame,wxFrame)
     //*)
 END_EVENT_TABLE()
 
-BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id)
+BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size)
 {
     //(*Initialize(BanyanChartFrame)
     wxBoxSizer* BoxSizer1;
-    wxBoxSizer* BoxSizer2;
     wxMenu* Menu1;
     wxMenu* Menu2;
     wxMenuBar* MenuBar1;
     wxMenuItem* MenuItem1;
     wxMenuItem* MenuItem2;
 
-    Create(parent, id, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
+    Create(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
     BoxSizer1 = new wxBoxSizer(wxHORIZONTAL);
-    Ribbon = new wxPanel(this, ID_RIBBON, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_RIBBON"));
-    BoxSizer1->Add(Ribbon, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Canvas = new wxPanel(this, ID_CANVAS, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_CANVAS"));
-    BoxSizer2 = new wxBoxSizer(wxHORIZONTAL);
-    Canvas->SetSizer(BoxSizer2);
     BoxSizer1->Add(Canvas, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     SetSizer(BoxSizer1);
     MenuBar1 = new wxMenuBar();
@@ -109,10 +103,6 @@ BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id)
     SetStatusBar(StatusBar1);
     BoxSizer1->SetSizeHints(this);
 
-    Connect(idMenuNew, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnNew);
-    Connect(idMenuOpen, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnOpen);
-    Connect(idMenuSave, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnSave);
-    Connect(idMenuSaveAs, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnSaveAs);
     Connect(idMenuQuit, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnQuit);
     Connect(idMenuAbout, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnAbout);
     Connect(wxID_ANY, wxEVT_CLOSE_WINDOW, (wxObjectEventFunction)&BanyanChartFrame::OnClose);

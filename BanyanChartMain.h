@@ -18,7 +18,6 @@
 #include <wx/panel.h>
 #include <wx/sizer.h>
 #include <wx/statusbr.h>
-#include <wx/wfstream.h>
 //*)
 
 class FileParser;
@@ -26,7 +25,7 @@ class BanyanChartFrame: public wxFrame
 {
     public:
 
-        BanyanChartFrame(wxWindow* parent,wxWindowID id = -1);
+        BanyanChartFrame(wxWindow* parent,wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size);
         virtual ~BanyanChartFrame();
 
     private:
@@ -43,7 +42,6 @@ class BanyanChartFrame: public wxFrame
         //*)
 
         //(*Identifiers(BanyanChartFrame)
-        static const wxWindowID ID_RIBBON;
         static const wxWindowID ID_CANVAS;
         static const wxWindowID idMenuNew;
         static const wxWindowID idMenuOpen;
@@ -62,7 +60,6 @@ class BanyanChartFrame: public wxFrame
         wxMenuItem* MenuItem5;
         wxMenuItem* MenuItem6;
         wxPanel* Canvas;
-        wxPanel* Ribbon;
         wxStatusBar* StatusBar1;
         //*)
 
