@@ -262,12 +262,11 @@ void FileParser::save() {
     this->save(this->getPath());
 }
 
-void FileParser::update() { // Completely change to use "\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}" as the delimiter for each line (https://stackoverflow.com/a/14266139)
+void FileParser::update() {
     std::vector<std::vector<std::string>> newBlockTextList;
     std::vector<std::vector<size_t>> newBlockAddressList;
     size_t counter = 0;
     std::string line;
-
     std::string fileContents;
     {
         std::ifstream fin(this->getPath(), std::ios::binary | std::ios::trunc);
@@ -276,13 +275,29 @@ void FileParser::update() { // Completely change to use "\x{FF}\x{FF}\x{FF}\x{FF
         fileContents = sout.str();
     }
 
-    while(std::getline(fin, line, '\x{04}')) {
+    for (size_t lineIndex = fileContents.find("\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}"); lineIndex != string::npos; lineIndex = fileContents.find("\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}")) {
+        line = fileContents.substr(0, lineIndex);
+        fileContents = fileContents.substr(lineIndex + 8);
         newBlockTextList.push_back( { { "" } } );
-        newBlockAddressList.push_back( { { } } );
+        newBlockAddressList.push_back( { { 0 } } );
         if (line.at(0) == '\x{01}' ) {
             this->firstBlock = counter;
+            line = line.substr(1);
         }
-        std::istringstream sin(line.substr((line.at(0) == '\x{01}')));
+
+//        size_t elementIndex = line.find('\t');
+//        if (elementIndex == string::npos) {
+//            newBlockTextList.at(0) = line;
+//        }
+//        else{
+//            newBlockTextList.at(0) = line.substr(0,elementIndex);
+//            line = line.substr(elementIndex + 1);
+//            for (; elementIndex != string::npos; elementIndex = line.find('\t')) {
+//                newBlockTextList
+//            }
+//        }
+
+        std::istringstream sin(line);
 
         std::string element;
         std::getline(sin, element, '\t');
@@ -296,8 +311,32 @@ void FileParser::update() { // Completely change to use "\x{FF}\x{FF}\x{FF}\x{FF
                 newBlockTextList.back().push_back("");
             }
         }
+
         ++counter;
     }
+
+//    while (std::getline(fin, line, '\x{04}')) {
+//        newBlockTextList.push_back( { { "" } } );
+//        newBlockAddressList.push_back( { { } } );
+//        if (line.at(0) == '\x{01}' ) {
+//            this->firstBlock = counter;
+//        }
+//        std::istringstream sin(line.substr((line.at(0) == '\x{01}')));
+//
+//        std::string element;
+//        std::getline(sin, element, '\t');
+//        newBlockTextList.back().at(0) = element;
+//        while (sin.peek() != -1) {
+//            newBlockAddressList.back().push_back(this->getSize_tFromBinary(sin));
+//            if (std::getline(sin, element, '\t')) {
+//                newBlockTextList.back().push_back(element);
+//            }
+//            else {
+//                newBlockTextList.back().push_back("");
+//            }
+//        }
+//        ++counter;
+//    }
 
     this->setBlockLists(newBlockTextList, newBlockAddressList);
 }

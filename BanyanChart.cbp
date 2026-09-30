@@ -47,7 +47,6 @@
 		<Unit filename="BanyanChartMain.cpp" />
 		<Unit filename="BanyanChartMain.h" />
 		<Unit filename="include/FileParser.h" />
-		<Unit filename="readEntireFile.hpp" />
 		<Unit filename="src/FileParser.cpp" />
 		<Unit filename="wx_pch.h">
 			<Option compile="1" />
