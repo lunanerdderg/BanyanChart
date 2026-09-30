@@ -29,7 +29,14 @@ class BanyanChartFrame: public wxFrame
         virtual ~BanyanChartFrame();
 
     private:
+        const int WIDTH = 100; // BOOKMARK
+        const int HEIGHT = 100;
+
         FileParser File{};
+        bool Canvas_dragging;
+        int Canvas_mouseX, Canvas_mouseY, Canvas_mousePrevX, Canvas_mousePrevY;
+
+        void Canvas_render(wxDC& dc);
 
         //(*Handlers(BanyanChartFrame)
         void OnNew(wxCommandEvent& event);
@@ -39,6 +46,14 @@ class BanyanChartFrame: public wxFrame
         void OnQuit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);
         void OnClose(wxCloseEvent& event);
+
+        void mouseMoved(wxMouseEvent& event);
+        void mouseDown(wxMouseEvent& event);
+        void mouseReleased(wxMouseEvent& event);
+        void rightClick(wxMouseEvent& event);
+        void mouseLeftWindow(wxMouseEvent& event);
+        void mouseWheelMoved(wxMouseEvent& event);
+        void paintEvent(wxPaintEvent& event);
         //*)
 
         //(*Identifiers(BanyanChartFrame)

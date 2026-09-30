@@ -1640,8 +1640,7 @@
 1783353135 /usr/include/wx-3.2/wx/gtk/mdi.h
 	"wx/frame.h"
 
-1790789434 source:/home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartApp.cpp
-	"wx_pch.h"
+1790791443 source:/home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartApp.cpp
 	"BanyanChartApp.h"
 	"BanyanChartMain.h"
 	<wx/image.h>
@@ -1650,12 +1649,12 @@
 	<wx/wxprec.h>
 	<wx/wx.h>
 
-1790749266 /home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartApp.h
+1790790693 /home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartApp.h
 	"wx/wx.h"
 	"wx/sizer.h"
 	<wx/app.h>
 
-1790750605 /home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartMain.h
+1790797992 /home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartMain.h
 	"FileParser.h"
 	<wx/frame.h>
 	<wx/menu.h>
@@ -1663,7 +1662,7 @@
 	<wx/sizer.h>
 	<wx/statusbr.h>
 
-1790789525 source:/home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartMain.cpp
+1790796127 source:/home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartMain.cpp
 	"wx_pch.h"
 	"BanyanChartMain.h"
 	<wx/msgdlg.h>
