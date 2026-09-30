@@ -12,7 +12,7 @@ Creates a `.byfc` (Banyan Flowchart) file.
 This project requires installation of `libwxgtk3.2-dev` if you run Ubuntu. It is available with this command: 
 
 ```
-sudo apt update && sudo apt install -y libwxgtk3.2-dev
+sudo apt update && sudo apt install -y libwxgtk3.2-dev libwxgtk-media3.2-dev libwxgtk-webview3.2-dev
 ```
 
 # License
