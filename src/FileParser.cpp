@@ -4,7 +4,7 @@
 
 void newFile(fs::path file, std::string body) {
     std::ofstream fout(file.c_str(), std::ios::binary | std::ios::trunc);
-    fout << "\x{01}" << body;
+    fout << "\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}" << body;
 }
 
 //void FileParser::coutBlockLists() { // TESTING
@@ -19,21 +19,34 @@ void newFile(fs::path file, std::string body) {
 //}
 
 FileParser::FileParser(bool startEmpty) {
-    this->initialize(fs::path(), startEmpty);
+    this->newInstance(startEmpty);
 }
 FileParser::FileParser(fs::path file, bool startEmpty) {
-    this->initialize(file, startEmpty);
-    this->update();
+    this->newInstance(file, startEmpty);
 }
 FileParser::FileParser(std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
-    this->initialize(fs::path(), blockTextLists, blockAddressLists, topBlock);
+    this->newInstance(blockTextLists, blockAddressLists, topBlock);
 }
 FileParser::FileParser(fs::path file, std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
-    this->initialize(file, blockTextLists, blockAddressLists, topBlock);
-    this->save();
+    this->newInstance(file, blockTextLists, blockAddressLists, topBlock);
 }
 
 FileParser::~FileParser() {
+}
+
+void FileParser::newInstance(bool startEmpty) {
+    this->initialize(fs::path(), startEmpty);
+}
+void FileParser::newInstance(fs::path file, bool startEmpty) {
+    this->initialize(file, startEmpty);
+    this->update();
+}
+void FileParser::newInstance(std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
+    this->initialize(fs::path(), blockTextLists, blockAddressLists, topBlock);
+}
+void FileParser::newInstance(fs::path file, std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
+    this->initialize(file, blockTextLists, blockAddressLists, topBlock);
+    this->save();
 }
 
 /*
@@ -224,11 +237,15 @@ void FileParser::duplicateMultipleNodes(std::vector<size_t> ogBlockIndex, std::v
 
 // File-handling
 
+void FileParser::setPath(fs::path file) {
+    this->filePath = file;
+}
+
 void FileParser::save(fs::path file) {
     std::ofstream fout(file.c_str(), std::ios::binary | std::ios::trunc);
     for (size_t lineIndex = 0; lineIndex < this->blockTextList.size(); ++lineIndex) {
         if (lineIndex != 0) {
-            fout << '\x{04}';
+            fout << "\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}";
         }
         if (lineIndex == this->firstBlock) {
             fout << '\x{01}';
@@ -245,20 +262,24 @@ void FileParser::save() {
     this->save(this->getPath());
 }
 
-void FileParser::update() {
+void FileParser::update() { // Completely change to use "\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}" as the delimiter for each line (https://stackoverflow.com/a/14266139)
     size_t counter = 0;
     std::string line;
     std::ifstream fin(this->getPath(), std::ios::binary | std::ios::trunc);
     std::vector<std::vector<std::string>> newBlockTextList;
     std::vector<std::vector<size_t>> newBlockAddressList;
 
+    std::string fileContents = read_file(this->getPath());
+
+
+
     while(std::getline(fin, line, '\x{04}')) {
         newBlockTextList.push_back( { { "" } } );
         newBlockAddressList.push_back( { { } } );
-        if (line.at(0) == ( (char)1 ) ) {
+        if (line.at(0) == '\x{01}' ) {
             this->firstBlock = counter;
         }
-        std::istringstream sin(line.substr((line.at(0) == ( (char)1 ))));
+        std::istringstream sin(line.substr((line.at(0) == '\x{01}')));
 
         std::string element;
         std::getline(sin, element, '\t');
@@ -288,13 +309,21 @@ void FileParser::update() {
 
 void FileParser::initialize(fs::path file, bool startEmpty) {
     this->filePath = file;
+    if (startEmpty) {
+        this->firstBlock = 0;
+        this->blockTextList = {{}};
+        this->blockAddressList = {{}};
+    }
     if (!fs::exists(file)) {
         if (startEmpty) {
-            newFile(file, "");
-        }
-        else {
             newFile(file);
         }
+        else {
+            newFile(file, "Example body");
+        }
+    }
+    else {
+        this->update();
     }
 }
 void FileParser::initialize(fs::path file, std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {

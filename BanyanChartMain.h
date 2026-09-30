@@ -10,12 +10,18 @@
 #ifndef BANYANCHARTMAIN_H
 #define BANYANCHARTMAIN_H
 
+#include "FileParser.h"
+
 //(*Headers(BanyanChartFrame)
 #include <wx/frame.h>
 #include <wx/menu.h>
+#include <wx/panel.h>
+#include <wx/sizer.h>
 #include <wx/statusbr.h>
+#include <wx/wfstream.h>
 //*)
 
+class FileParser;
 class BanyanChartFrame: public wxFrame
 {
     public:
@@ -24,20 +30,39 @@ class BanyanChartFrame: public wxFrame
         virtual ~BanyanChartFrame();
 
     private:
+        FileParser File{true};
 
         //(*Handlers(BanyanChartFrame)
+        void OnNew(wxCommandEvent& event);
+        void OnOpen(wxCommandEvent& event);
+        void OnSave(wxCommandEvent& event);
+        void OnSaveAs(wxCommandEvent& event);
         void OnQuit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);
         void OnClose(wxCloseEvent& event);
         //*)
 
         //(*Identifiers(BanyanChartFrame)
-        static const long idMenuQuit;
-        static const long idMenuAbout;
-        static const long ID_STATUSBAR1;
+        static const wxWindowID ID_RIBBON;
+        static const wxWindowID ID_CANVAS;
+        static const wxWindowID idMenuNew;
+        static const wxWindowID idMenuOpen;
+        static const wxWindowID idMenuSave;
+        static const wxWindowID idMenuSaveAs;
+        static const wxWindowID idMenuQuit;
+        static const wxWindowID idMenuAbout;
+        static const wxWindowID ID_STATUSBAR1;
         //*)
 
         //(*Declarations(BanyanChartFrame)
+        wxMenu* Menu3;
+        wxMenu* Menu4;
+        wxMenuItem* MenuItem3;
+        wxMenuItem* MenuItem4;
+        wxMenuItem* MenuItem5;
+        wxMenuItem* MenuItem6;
+        wxPanel* Canvas;
+        wxPanel* Ribbon;
         wxStatusBar* StatusBar1;
         //*)
 

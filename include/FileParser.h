@@ -4,22 +4,19 @@
 //#include <iostream> // TESTING
 
 #include <vector>
-#include <string>
 #include <sstream>
-#include <fstream>
 #include <cmath>
 #include <algorithm>
-#include <filesystem>
-namespace fs = std::filesystem;
+#include "readEntireFile.hpp"
 
-void newFile(fs::path, std::string="Example body");
+void newFile(fs::path, std::string="");
 
-class FileParser
-{
+class FileParser {
     public:
 //        void coutBlockLists(); // TESTING
         FileParser(bool=false); FileParser(fs::path, bool=false); FileParser(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); FileParser(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
         virtual ~FileParser();
+        void newInstance(bool=false); void newInstance(fs::path, bool=false); void newInstance(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); void newInstance(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
         // Get
         fs::path getPath();
         size_t getFirstBlock();
@@ -47,6 +44,7 @@ class FileParser
         void duplicateNode(size_t, size_t, size_t);
         void duplicateMultipleNodes(std::vector<size_t>, std::vector<size_t>, size_t); void duplicateMultipleNodes(std::vector<size_t>, std::vector<size_t>, std::vector<size_t>);
           // File-handling
+        void setPath(fs::path);
         void save();
         void save(fs::path);
         void update();
