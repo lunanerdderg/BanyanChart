@@ -25,7 +25,7 @@ class BanyanChartFrame: public wxFrame
 {
     public:
 
-        BanyanChartFrame(wxWindow* parent,wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size);
+        BanyanChartFrame(wxWindow* parent,wxWindowID id = -1);
         virtual ~BanyanChartFrame();
 
     private:

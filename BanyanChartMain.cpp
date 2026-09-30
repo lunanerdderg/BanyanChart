@@ -58,7 +58,7 @@ BEGIN_EVENT_TABLE(BanyanChartFrame,wxFrame)
     //*)
 END_EVENT_TABLE()
 
-BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size)
+BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id)
 {
     //(*Initialize(BanyanChartFrame)
     wxBoxSizer* BoxSizer1;
