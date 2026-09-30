@@ -1,11 +1,12 @@
 # reset-pull.sh
 # upload.sh
 # windows-upload.txt
-# Testing/
+# Test/
 BanyanChart.layout
 template.byfc
 .tutorial
 .tutorial/
+.examples/
 
 # Prerequisites
 *.d
