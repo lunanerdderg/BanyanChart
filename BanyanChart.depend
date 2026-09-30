@@ -1653,7 +1653,7 @@
 1790660833 /home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartApp.h
 	<wx/app.h>
 
-1790717623 /home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartMain.h
+1790745608 /home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartMain.h
 	"FileParser.h"
 	<wx/frame.h>
 	<wx/menu.h>
@@ -1669,16 +1669,17 @@
 	<wx/intl.h>
 	<wx/string.h>
 
-1790718301 source:/home/luna/Documents/Programming/Apps/BanyanChart/src/FileParser.cpp
+1790745418 source:/home/luna/Documents/Programming/Apps/BanyanChart/src/FileParser.cpp
 	"FileParser.h"
 
-1790741582 /home/luna/Documents/Programming/Apps/BanyanChart/include/FileParser.h
+1790745425 /home/luna/Documents/Programming/Apps/BanyanChart/include/FileParser.h
 	<vector>
 	<sstream>
 	<cmath>
 	<algorithm>
 	<fstream>
 	<string>
+	<bits/stdc++.h>
 	<filesystem>
 
 1783353135 /usr/lib/wx/include/gtk3-unicode-3.2/wx/setup.h

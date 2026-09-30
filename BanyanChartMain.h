@@ -30,7 +30,7 @@ class BanyanChartFrame: public wxFrame
         virtual ~BanyanChartFrame();
 
     private:
-        FileParser File{true};
+        FileParser File{};
 
         //(*Handlers(BanyanChartFrame)
         void OnNew(wxCommandEvent& event);

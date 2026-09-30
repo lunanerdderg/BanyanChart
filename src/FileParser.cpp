@@ -4,7 +4,7 @@
 
 void newFile(fs::path file, std::string body) {
     std::ofstream fout(file.c_str(), std::ios::binary | std::ios::trunc);
-    fout << "\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}" << body;
+    fout << '\x{01}' << body;
 }
 
 //void FileParser::coutBlockLists() { // TESTING
