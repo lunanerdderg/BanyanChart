@@ -175,7 +175,8 @@ void BanyanChartFrame::OnOpen(wxCommandEvent& WXUNUSED(event)) {
         return;
     }
 
-    this->File->newInstance(openFileDialog.GetPath().mb_str());
+    fs::path tempPath = fs::path(openFileDialog.GetPath().ToStdString());
+    this->File->newInstance(tempPath);
     this->Canvas_initializeBoxes();
 }
 
@@ -186,7 +187,8 @@ void BanyanChartFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
             return;
         }
 
-        this->File->setPath(std::string(saveFileDialog.GetPath().mb_str()));
+        fs::path tempPath = fs::path(saveFileDialog.GetPath().ToStdString());
+        this->File->setPath(tempPath);
         this->File->save();
     }
     else {
@@ -200,7 +202,8 @@ void BanyanChartFrame::OnSaveAs(wxCommandEvent& WXUNUSED(event)) {
         return;
     }
 
-    this->File->save(std::string(saveFileDialog.GetPath().mb_str()));
+    fs::path tempPath = fs::path(saveFileDialog.GetPath().ToStdString());
+    this->File->save(tempPath);
 }
 
 void BanyanChartFrame::OnQuit(wxCommandEvent& event) {
