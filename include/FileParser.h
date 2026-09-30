@@ -7,7 +7,10 @@
 #include <sstream>
 #include <cmath>
 #include <algorithm>
-#include "readEntireFile.hpp"
+#include <fstream>
+#include <string>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 void newFile(fs::path, std::string="");
 

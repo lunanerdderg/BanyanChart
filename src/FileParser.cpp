@@ -263,15 +263,18 @@ void FileParser::save() {
 }
 
 void FileParser::update() { // Completely change to use "\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}" as the delimiter for each line (https://stackoverflow.com/a/14266139)
-    size_t counter = 0;
-    std::string line;
-    std::ifstream fin(this->getPath(), std::ios::binary | std::ios::trunc);
     std::vector<std::vector<std::string>> newBlockTextList;
     std::vector<std::vector<size_t>> newBlockAddressList;
+    size_t counter = 0;
+    std::string line;
 
-    std::string fileContents = read_file(this->getPath());
-
-
+    std::string fileContents;
+    {
+        std::ifstream fin(this->getPath(), std::ios::binary | std::ios::trunc);
+        std::ostringstream sout;
+        sout << fin.rdbuf();
+        fileContents = sout.str();
+    }
 
     while(std::getline(fin, line, '\x{04}')) {
         newBlockTextList.push_back( { { "" } } );
