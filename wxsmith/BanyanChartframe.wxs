@@ -4,6 +4,7 @@
 		<title>BanyanChart</title>
 		<pos>50,50</pos>
 		<size>800,600</size>
+		<bg>wxSYS_COLOUR_WINDOW</bg>
 		<id_arg>0</id_arg>
 		<object class="wxBoxSizer" variable="BoxSizer1" member="no">
 			<object class="sizeritem">

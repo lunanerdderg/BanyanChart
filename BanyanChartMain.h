@@ -29,14 +29,13 @@ class BanyanChartFrame: public wxFrame
         virtual ~BanyanChartFrame();
 
     private:
-        const int WIDTH = 100; // BOOKMARK
-        const int HEIGHT = 100;
-
-        FileParser File{};
-        bool Canvas_dragging;
-        int Canvas_mouseX, Canvas_mouseY, Canvas_mousePrevX, Canvas_mousePrevY;
+        FileParser* File;
+        int Canvas_mousePrevX, Canvas_mousePrevY;
+        std::vector<bool> Canvas_boxDraggingList;
+        std::vector<int> Canvas_boxXList, Canvas_boxYList, Canvas_boxWList, Canvas_boxHList;
 
         void Canvas_render(wxDC& dc);
+        void Canvas_initializeBoxes();
 
         //(*Handlers(BanyanChartFrame)
         void OnNew(wxCommandEvent& event);

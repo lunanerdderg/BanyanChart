@@ -24,8 +24,10 @@ class FileParser {
         // Get
         fs::path getPath();
         size_t getFirstBlock();
+        size_t getNumBlocks();
         std::string getNodeText(size_t, size_t);
         size_t getNodeAddress(size_t, size_t);
+        std::string getBlockBody(size_t);
         std::vector<std::string> getBlockText(size_t);
         std::vector<size_t> getBlockAddress(size_t);
         std::vector<std::vector<std::string>> getBlockTextList();

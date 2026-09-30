@@ -1654,7 +1654,7 @@
 	"wx/sizer.h"
 	<wx/app.h>
 
-1790797992 /home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartMain.h
+1790804973 /home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartMain.h
 	"FileParser.h"
 	<wx/frame.h>
 	<wx/menu.h>
@@ -1662,17 +1662,18 @@
 	<wx/sizer.h>
 	<wx/statusbr.h>
 
-1790796127 source:/home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartMain.cpp
+1790804982 source:/home/luna/Documents/Programming/Apps/BanyanChart/BanyanChartMain.cpp
 	"wx_pch.h"
 	"BanyanChartMain.h"
 	<wx/msgdlg.h>
 	<wx/intl.h>
+	<wx/settings.h>
 	<wx/string.h>
 
-1790745690 source:/home/luna/Documents/Programming/Apps/BanyanChart/src/FileParser.cpp
+1790803986 source:/home/luna/Documents/Programming/Apps/BanyanChart/src/FileParser.cpp
 	"FileParser.h"
 
-1790745425 /home/luna/Documents/Programming/Apps/BanyanChart/include/FileParser.h
+1790803733 /home/luna/Documents/Programming/Apps/BanyanChart/include/FileParser.h
 	<vector>
 	<sstream>
 	<cmath>

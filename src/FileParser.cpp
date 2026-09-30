@@ -71,6 +71,13 @@ size_t FileParser::getFirstBlock() {
     return this->firstBlock;
 }
 
+size_t FileParser::getNumBlocks() {
+    size_t listSize = blockTextList.size();
+    if (listSize > blockAddressList.size()) {
+        listSize = blockAddressList.size();
+    }
+    return listSize;
+}
 std::string FileParser::getNodeText(size_t blockIndex, size_t nodeIndex) {
     if (blockIndex < this->blockTextList.size() && nodeIndex < this->blockTextList.at(blockIndex).size()) {
         return this->blockTextList.at(blockIndex).at(nodeIndex);
@@ -97,6 +104,12 @@ std::vector<size_t> FileParser::getBlockAddress(size_t blockIndex) {
     return {};
 }
 
+std::string FileParser::getBlockBody(size_t blockIndex) {
+    if (blockIndex < this->blockTextList.size() && this->blockTextList.at(blockIndex).size() > 0) {
+        return this->blockTextList.at(blockIndex).at(0);
+    }
+    return "";
+}
 std::vector<std::vector<std::string>> FileParser::getBlockTextList() {
     return this->blockTextList;
 }
@@ -129,11 +142,7 @@ void FileParser::addBlock(std::string body) {
 }
 void FileParser::addBlock(std::vector<std::string> blockTextList, std::vector<size_t> blockAddressList) {
     this->addBlock(blockTextList.at(0));
-    size_t listSize = blockTextList.size();
-    if (listSize > blockAddressList.size()) {
-        listSize = blockAddressList.size();
-    }
-    for (size_t index = 1; index < listSize; ++index) {
+    for (size_t index = 1; index < this->getNumBlocks(); ++index) {
         this->blockTextList.back().push_back(blockTextList.at(index));
         this->blockAddressList.back().push_back(blockAddressList.at(index));
     }
@@ -143,24 +152,20 @@ void FileParser::addBlock(std::string body, std::vector<std::string> blockTextLi
     this->addBlock(blockTextList, blockAddressList);
 }
 void FileParser::addMultipleBlocks(std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists) {
-    size_t listSize = blockTextLists.size();
-    if (listSize > blockAddressLists.size()) {
-        listSize = blockAddressLists.size();
-    }
-    for (size_t index = 0; index < listSize; ++index) {
+    for (size_t index = 0; index < this->getNumBlocks(); ++index) {
         this->addBlock(blockTextLists.at(index), blockAddressLists.at(index));
     }
 }
 
 void FileParser::removeBlock(size_t blockIndex) {
-    if (blockIndex < this->blockTextList.size()) {
+    if (blockIndex < this->getNumBlocks()) {
         this->blockTextList.erase(this->blockTextList.begin() + blockIndex);
         this->blockAddressList.erase(this->blockAddressList.begin() + blockIndex);
     }
 }
 void FileParser::removeMultipleBlocks(std::vector<size_t> blockIndices) {
     std::sort(blockIndices.begin(), blockIndices.end(), std::greater<size_t>());
-    if (blockIndices.at(0) < this->blockTextList.size()) {
+    if (blockIndices.at(0) < this->getNumBlocks()) {
         for (size_t blockIndex : blockIndices) {
             this->removeBlock(blockIndex);
         }
@@ -168,7 +173,7 @@ void FileParser::removeMultipleBlocks(std::vector<size_t> blockIndices) {
 }
 
 void FileParser::duplicateBlock(size_t blockIndex) {
-    if (blockIndex < this->blockTextList.size()) {
+    if (blockIndex < this->getNumBlocks()) {
         this->addBlock(this->getBlockText(blockIndex), this->getBlockAddress(blockIndex));
     }
 }
@@ -181,23 +186,19 @@ void FileParser::duplicateMultipleBlocks(std::vector<size_t> blockIndices) {
 // Nodes
 
 void FileParser::addNode(size_t blockIndex, std::string nodeText, size_t nodeAddress) {
-    if (blockIndex < this->blockTextList.size()) {
+    if (blockIndex < this->getNumBlocks()) {
         this->blockTextList.at(blockIndex).push_back(nodeText);
         this->blockAddressList.at(blockIndex).push_back(nodeAddress);
     }
 }
 void FileParser::addMultipleNodes(size_t blockIndex, std::vector<std::string> nodeTextList, std::vector<size_t> nodeAddressList) {
-    size_t listSize = nodeTextList.size();
-    if (listSize > nodeAddressList.size()) {
-        listSize = nodeAddressList.size();
-    }
-    for (size_t index = 0; index < listSize; ++index) {
+    for (size_t index = 0; index < this->getNumBlocks(); ++index) {
         this->addNode(blockIndex, nodeTextList.at(index), nodeAddressList.at(index));
     }
 }
 
 void FileParser::removeNode(size_t blockIndex, size_t nodeIndex) {
-    if (nodeIndex != 0 && blockIndex < this->blockTextList.size() && nodeIndex < this->blockTextList.at(blockIndex).size()) {
+    if (nodeIndex != 0 && blockIndex < this->getNumBlocks() && nodeIndex < this->blockTextList.at(blockIndex).size()) {
         this->blockTextList.at(blockIndex).erase(this->blockTextList.at(blockIndex).begin() + nodeIndex);
         this->blockAddressList.at(blockIndex).erase(this->blockAddressList.at(blockIndex).begin() + nodeIndex);
     }
@@ -212,27 +213,19 @@ void FileParser::removeMultipleNodes(size_t blockIndex, std::vector<size_t> node
 }
 void FileParser::removeMultipleNodes(std::vector<size_t> blockIndices, std::vector<std::vector<size_t>> nodeIndices) {
     // Every block index in the blockIndices list has a corresponding vector of node indices.
-    size_t listSize = blockIndices.size();
-    if (listSize > nodeIndices.size()) {
-        listSize = nodeIndices.size();
-    }
-    for (size_t index = 0; index < listSize; ++index) {
+    for (size_t index = 0; index < this->getNumBlocks(); ++index) {
         this->removeMultipleNodes(blockIndices.at(index), nodeIndices.at(index));
     }
 }
 
 void FileParser::duplicateNode(size_t ogBlockIndex, size_t ogNodeIndex, size_t pasteBlockIndex) {
-    if (ogBlockIndex < this->blockTextList.size() && ogNodeIndex < this->blockTextList.at(ogBlockIndex).size() && pasteBlockIndex < this->blockTextList.size()) {
+    if (ogBlockIndex < this->getNumBlocks() && ogNodeIndex < this->blockTextList.at(ogBlockIndex).size() && pasteBlockIndex < this->getNumBlocks()) {
         this->addNode(pasteBlockIndex, this->blockTextList.at(ogBlockIndex).at(ogNodeIndex), this->blockAddressList.at(ogBlockIndex).at(ogNodeIndex));
     }
 }
 void FileParser::duplicateMultipleNodes(std::vector<size_t> ogBlockIndex, std::vector<size_t> ogNodeIndex, size_t pasteBlockIndex) {
     // Every block index in the ogBlockIndices list has a corresponding node index, (requiring duplicates if multiple nodes in the same block).
-    size_t listSize = ogBlockIndex.size();
-    if (listSize > ogNodeIndex.size()) {
-        listSize = ogNodeIndex.size();
-    }
-    for (size_t index = 0; index < listSize; ++index) {
+    for (size_t index = 0; index < this->getNumBlocks(); ++index) {
         this->duplicateNode(ogBlockIndex.at(index), ogNodeIndex.at(index), pasteBlockIndex);
     }
 }
@@ -250,7 +243,7 @@ void FileParser::setPath(fs::path file) {
 
 void FileParser::save(fs::path file) {
     std::ofstream fout(file.c_str(), std::ios::binary | std::ios::trunc);
-    for (size_t lineIndex = 0; lineIndex < this->blockTextList.size(); ++lineIndex) {
+    for (size_t lineIndex = 0; lineIndex < this->getNumBlocks(); ++lineIndex) {
         if (lineIndex != 0) {
             fout << "\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}";
         }
