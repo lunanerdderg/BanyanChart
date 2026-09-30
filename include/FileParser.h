@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <fstream>
 #include <string>
+#include <bits/stdc++.h>
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -17,7 +18,7 @@ void newFile(fs::path, std::string="");
 class FileParser {
     public:
 //        void coutBlockLists(); // TESTING
-        FileParser(bool=false); FileParser(fs::path, bool=false); FileParser(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); FileParser(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
+        FileParser(); /*FileParser(fs::path); FileParser(bool);*/ FileParser(fs::path, bool=false); FileParser(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); FileParser(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
         virtual ~FileParser();
         void newInstance(bool=false); void newInstance(fs::path, bool=false); void newInstance(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); void newInstance(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
         // Get

@@ -2,18 +2,20 @@
 1790174942 source:/home/luna/Documents/Programming/Apps/BanyanChart/Testing/main.cpp
 	"../include/FileParser.h"
 
-1790714927 /home/luna/Documents/Programming/Apps/BanyanChart/include/FileParser.h
+1790744620 /home/luna/Documents/Programming/Apps/BanyanChart/include/FileParser.h
+	<iostream>
 	<vector>
-	<string>
 	<sstream>
-	<fstream>
 	<cmath>
 	<algorithm>
+	<fstream>
+	<string>
+	<bits/stdc++.h>
 	<filesystem>
 
-1790714782 source:/home/luna/Documents/Programming/Apps/BanyanChart/src/FileParser.cpp
+1790745320 source:/home/luna/Documents/Programming/Apps/BanyanChart/src/FileParser.cpp
 	"FileParser.h"
 
-1790660831 source:/home/luna/Documents/Programming/Apps/BanyanChart/Test/main.cpp
+1790745057 source:/home/luna/Documents/Programming/Apps/BanyanChart/Test/main.cpp
 	"FileParser.h"
 

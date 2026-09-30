@@ -8,19 +8,26 @@ void newFile(fs::path file, std::string body) {
 }
 
 //void FileParser::coutBlockLists() { // TESTING
-//    for (size_t lineIndex = 0; lineIndex < this->blockTextList.size(); ++lineIndex) {
+//    for (size_t lineIndex = 0; lineIndex < this->blockTextList.size() && lineIndex < this->blockAddressList.size(); ++lineIndex) {
 //        if (lineIndex != 0) {
 //            std::cout << std::endl;
 //        }
-//        for (size_t elementIndex = 0; elementIndex < this->blockTextList.at(lineIndex).size(); ++elementIndex) {
+//        for (size_t elementIndex = 0; elementIndex < this->blockTextList.at(lineIndex).size() && lineIndex < this->blockAddressList.at(lineIndex).size(); ++elementIndex) {
 //            std::cout << this->blockTextList.at(lineIndex).at(elementIndex) << '/' << this->blockAddressList.at(lineIndex).at(elementIndex) << ", ";
 //        }
 //    }
 //}
 
-FileParser::FileParser(bool startEmpty) {
-    this->newInstance(startEmpty);
+FileParser::FileParser() {
+    this->newInstance(false);
 }
+//FileParser::FileParser(fs::path file) {
+//    this->newInstance(file, false);
+//}
+//FileParser::FileParser(bool startEmpty) {
+//    std::cout << "wrong1\n";
+//    this->newInstance(startEmpty);
+//}
 FileParser::FileParser(fs::path file, bool startEmpty) {
     this->newInstance(file, startEmpty);
 }
@@ -265,37 +272,27 @@ void FileParser::save() {
 void FileParser::update() {
     std::vector<std::vector<std::string>> newBlockTextList;
     std::vector<std::vector<size_t>> newBlockAddressList;
-    size_t counter = 0;
+    size_t lineCounter = 0;
     std::string line;
     std::string fileContents;
     {
-        std::ifstream fin(this->getPath(), std::ios::binary | std::ios::trunc);
+        std::ifstream fin(this->getPath(), std::ios::binary);
         std::ostringstream sout;
         sout << fin.rdbuf();
         fileContents = sout.str();
     }
 
-    for (size_t lineIndex = fileContents.find("\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}"); lineIndex != string::npos; lineIndex = fileContents.find("\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}")) {
+    bool lastLineRead = false;
+    for (size_t lineIndex = fileContents.find("\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}"); !lastLineRead; lineIndex = fileContents.find("\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}")) {
+        lastLineRead = (lineIndex == std::string::npos);
         line = fileContents.substr(0, lineIndex);
         fileContents = fileContents.substr(lineIndex + 8);
         newBlockTextList.push_back( { { "" } } );
         newBlockAddressList.push_back( { { 0 } } );
         if (line.at(0) == '\x{01}' ) {
-            this->firstBlock = counter;
+            this->firstBlock = lineCounter;
             line = line.substr(1);
         }
-
-//        size_t elementIndex = line.find('\t');
-//        if (elementIndex == string::npos) {
-//            newBlockTextList.at(0) = line;
-//        }
-//        else{
-//            newBlockTextList.at(0) = line.substr(0,elementIndex);
-//            line = line.substr(elementIndex + 1);
-//            for (; elementIndex != string::npos; elementIndex = line.find('\t')) {
-//                newBlockTextList
-//            }
-//        }
 
         std::istringstream sin(line);
 
@@ -312,31 +309,8 @@ void FileParser::update() {
             }
         }
 
-        ++counter;
+        ++lineCounter;
     }
-
-//    while (std::getline(fin, line, '\x{04}')) {
-//        newBlockTextList.push_back( { { "" } } );
-//        newBlockAddressList.push_back( { { } } );
-//        if (line.at(0) == '\x{01}' ) {
-//            this->firstBlock = counter;
-//        }
-//        std::istringstream sin(line.substr((line.at(0) == '\x{01}')));
-//
-//        std::string element;
-//        std::getline(sin, element, '\t');
-//        newBlockTextList.back().at(0) = element;
-//        while (sin.peek() != -1) {
-//            newBlockAddressList.back().push_back(this->getSize_tFromBinary(sin));
-//            if (std::getline(sin, element, '\t')) {
-//                newBlockTextList.back().push_back(element);
-//            }
-//            else {
-//                newBlockTextList.back().push_back("");
-//            }
-//        }
-//        ++counter;
-//    }
 
     this->setBlockLists(newBlockTextList, newBlockAddressList);
 }
@@ -364,9 +338,9 @@ void FileParser::initialize(fs::path file, bool startEmpty) {
             newFile(file, "Example body");
         }
     }
-    else {
-        this->update();
-    }
+//    else {
+//        this->update();
+//    }
 }
 void FileParser::initialize(fs::path file, std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
     this->filePath = file;
