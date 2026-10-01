@@ -327,6 +327,27 @@ void BanyanChartFrame::mouseLeftWindow(wxMouseEvent& event) {
 }
 
 void BanyanChartFrame::mouseWheelMoved(wxMouseEvent& event) {
+//    if (event.GetWheelRotation() > event.GetWheelDelta() || event.GetWheelRotation() < -1*event.GetWheelDelta()) {
+        if (event.GetWheelAxis() == wxMOUSE_WHEEL_HORIZONTAL) {
+//            if ( ( event.GetWheelRotation() >= 0 && !event.IsWheelInverted() ) || ( event.GetWheelRotation() < 0 && event.IsWheelInverted() ) ) {
+            if (event.GetWheelRotation() < 0) {
+                this->Canvas_frameX += -100 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
+            }
+            else {
+                this->Canvas_frameX -= 100 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
+            }
+        }
+        else { // if (event.GetWheelAxis() == wxMOUSE_WHEEL_VERTICAL) {
+//            if ( ( event.GetWheelRotation() >= 0 && !event.IsWheelInverted() ) || ( event.GetWheelRotation() < 0 && event.IsWheelInverted() ) ) {
+            if (event.GetWheelRotation() >= 0) {
+                this->Canvas_frameY += 100 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
+            }
+            else {
+                this->Canvas_frameY -= -100 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
+            }
+        }
+        Refresh();
+//    }
 }
 
 void BanyanChartFrame::paintEvent(wxPaintEvent& event) {
