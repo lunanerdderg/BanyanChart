@@ -138,18 +138,16 @@ void FileParser::setFirstBlock(size_t blockIndex) {
 
 void FileParser::addBlock(std::string body) {
     this->blockTextList.push_back( { { body } } );
-    this->blockAddressList.push_back( { { } } );
+    this->blockAddressList.push_back( { { 0 } } );
 }
-void FileParser::addBlock(std::vector<std::string> blockTextList, std::vector<size_t> blockAddressList) {
-    this->addBlock(blockTextList.at(0));
-    for (size_t index = 1; index < this->getNumBlocks(); ++index) {
-        this->blockTextList.back().push_back(blockTextList.at(index));
-        this->blockAddressList.back().push_back(blockAddressList.at(index));
-    }
+void FileParser::addBlock(std::vector<std::string> blockTexts, std::vector<size_t> blockAddresses) {
+    this->blockTextList.push_back(blockTexts);
+    this->blockAddressList.push_back(blockAddresses);
 }
-void FileParser::addBlock(std::string body, std::vector<std::string> blockTextList, std::vector<size_t> blockAddressList) {
-    blockTextList.insert(blockTextList.begin(), body);
-    this->addBlock(blockTextList, blockAddressList);
+void FileParser::addBlock(std::string body, std::vector<std::string> blockTexts, std::vector<size_t> blockAddresses) {
+    blockTexts.insert(blockTexts.begin(), body);
+    blockAddresses.insert(blockAddresses.begin(), 0);
+    this->addBlock(blockTexts, blockAddresses);
 }
 void FileParser::addMultipleBlocks(std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists) {
     for (size_t index = 0; index < this->getNumBlocks(); ++index) {
@@ -238,6 +236,7 @@ void FileParser::duplicateMultipleNodes(std::vector<size_t> ogBlockIndex, std::v
 // File-handling
 
 void FileParser::setPath(fs::path file) {
+    this->filePath.clear();
     this->filePath = file;
 }
 
@@ -259,53 +258,57 @@ void FileParser::save(fs::path file) {
     }
 }
 void FileParser::save() {
-    this->save(this->getPath());
+    if (!this->getPath().empty()) {
+        this->save(this->getPath());
+    }
 }
 
 void FileParser::update() {
-    std::vector<std::vector<std::string>> newBlockTextList;
-    std::vector<std::vector<size_t>> newBlockAddressList;
-    size_t lineCounter = 0;
-    std::string line;
-    std::string fileContents;
-    {
-        std::ifstream fin(this->getPath(), std::ios::binary);
-        std::ostringstream sout;
-        sout << fin.rdbuf();
-        fileContents = sout.str();
-    }
-
-    bool lastLineRead = false;
-    for (size_t lineIndex = fileContents.find("\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}"); !lastLineRead; lineIndex = fileContents.find("\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}")) {
-        lastLineRead = (lineIndex == std::string::npos);
-        line = fileContents.substr(0, lineIndex);
-        fileContents = fileContents.substr(lineIndex + 8);
-        newBlockTextList.push_back( { { "" } } );
-        newBlockAddressList.push_back( { { 0 } } );
-        if (line.at(0) == '\x{01}' ) {
-            this->firstBlock = lineCounter;
-            line = line.substr(1);
+    if (!this->getPath().empty()) {
+        std::vector<std::vector<std::string>> newBlockTextList;
+        std::vector<std::vector<size_t>> newBlockAddressList;
+        size_t lineCounter = 0;
+        std::string line;
+        std::string fileContents;
+        {
+            std::ifstream fin(this->getPath(), std::ios::binary);
+            std::ostringstream sout;
+            sout << fin.rdbuf();
+            fileContents = sout.str();
         }
 
-        std::istringstream sin(line);
+        bool lastLineRead = false;
+        for (size_t lineIndex = fileContents.find("\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}"); !lastLineRead; lineIndex = fileContents.find("\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}")) {
+            lastLineRead = (lineIndex == std::string::npos);
+            line = fileContents.substr(0, lineIndex);
+            fileContents = fileContents.substr(lineIndex + 8);
+            newBlockTextList.push_back( { { "" } } );
+            newBlockAddressList.push_back( { { 0 } } );
+            if (line.at(0) == '\x{01}' ) {
+                this->firstBlock = lineCounter;
+                line = line.substr(1);
+            }
 
-        std::string element;
-        std::getline(sin, element, '\t');
-        newBlockTextList.back().at(0) = element;
-        while (sin.peek() != -1) {
-            newBlockAddressList.back().push_back(this->getSize_tFromBinary(sin));
-            if (std::getline(sin, element, '\t')) {
-                newBlockTextList.back().push_back(element);
+            std::istringstream sin(line);
+
+            std::string element;
+            std::getline(sin, element, '\t');
+            newBlockTextList.back().at(0) = element;
+            while (sin.peek() != -1) {
+                newBlockAddressList.back().push_back(this->getSize_tFromBinary(sin));
+                if (std::getline(sin, element, '\t')) {
+                    newBlockTextList.back().push_back(element);
+                }
+                else {
+                    newBlockTextList.back().push_back("");
+                }
             }
-            else {
-                newBlockTextList.back().push_back("");
-            }
+
+            ++lineCounter;
         }
 
-        ++lineCounter;
+        this->setBlockLists(newBlockTextList, newBlockAddressList);
     }
-
-    this->setBlockLists(newBlockTextList, newBlockAddressList);
 }
 
 /*
@@ -317,7 +320,7 @@ void FileParser::update() {
 */
 
 void FileParser::initialize(fs::path file, bool startEmpty) {
-    this->filePath = file;
+    this->setPath(file);
     if (startEmpty) {
         this->firstBlock = 0;
         this->blockTextList = {{}};
@@ -336,7 +339,7 @@ void FileParser::initialize(fs::path file, bool startEmpty) {
 //    }
 }
 void FileParser::initialize(fs::path file, std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
-    this->filePath = file;
+    this->setPath(file);
     this->firstBlock = topBlock;
     this->blockTextList = blockTextLists;
     this->blockAddressList = blockAddressLists;
