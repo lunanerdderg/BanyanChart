@@ -21,30 +21,14 @@ void newFile(std::string file, std::string body) {
 FileParser::FileParser() {
     this->newInstance();
 }
-FileParser::FileParser(bool startEmpty) {
-    this->newInstance(startEmpty);
-}
-FileParser::FileParser(wxString file) {
-    this->newInstance(file);
-}
-FileParser::FileParser(std::string file) {
-    this->newInstance(file);
-}
-FileParser::FileParser(const char file[]) {
-    this->newInstance(file);
-}
-FileParser::FileParser(std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
-    this->newInstance(blockTextLists, blockAddressLists, topBlock);
-}
-FileParser::FileParser(const char file[], std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
-    this->newInstance(file, blockTextLists, blockAddressLists, topBlock);
-}
-FileParser::FileParser(wxString file, std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
-    this->newInstance(file, blockTextLists, blockAddressLists, topBlock);
-}
-FileParser::FileParser(std::string file, std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
-    this->newInstance(file, blockTextLists, blockAddressLists, topBlock);
-}
+FileParser::FileParser(bool startEmpty) {this->newInstance(startEmpty);}
+FileParser::FileParser(wxString file) {this->newInstance(file);}
+FileParser::FileParser(std::string file) {this->newInstance(file);}
+FileParser::FileParser(const char file[]) {this->newInstance(file);}
+FileParser::FileParser(std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {this->newInstance(blockTextLists, blockAddressLists, topBlock);}
+FileParser::FileParser(const char file[], std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {this->newInstance(file, blockTextLists, blockAddressLists, topBlock);}
+FileParser::FileParser(wxString file, std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {this->newInstance(file, blockTextLists, blockAddressLists, topBlock);}
+FileParser::FileParser(std::string file, std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {this->newInstance(file, blockTextLists, blockAddressLists, topBlock);}
 
 FileParser::~FileParser() {
 }
@@ -370,12 +354,18 @@ void FileParser::update() {
 
 void FileParser::initialize(std::string file, bool startEmpty) { // BOOKMARK
     this->setPath(file);
-    if (startEmpty) {
+    if (startEmpty || file == "") {
         this->firstBlock = 0;
-        this->blockTextList = {{}};
-        this->blockAddressList = {{}};
+        if (startEmpty) {
+            this->blockTextList = {{}};
+            this->blockAddressList = {{}};
+        }
+        else {
+            this->blockTextList = {{"Example body"}};
+            this->blockAddressList = {{0}};
+        }
     }
-    if (!fs::exists((file.c_str()))) {
+    if (file != "" && !fs::exists((file.c_str()))) {
         if (startEmpty) {
             newFile(file);
         }
@@ -383,7 +373,7 @@ void FileParser::initialize(std::string file, bool startEmpty) { // BOOKMARK
             newFile(file, "Example body");
         }
     }
-//    else {
+//    else if (file != "") {
 //        this->update();
 //    }
 }

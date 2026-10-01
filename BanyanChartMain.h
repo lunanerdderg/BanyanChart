@@ -30,14 +30,15 @@ class BanyanChartFrame: public wxFrame
 
     private:
         FileParser File;
-        size_t selectedBlock = -1;
-        size_t selectedNode = -1;
-        int Canvas_mousePrevX, Canvas_mousePrevY;
+        size_t selectedBlock = -1, selectedNode = -1;
+        int Canvas_frameX = 0, Canvas_frameY = 0, Canvas_mousePrevX, Canvas_mousePrevY;
+        unsigned int Canvas_zoom = 100;
+        bool Canvas_dragging = false;
         std::vector<bool> Canvas_boxDraggingList;
         std::vector<int> Canvas_boxXList, Canvas_boxYList, Canvas_boxWList, Canvas_boxHList;
 
         void Canvas_render(wxDC& dc);
-        void Canvas_initializeBoxes();
+        void Canvas_initializeBoxes(bool=true);
 
         //(*Handlers(BanyanChartFrame)
         void OnNew(wxCommandEvent& event);
