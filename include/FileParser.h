@@ -18,9 +18,9 @@ void newFile(fs::path, std::string="");
 class FileParser {
     public:
 //        void coutBlockLists(); // TESTING
-        FileParser(); /*FileParser(fs::path); FileParser(bool);*/ FileParser(fs::path, bool=false); FileParser(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); FileParser(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
-        virtual ~FileParser();
-        void newInstance(bool=false); void newInstance(fs::path, bool=false); void newInstance(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); void newInstance(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
+        FileParser(); FileParser(bool); FileParser(const char[]); FileParser(std::string); FileParser(fs::path); FileParser(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); FileParser(const char[], std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); FileParser(std::string, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); FileParser(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
+        virtual ~FileParser(); // const char[] // const char*
+        void newInstance(bool=false); void newInstance(const char[]); void newInstance(std::string); void newInstance(fs::path); void newInstance(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); void newInstance(const char[], std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); void newInstance(std::string, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); void newInstance(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
         // Get
         fs::path getPath();
         size_t getFirstBlock();
