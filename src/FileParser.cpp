@@ -274,7 +274,7 @@ void FileParser::setPath(std::string file) {
     this->setPath(fs::path(file));
 }
 void FileParser::setPath(wxString file) {
-    this->filePath = file.ToStdString();
+    this->setPath(file.ToStdString());
 }
 void FileParser::setPath(fs::path file) {
     this->filePath = file;
@@ -372,7 +372,6 @@ void FileParser::update() {
 
 void FileParser::initialize(fs::path file, bool startEmpty) {
     this->setPath(file);
-    std::cout << '-' << file.c_str() << std::endl;
     if (startEmpty) {
         this->firstBlock = 0;
         this->blockTextList = {{}};
