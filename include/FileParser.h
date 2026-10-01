@@ -3,6 +3,7 @@
 
 //#include <iostream> // TESTING
 
+#include "../BanyanChartApp.h"
 #include <vector>
 #include <sstream>
 #include <cmath>
@@ -18,9 +19,9 @@ void newFile(fs::path, std::string="");
 class FileParser {
     public:
 //        void coutBlockLists(); // TESTING
-        FileParser(); FileParser(bool); FileParser(const char[]); FileParser(std::string); FileParser(fs::path); FileParser(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); FileParser(const char[], std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); FileParser(std::string, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); FileParser(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
+        FileParser(); FileParser(bool); FileParser(const char[]); FileParser(std::string); FileParser(wxString); FileParser(fs::path); FileParser(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); FileParser(const char[], std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); FileParser(wxString, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); FileParser(std::string, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); FileParser(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
         virtual ~FileParser(); // const char[] // const char*
-        void newInstance(bool=false); void newInstance(const char[]); void newInstance(std::string); void newInstance(fs::path); void newInstance(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); void newInstance(const char[], std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); void newInstance(std::string, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); void newInstance(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
+        void newInstance(bool=false); void newInstance(const char[]); void newInstance(std::string); void newInstance(wxString); void newInstance(fs::path); void newInstance(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); void newInstance(const char[], std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); void newInstance(wxString, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); void newInstance(std::string, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0); void newInstance(fs::path, std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>, size_t=0);
         // Get
         fs::path getPath();
         size_t getFirstBlock();
@@ -50,9 +51,9 @@ class FileParser {
         void duplicateNode(size_t, size_t, size_t);
         void duplicateMultipleNodes(std::vector<size_t>, std::vector<size_t>, size_t); void duplicateMultipleNodes(std::vector<size_t>, std::vector<size_t>, std::vector<size_t>);
           // File-handling
-        void setPath(fs::path);
+        void setPath(const char[]); void setPath(std::string); void setPath(wxString); void setPath(fs::path);
         void save();
-        void save(fs::path);
+        void save(const char[]); void save(std::string); void save(wxString); void save(fs::path);
         void update();
 
     private:

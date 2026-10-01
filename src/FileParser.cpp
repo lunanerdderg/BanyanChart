@@ -24,6 +24,9 @@ FileParser::FileParser() {
 FileParser::FileParser(bool startEmpty) {
     this->newInstance(startEmpty);
 }
+FileParser::FileParser(wxString file) {
+    this->newInstance(file);
+}
 FileParser::FileParser(std::string file) {
     this->newInstance(file);
 }
@@ -37,6 +40,9 @@ FileParser::FileParser(std::vector<std::vector<std::string>> blockTextLists, std
     this->newInstance(blockTextLists, blockAddressLists, topBlock);
 }
 FileParser::FileParser(const char file[], std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
+    this->newInstance(file, blockTextLists, blockAddressLists, topBlock);
+}
+FileParser::FileParser(wxString file, std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
     this->newInstance(file, blockTextLists, blockAddressLists, topBlock);
 }
 FileParser::FileParser(std::string file, std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
@@ -59,6 +65,9 @@ void FileParser::newInstance(fs::path file) {
 void FileParser::newInstance(const char file[]) {
     this->newInstance(fs::path(file));
 }
+void FileParser::newInstance(wxString file) {
+    this->newInstance(fs::path(file.ToStdString()));
+}
 void FileParser::newInstance(std::string file) {
     this->newInstance(fs::path(file));
 }
@@ -74,6 +83,9 @@ void FileParser::newInstance(const char file[], std::vector<std::vector<std::str
 }
 void FileParser::newInstance(std::string file, std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
     this->newInstance(fs::path(file), blockTextLists, blockAddressLists, topBlock);
+}
+void FileParser::newInstance(wxString file, std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists, size_t topBlock) {
+    this->newInstance(file.ToStdString(), blockTextLists, blockAddressLists, topBlock);
 }
 
 /*
@@ -255,6 +267,15 @@ void FileParser::duplicateMultipleNodes(std::vector<size_t> ogBlockIndex, std::v
 
 // File-handling
 
+void FileParser::setPath(const char file[]) {
+    this->setPath(fs::path(file));
+}
+void FileParser::setPath(std::string file) {
+    this->setPath(fs::path(file));
+}
+void FileParser::setPath(wxString file) {
+    this->filePath = file.ToStdString();
+}
 void FileParser::setPath(fs::path file) {
     this->filePath = file;
 }
@@ -277,6 +298,15 @@ void FileParser::save(fs::path file) {
             }
         }
     }
+}
+void FileParser::save(const char file[]) {
+    this->save(fs::path(file));
+}
+void FileParser::save(std::string file) {
+    this->save(fs::path(file));
+}
+void FileParser::save(wxString file) {
+    this->save(file.ToStdString());
 }
 void FileParser::save() {
     if (!this->getPath().empty()) {
