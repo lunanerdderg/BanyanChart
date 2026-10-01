@@ -352,7 +352,7 @@ void FileParser::update() {
 ======================================================
 */
 
-void FileParser::initialize(std::string file, bool startEmpty) { // BOOKMARK
+void FileParser::initialize(std::string file, bool startEmpty) {
     this->setPath(file);
     if (startEmpty || file == "") {
         this->firstBlock = 0;

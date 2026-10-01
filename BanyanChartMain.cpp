@@ -66,8 +66,8 @@ BEGIN_EVENT_TABLE(BanyanChartFrame,wxFrame)
     EVT_MOUSEWHEEL(BanyanChartFrame::mouseWheelMoved)
 END_EVENT_TABLE()
 
-BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) { // BOOKMARK
-    File = FileParser(); //( { {"Block1" , "1Node1","1Node2","1Node3"}, {"Block2" , "2Node1","2Node2","2Node3"} }, { {0 , 0,1,0}, {0 , 1,1,0} } );
+BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
+    File = FileParser();
     this->Canvas_initializeBoxes();
 
     //(*Initialize(BanyanChartFrame)
@@ -161,8 +161,8 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
 
         for (size_t i = 0; i != -1 && i < numBlocks; ++i) {
             this->Canvas_boxDraggingList.push_back(false);
-            this->Canvas_boxXList.push_back(100*numBlocks/(numBlocks - i));
-            this->Canvas_boxYList.push_back(100);
+            this->Canvas_boxXList.push_back(100);
+            this->Canvas_boxYList.push_back(100*numBlocks/(numBlocks - i));
             this->Canvas_boxWList.push_back(50);
             this->Canvas_boxHList.push_back(50);
         }
@@ -170,8 +170,8 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
     else if (numBlocks > this->Canvas_boxDraggingList.size()) {
         for (size_t i = this->Canvas_boxDraggingList.size(); i != -1 && i < numBlocks; ++i) {
             this->Canvas_boxDraggingList.push_back(false);
-            this->Canvas_boxXList.push_back(100*numBlocks/(numBlocks - i)); // - this->Canvas_boxDraggingList.size()));
-            this->Canvas_boxYList.push_back(100);
+            this->Canvas_boxXList.push_back(100);
+            this->Canvas_boxYList.push_back(100*numBlocks/(numBlocks - i)); // - this->Canvas_boxDraggingList.size()));
             this->Canvas_boxWList.push_back(50);
             this->Canvas_boxHList.push_back(50);
         }
