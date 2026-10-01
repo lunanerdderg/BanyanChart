@@ -177,6 +177,22 @@ void FileParser::addMultipleBlocks(std::vector<std::vector<std::string>> blockTe
 
 void FileParser::removeBlock(size_t blockIndex) {
     if (blockIndex < this->getNumBlocks()) {
+        for (size_t index = 0; index != -1 && index < this->blockAddressList.size(); ++index) {
+            for (size_t nodeIndex = this->blockAddressList.at(index).size() - 1; nodeIndex > 0; --nodeIndex) {
+                if (this->blockAddressList.at(index).at(nodeIndex) == blockIndex) {
+                    this->blockTextList.at(index).erase(this->blockTextList.at(index).begin() + nodeIndex);
+                    this->blockAddressList.at(index).erase(this->blockAddressList.at(index).begin() + nodeIndex);
+                }
+                else if (index >= blockIndex) {
+                    --this->blockAddressList.at(index).at(nodeIndex);
+                }
+            }
+        }
+        if (blockIndex == this->firstBlock) {
+            if (this->blockAddressList.at(this->firstBlock).size() > 1) {
+                this->firstBlock = this->blockAddressList.at(this->firstBlock).at(1);
+            }
+        }
         this->blockTextList.erase(this->blockTextList.begin() + blockIndex);
         this->blockAddressList.erase(this->blockAddressList.begin() + blockIndex);
     }

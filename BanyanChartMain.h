@@ -29,7 +29,9 @@ class BanyanChartFrame: public wxFrame
         virtual ~BanyanChartFrame();
 
     private:
-        FileParser* File;
+        FileParser File;
+        size_t selectedBlock = -1;
+        size_t selectedNode = -1;
         int Canvas_mousePrevX, Canvas_mousePrevY;
         std::vector<bool> Canvas_boxDraggingList;
         std::vector<int> Canvas_boxXList, Canvas_boxYList, Canvas_boxWList, Canvas_boxHList;
@@ -42,6 +44,8 @@ class BanyanChartFrame: public wxFrame
         void OnOpen(wxCommandEvent& event);
         void OnSave(wxCommandEvent& event);
         void OnSaveAs(wxCommandEvent& event);
+        void OnAdd(wxCommandEvent& event);
+        void OnDelete(wxCommandEvent& event);
         void OnQuit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);
         void OnClose(wxCloseEvent& event);
@@ -62,6 +66,8 @@ class BanyanChartFrame: public wxFrame
         static const wxWindowID idMenuSave;
         static const wxWindowID idMenuSaveAs;
         static const wxWindowID idMenuQuit;
+        static const wxWindowID idMenuAdd;
+        static const wxWindowID idMenuDelete;
         static const wxWindowID idMenuAbout;
         static const wxWindowID ID_STATUSBAR1;
         //*)
@@ -73,6 +79,8 @@ class BanyanChartFrame: public wxFrame
         wxMenuItem* MenuItem4;
         wxMenuItem* MenuItem5;
         wxMenuItem* MenuItem6;
+        wxMenuItem* MenuItem7;
+        wxMenuItem* MenuItem8;
         wxPanel* Canvas;
         wxStatusBar* StatusBar1;
         //*)

@@ -53,10 +53,19 @@
 				</object>
 			</object>
 			<object class="wxMenu" variable="Menu3" member="yes">
-				<label>Object</label>
+				<label>Blocks</label>
+				<object class="wxMenuItem" name="idMenuAdd" variable="MenuItem7" member="yes">
+					<label>Add</label>
+					<help>Add a block</help>
+				</object>
+				<object class="wxMenuItem" name="idMenuDelete" variable="MenuItem8" member="yes">
+					<label>Delete</label>
+					<accel>Delete</accel>
+					<help>Delete a block</help>
+				</object>
 			</object>
 			<object class="wxMenu" variable="Menu4" member="yes">
-				<label>Node</label>
+				<label>Nodes</label>
 			</object>
 			<object class="wxMenu" variable="Menu2" member="no">
 				<label>Help</label>

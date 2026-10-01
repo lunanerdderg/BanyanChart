@@ -48,6 +48,8 @@ const wxWindowID BanyanChartFrame::idMenuOpen = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuSave = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuSaveAs = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuQuit = wxNewId();
+const wxWindowID BanyanChartFrame::idMenuAdd = wxNewId();
+const wxWindowID BanyanChartFrame::idMenuDelete = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuAbout = wxNewId();
 const wxWindowID BanyanChartFrame::ID_STATUSBAR1 = wxNewId();
 //*)
@@ -65,7 +67,6 @@ BEGIN_EVENT_TABLE(BanyanChartFrame,wxFrame)
 END_EVENT_TABLE()
 
 BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) { // BOOKMARK
-    FileParser* File;
     File = new FileParser( { {"Block1" , "1Node1","1Node2","1Node3"}, {"Block2" , "2Node1","2Node2","2Node3"} }, { {0 , 0,1,0}, {0 , 1,1,0} } );
     this->Canvas_initializeBoxes();
 
@@ -99,9 +100,13 @@ BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) { // BOOKMARK
     Menu1->Append(MenuItem1);
     MenuBar1->Append(Menu1, _("&File"));
     Menu3 = new wxMenu();
-    MenuBar1->Append(Menu3, _("Object"));
+    MenuItem7 = new wxMenuItem(Menu3, idMenuAdd, _("Add"), _("Add a block"), wxITEM_NORMAL);
+    Menu3->Append(MenuItem7);
+    MenuItem8 = new wxMenuItem(Menu3, idMenuDelete, _("Delete\tDelete"), _("Delete a block"), wxITEM_NORMAL);
+    Menu3->Append(MenuItem8);
+    MenuBar1->Append(Menu3, _("Blocks"));
     Menu4 = new wxMenu();
-    MenuBar1->Append(Menu4, _("Node"));
+    MenuBar1->Append(Menu4, _("Nodes"));
     Menu2 = new wxMenu();
     MenuItem2 = new wxMenuItem(Menu2, idMenuAbout, _("About\tF1"), _("Show info about this application"), wxITEM_NORMAL);
     Menu2->Append(MenuItem2);
@@ -114,14 +119,17 @@ BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) { // BOOKMARK
     StatusBar1->SetStatusStyles(1,__wxStatusBarStyles_1);
     SetStatusBar(StatusBar1);
     Layout();
-
-    Connect(idMenuQuit, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnQuit);
-    Connect(idMenuAbout, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnAbout);
     //*)
+
     Connect(idMenuNew, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnNew);
     Connect(idMenuOpen, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnOpen);
     Connect(idMenuSave, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnSave);
     Connect(idMenuSaveAs, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnSaveAs);
+    Connect(idMenuAdd, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnAdd);
+    Connect(idMenuDelete, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnDelete);
+
+    Connect(idMenuQuit, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnQuit);
+    Connect(idMenuAbout, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnAbout);
 }
 /*
     Canvas->Connect(wxEVT_PAINT, (wxObjectEventFunction)&BanyanChartFrame::paintEvent);
@@ -146,11 +154,11 @@ void BanyanChartFrame::Canvas_initializeBoxes() {
     this->Canvas_boxWList = {};
     this->Canvas_boxHList = {};
 
-    size_t numBlocks = this->File->getNumBlocks();
+    size_t numBlocks = this->File.getNumBlocks();
 
     for (size_t i = 0; i != -1 && i < numBlocks; ++i) {
         this->Canvas_boxDraggingList.push_back(false);
-        this->Canvas_boxXList.push_back(100);
+        this->Canvas_boxXList.push_back(100*numBlocks/(numBlocks - i));
         this->Canvas_boxYList.push_back(100);
         this->Canvas_boxWList.push_back(50);
         this->Canvas_boxHList.push_back(50);
@@ -160,8 +168,9 @@ void BanyanChartFrame::Canvas_initializeBoxes() {
 
 
 void BanyanChartFrame::OnNew(wxCommandEvent& event) {
-    this->File->newInstance();
+    this->File.newInstance();
     this->Canvas_initializeBoxes();
+    Refresh();
 }
 
 void BanyanChartFrame::OnOpen(wxCommandEvent& WXUNUSED(event)) {
@@ -175,22 +184,23 @@ void BanyanChartFrame::OnOpen(wxCommandEvent& WXUNUSED(event)) {
         return;
     }
 
-    this->File->newInstance(openFileDialog.GetPath());
+    this->File.newInstance(openFileDialog.GetPath());
     this->Canvas_initializeBoxes();
+    Refresh();
 }
 
 void BanyanChartFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
-    if (File->getPath() == fs::path()) {
+    if (File.getPath() == fs::path()) {
         wxFileDialog saveFileDialog(this, _("Save BanyanChart file"), "", "", "BanyanChart files (*.byfc)|*.byfc", wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
         if (saveFileDialog.ShowModal() == wxID_CANCEL) {
             return;
         }
 
-        this->File->setPath(saveFileDialog.GetPath());
-        this->File->save();
+        this->File.setPath(saveFileDialog.GetPath());
+        this->File.save();
     }
     else {
-        this->File->save();
+        this->File.save();
     }
 }
 
@@ -200,7 +210,25 @@ void BanyanChartFrame::OnSaveAs(wxCommandEvent& WXUNUSED(event)) {
         return;
     }
 
-    this->File->save(saveFileDialog.GetPath());
+    this->File.save(saveFileDialog.GetPath());
+}
+
+void BanyanChartFrame::OnAdd(wxCommandEvent& WXUNUSED(event)) {
+    this->File.addBlock("");
+    this->Canvas_initializeBoxes();
+    Refresh();
+}
+void BanyanChartFrame::OnDelete(wxCommandEvent& WXUNUSED(event)) {
+    if (this->selectedBlock != -1) {
+        this->File.removeBlock(this->selectedBlock);
+        this->Canvas_boxDraggingList.erase(this->Canvas_boxDraggingList.begin() + this->selectedBlock);
+        this->Canvas_boxXList.erase(this->Canvas_boxXList.begin() + this->selectedBlock);
+        this->Canvas_boxYList.erase(this->Canvas_boxYList.begin() + this->selectedBlock);
+        this->Canvas_boxWList.erase(this->Canvas_boxWList.begin() + this->selectedBlock);
+        this->Canvas_boxHList.erase(this->Canvas_boxHList.begin() + this->selectedBlock);
+        selectedBlock = -1;
+        Refresh();
+    }
 }
 
 void BanyanChartFrame::OnQuit(wxCommandEvent& event) {
@@ -235,6 +263,7 @@ void BanyanChartFrame::mouseMoved(wxMouseEvent& event) {
 }
 
 void BanyanChartFrame::mouseDown(wxMouseEvent& event) {
+    bool selectionMade = false;
     for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size(); ++index) {
         if (event.GetPosition().x >= this->Canvas_boxXList.at(index) && event.GetPosition().x <= this->Canvas_boxXList.at(index) + this->Canvas_boxWList.at(index) &&
             event.GetPosition().y >= this->Canvas_boxYList.at(index) && event.GetPosition().y <= this->Canvas_boxYList.at(index) + this->Canvas_boxHList.at(index))
@@ -242,8 +271,14 @@ void BanyanChartFrame::mouseDown(wxMouseEvent& event) {
             this->Canvas_boxDraggingList.at(index) = true;
             this->Canvas_mousePrevX = event.GetPosition().x;
             this->Canvas_mousePrevY = event.GetPosition().y;
+            this->selectedBlock = index;
+            selectionMade = true;
         }
     }
+    if (!selectionMade) {
+        selectedBlock = -1;
+    }
+    Refresh();
 }
 
 void BanyanChartFrame::mouseReleased(wxMouseEvent& event) {
@@ -272,10 +307,16 @@ void BanyanChartFrame::paintEvent(wxPaintEvent& event) {
 
 
 void BanyanChartFrame::Canvas_render(wxDC&  dc) {
-    dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW)); // blue filling
-    dc.SetPen( wxPen( wxColor(255,175,175), 3 ) ); // 10-pixels-thick pink outline
-    for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size() && index < this->File->getNumBlocks(); ++index) {
+    dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+    dc.SetPen( wxPen( wxColor(255,175,175), 2 ) );
+    for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size() && index < this->File.getNumBlocks(); ++index) {
+        if (index == this->selectedBlock) {
+            dc.SetPen( wxPen( wxColor(255,75,75), 3 ) );
+        }
         dc.DrawRectangle(this->Canvas_boxXList.at(index), this->Canvas_boxYList.at(index), this->Canvas_boxWList.at(index), this->Canvas_boxHList.at(index));
-        dc.DrawText(this->File->getBlockBody(index).c_str(), this->Canvas_boxXList.at(index), this->Canvas_boxYList.at(index)); // draw some text
+        if (index == this->selectedBlock) {
+            dc.SetPen( wxPen( wxColor(255,175,175), 2 ) );
+        }
+        dc.DrawText(this->File.getBlockBody(index).c_str(), this->Canvas_boxXList.at(index), this->Canvas_boxYList.at(index));
     }
 }
