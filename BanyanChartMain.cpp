@@ -190,13 +190,19 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
 
 
 void BanyanChartFrame::OnNew(wxCommandEvent& event) {
+    if (this->unsaved) {
+        if (wxMessageBox(_("Current content has not been saved! Proceed?"), _("Please confirm"), wxICON_QUESTION | wxYES_NO, this) == wxNO ) {
+            return;
+        }
+    }
     this->File.newInstance();
     this->Canvas_initializeBoxes();
     Refresh();
+    this->unsaved = false;
 }
 
 void BanyanChartFrame::OnOpen(wxCommandEvent& WXUNUSED(event)) {
-    if (false) { // Remember to replace "false" with a function that tests if the file has been saved (BOOKMARK)
+    if (this->unsaved) {
         if (wxMessageBox(_("Current content has not been saved! Proceed?"), _("Please confirm"), wxICON_QUESTION | wxYES_NO, this) == wxNO ) {
             return;
         }
@@ -209,10 +215,11 @@ void BanyanChartFrame::OnOpen(wxCommandEvent& WXUNUSED(event)) {
     this->File.newInstance(openFileDialog.GetPath());
     this->Canvas_initializeBoxes();
     Refresh();
+    this->unsaved = false;
 }
 
 void BanyanChartFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
-    if (File.getPath() == fs::path()) {
+    if (File.getPath() == "") {
         wxFileDialog saveFileDialog(this, _("Save BanyanChart file"), "", "", "BanyanChart files (*.byfc)|*.byfc", wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
         if (saveFileDialog.ShowModal() == wxID_CANCEL) {
             return;
@@ -220,9 +227,11 @@ void BanyanChartFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
 
         this->File.setPath(saveFileDialog.GetPath());
         this->File.save();
+        this->unsaved = false;
     }
     else {
         this->File.save();
+        this->unsaved = false;
     }
 }
 
@@ -233,12 +242,14 @@ void BanyanChartFrame::OnSaveAs(wxCommandEvent& WXUNUSED(event)) {
     }
 
     this->File.save(saveFileDialog.GetPath());
+    this->unsaved = false;
 }
 
 void BanyanChartFrame::OnAdd(wxCommandEvent& WXUNUSED(event)) {
     this->File.addBlock("");
     this->Canvas_initializeBoxes(false);
     Refresh();
+    this->unsaved = true;
 }
 void BanyanChartFrame::OnDelete(wxCommandEvent& WXUNUSED(event)) {
     if (this->selectedBlock != -1 && this->selectedBlock < this->File.getNumBlocks()) {
@@ -250,6 +261,7 @@ void BanyanChartFrame::OnDelete(wxCommandEvent& WXUNUSED(event)) {
         this->Canvas_boxHList.erase(this->Canvas_boxHList.begin() + this->selectedBlock);
         selectedBlock = -1;
         Refresh();
+        this->unsaved = true;
     }
 }
 
