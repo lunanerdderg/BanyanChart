@@ -52,6 +52,19 @@
 					<handler function="OnQuit" entry="EVT_MENU" />
 				</object>
 			</object>
+			<object class="wxMenu" variable="Menu5" member="yes">
+				<label>View</label>
+				<object class="wxMenuItem" name="idMenuZoomIn" variable="MenuItem9" member="yes">
+					<label>Zoom in</label>
+					<accel>Ctrl-+</accel>
+					<help>Zoom into the canvas</help>
+				</object>
+				<object class="wxMenuItem" name="idMenuZoomOut" variable="MenuItem10" member="yes">
+					<label>Zoom out</label>
+					<accel>Ctrl--</accel>
+					<help>Zoom out of the canvas</help>
+				</object>
+			</object>
 			<object class="wxMenu" variable="Menu3" member="yes">
 				<label>Blocks</label>
 				<object class="wxMenuItem" name="idMenuAdd" variable="MenuItem7" member="yes">

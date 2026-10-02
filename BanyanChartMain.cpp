@@ -48,6 +48,8 @@ const wxWindowID BanyanChartFrame::idMenuOpen = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuSave = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuSaveAs = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuQuit = wxNewId();
+const wxWindowID BanyanChartFrame::idMenuZoomIn = wxNewId();
+const wxWindowID BanyanChartFrame::idMenuZoomOut = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuAdd = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuDelete = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuAbout = wxNewId();
@@ -99,6 +101,12 @@ BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
     MenuItem1 = new wxMenuItem(Menu1, idMenuQuit, _("Quit\tCtrl-Q"), _("Quit the application"), wxITEM_NORMAL);
     Menu1->Append(MenuItem1);
     MenuBar1->Append(Menu1, _("&File"));
+    Menu5 = new wxMenu();
+    MenuItem9 = new wxMenuItem(Menu5, idMenuZoomIn, _("Zoom in\tCtrl-+"), _("Zoom into the canvas"), wxITEM_NORMAL);
+    Menu5->Append(MenuItem9);
+    MenuItem10 = new wxMenuItem(Menu5, idMenuZoomOut, _("Zoom out\tCtrl--"), _("Zoom out of the canvas"), wxITEM_NORMAL);
+    Menu5->Append(MenuItem10);
+    MenuBar1->Append(Menu5, _("View"));
     Menu3 = new wxMenu();
     MenuItem7 = new wxMenuItem(Menu3, idMenuAdd, _("Add"), _("Add a block"), wxITEM_NORMAL);
     Menu3->Append(MenuItem7);
@@ -125,10 +133,11 @@ BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
     Connect(idMenuOpen, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnOpen);
     Connect(idMenuSave, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnSave);
     Connect(idMenuSaveAs, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnSaveAs);
+    Connect(idMenuQuit, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnQuit);
+
     Connect(idMenuAdd, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnAdd);
     Connect(idMenuDelete, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnDelete);
 
-    Connect(idMenuQuit, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnQuit);
     Connect(idMenuAbout, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnAbout);
 }
 /*

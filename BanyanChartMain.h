@@ -67,6 +67,8 @@ class BanyanChartFrame: public wxFrame
         static const wxWindowID idMenuSave;
         static const wxWindowID idMenuSaveAs;
         static const wxWindowID idMenuQuit;
+        static const wxWindowID idMenuZoomIn;
+        static const wxWindowID idMenuZoomOut;
         static const wxWindowID idMenuAdd;
         static const wxWindowID idMenuDelete;
         static const wxWindowID idMenuAbout;
@@ -76,12 +78,15 @@ class BanyanChartFrame: public wxFrame
         //(*Declarations(BanyanChartFrame)
         wxMenu* Menu3;
         wxMenu* Menu4;
+        wxMenu* Menu5;
+        wxMenuItem* MenuItem10;
         wxMenuItem* MenuItem3;
         wxMenuItem* MenuItem4;
         wxMenuItem* MenuItem5;
         wxMenuItem* MenuItem6;
         wxMenuItem* MenuItem7;
         wxMenuItem* MenuItem8;
+        wxMenuItem* MenuItem9;
         wxPanel* Canvas;
         wxStatusBar* StatusBar1;
         //*)
