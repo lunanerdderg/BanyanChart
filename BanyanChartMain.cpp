@@ -252,14 +252,14 @@ void BanyanChartFrame::OnAdd(wxCommandEvent& WXUNUSED(event)) {
     this->unsaved = true;
 }
 void BanyanChartFrame::OnDelete(wxCommandEvent& WXUNUSED(event)) {
-    if (this->selectedBlock != -1 && this->selectedBlock < this->File.getNumBlocks()) {
-        this->File.removeBlock(this->selectedBlock);
-        this->Canvas_boxDraggingList.erase(this->Canvas_boxDraggingList.begin() + this->selectedBlock);
-        this->Canvas_boxXList.erase(this->Canvas_boxXList.begin() + this->selectedBlock);
-        this->Canvas_boxYList.erase(this->Canvas_boxYList.begin() + this->selectedBlock);
-        this->Canvas_boxWList.erase(this->Canvas_boxWList.begin() + this->selectedBlock);
-        this->Canvas_boxHList.erase(this->Canvas_boxHList.begin() + this->selectedBlock);
-        selectedBlock = -1;
+    if (this->Canvas_selectedBlock != -1 && this->Canvas_selectedBlock < this->File.getNumBlocks()) {
+        this->File.removeBlock(this->Canvas_selectedBlock);
+        this->Canvas_boxDraggingList.erase(this->Canvas_boxDraggingList.begin() + this->Canvas_selectedBlock);
+        this->Canvas_boxXList.erase(this->Canvas_boxXList.begin() + this->Canvas_selectedBlock);
+        this->Canvas_boxYList.erase(this->Canvas_boxYList.begin() + this->Canvas_selectedBlock);
+        this->Canvas_boxWList.erase(this->Canvas_boxWList.begin() + this->Canvas_selectedBlock);
+        this->Canvas_boxHList.erase(this->Canvas_boxHList.begin() + this->Canvas_selectedBlock);
+        Canvas_selectedBlock = -1;
         Refresh();
         this->unsaved = true;
     }
@@ -318,7 +318,7 @@ void BanyanChartFrame::mouseDown(wxMouseEvent& event) {
             this->Canvas_boxDraggingList.at(index) = true;
             this->Canvas_mousePrevX = event.GetPosition().x;
             this->Canvas_mousePrevY = event.GetPosition().y;
-            this->selectedBlock = index;
+            this->Canvas_selectedBlock = index;
             selectionMade = true;
         }
     }
@@ -326,7 +326,7 @@ void BanyanChartFrame::mouseDown(wxMouseEvent& event) {
         this->Canvas_mousePrevX = event.GetPosition().x;
         this->Canvas_mousePrevY = event.GetPosition().y;
         this->Canvas_dragging = true;
-        selectedBlock = -1;
+        Canvas_selectedBlock = -1;
     }
     Refresh();
 }
@@ -384,11 +384,11 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
     for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size() && index < this->File.getNumBlocks(); ++index) {
         const int xLocation = this->Canvas_boxXList.at(index) + this->Canvas_frameX;
         const int yLocation = this->Canvas_boxYList.at(index) + this->Canvas_frameY;
-        if (index == this->selectedBlock) {
+        if (index == this->Canvas_selectedBlock) {
             dc.SetPen( wxPen( wxColor(255,75,75), 3 ) );
         }
         dc.DrawRectangle(xLocation, yLocation, this->Canvas_boxWList.at(index), this->Canvas_boxHList.at(index));
-        if (index == this->selectedBlock) {
+        if (index == this->Canvas_selectedBlock) {
             dc.SetPen( wxPen( wxColor(255,175,175), 2 ) );
         }
         dc.DrawText(this->File.getBlockBody(index).c_str(), xLocation, yLocation);

@@ -30,7 +30,7 @@ class BanyanChartFrame: public wxFrame
 
     private:
         FileParser File;
-        size_t selectedBlock = -1, selectedNode = -1;
+        size_t Canvas_selectedBlock = -1, Canvas_selectedNode = -1;
         int Canvas_frameX = 0, Canvas_frameY = 0, Canvas_mousePrevX, Canvas_mousePrevY;
         unsigned int Canvas_zoom = 100;
         bool Canvas_dragging = false, unsaved = false;
