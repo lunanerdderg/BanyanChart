@@ -127,6 +127,7 @@ BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
     StatusBar1->SetStatusStyles(1,__wxStatusBarStyles_1);
     SetStatusBar(StatusBar1);
     Layout();
+
     //*)
 
     Connect(idMenuNew, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnNew);
@@ -134,6 +135,9 @@ BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
     Connect(idMenuSave, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnSave);
     Connect(idMenuSaveAs, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnSaveAs);
     Connect(idMenuQuit, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnQuit);
+
+    Connect(idMenuZoomIn, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnZoomIn);
+    Connect(idMenuZoomOut, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnZoomOut);
 
     Connect(idMenuAdd, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnAdd);
     Connect(idMenuDelete, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnDelete);
@@ -153,6 +157,7 @@ BanyanChartFrame::~BanyanChartFrame() {
     //(*Destroy(BanyanChartFrame)
     //*)
 }
+
 
 
 
@@ -243,6 +248,15 @@ void BanyanChartFrame::OnSaveAs(wxCommandEvent& WXUNUSED(event)) {
 
     this->File.save(saveFileDialog.GetPath());
     this->unsaved = false;
+}
+
+void BanyanChartFrame::OnZoomIn(wxCommandEvent& WXUNUSED(event)) {
+    this->Canvas_zoom += 25;
+    Refresh();
+}
+void BanyanChartFrame::OnZoomOut(wxCommandEvent& WXUNUSED(event)) {
+    this->Canvas_zoom -= 25;
+    Refresh();
 }
 
 void BanyanChartFrame::OnAdd(wxCommandEvent& WXUNUSED(event)) {
@@ -348,17 +362,26 @@ void BanyanChartFrame::mouseLeftWindow(wxMouseEvent& event) {
 }
 
 void BanyanChartFrame::mouseWheelMoved(wxMouseEvent& event) {
-//    if (event.GetWheelRotation() > event.GetWheelDelta() || event.GetWheelRotation() < -1*event.GetWheelDelta()) {
-        if (event.GetWheelAxis() == wxMOUSE_WHEEL_HORIZONTAL) {
-//            if ( ( event.GetWheelRotation() >= 0 && !event.IsWheelInverted() ) || ( event.GetWheelRotation() < 0 && event.IsWheelInverted() ) ) {
-            if (event.GetWheelRotation() < 0) {
-                this->Canvas_frameX += -100 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
+    if (event.GetWheelAxis() == wxMOUSE_WHEEL_HORIZONTAL) {
+//        if ( ( event.GetWheelRotation() >= 0 && !event.IsWheelInverted() ) || ( event.GetWheelRotation() < 0 && event.IsWheelInverted() ) ) {
+        if (event.GetWheelRotation() < 0) {
+            this->Canvas_frameX += -100 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
+        }
+        else {
+            this->Canvas_frameX -= 100 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
+        }
+    }
+    else if (event.GetWheelAxis() == wxMOUSE_WHEEL_VERTICAL) {
+        if (event.ControlDown()) {
+            wxCommandEvent commandEvent;
+            if (event.GetWheelRotation() > 0) {
+                this->OnZoomIn(commandEvent);
             }
-            else {
-                this->Canvas_frameX -= 100 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
+            else if (event.GetWheelRotation() < 0) {
+                this->OnZoomOut(commandEvent);
             }
         }
-        else { // if (event.GetWheelAxis() == wxMOUSE_WHEEL_VERTICAL) {
+        else {
 //            if ( ( event.GetWheelRotation() >= 0 && !event.IsWheelInverted() ) || ( event.GetWheelRotation() < 0 && event.IsWheelInverted() ) ) {
             if (event.GetWheelRotation() >= 0) {
                 this->Canvas_frameY += 100 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
@@ -367,8 +390,8 @@ void BanyanChartFrame::mouseWheelMoved(wxMouseEvent& event) {
                 this->Canvas_frameY -= -100 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
             }
         }
-        Refresh();
-//    }
+    }
+    Refresh();
 }
 
 void BanyanChartFrame::paintEvent(wxPaintEvent& event) {
@@ -387,10 +410,13 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
         if (index == this->Canvas_selectedBlock) {
             dc.SetPen( wxPen( wxColor(255,75,75), 3 ) );
         }
-        dc.DrawRectangle(xLocation, yLocation, this->Canvas_boxWList.at(index), this->Canvas_boxHList.at(index));
+        dc.DrawRectangle(xLocation, yLocation, this->Canvas_boxWList.at(index)*this->Canvas_zoom / 100, this->Canvas_boxHList.at(index)*this->Canvas_zoom / 100);
         if (index == this->Canvas_selectedBlock) {
             dc.SetPen( wxPen( wxColor(255,175,175), 2 ) );
         }
+        wxFont font; // BOOKMARK
+        font.Scale(1);
+        dc.SetFont(font);
         dc.DrawText(this->File.getBlockBody(index).c_str(), xLocation, yLocation);
     }
 }

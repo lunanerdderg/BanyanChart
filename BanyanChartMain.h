@@ -40,6 +40,8 @@ class BanyanChartFrame: public wxFrame
         void Canvas_render(wxDC& dc);
         void Canvas_initializeBoxes(bool=true);
 
+        void OnZoomIn(wxCommandEvent& event);
+        void OnZoomOut(wxCommandEvent& event);
         //(*Handlers(BanyanChartFrame)
         void OnNew(wxCommandEvent& event);
         void OnOpen(wxCommandEvent& event);
