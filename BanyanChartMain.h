@@ -29,6 +29,7 @@ class BanyanChartFrame: public wxFrame
         virtual ~BanyanChartFrame();
 
     private:
+        wxFont font;
         FileParser File;
         size_t Canvas_selectedBlock = -1, Canvas_selectedNode = -1;
         int Canvas_frameX = 0, Canvas_frameY = 0, Canvas_mousePrevX, Canvas_mousePrevY;

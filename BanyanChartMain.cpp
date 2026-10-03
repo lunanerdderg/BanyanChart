@@ -71,6 +71,7 @@ END_EVENT_TABLE()
 BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
     File = FileParser();
     this->Canvas_initializeBoxes();
+    this->font = this->GetFont();
 
     //(*Initialize(BanyanChartFrame)
     wxBoxSizer* BoxSizer1;
@@ -177,8 +178,8 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
             this->Canvas_boxDraggingList.push_back(false);
             this->Canvas_boxXList.push_back(100);
             this->Canvas_boxYList.push_back(100*numBlocks/(numBlocks - i));
-            this->Canvas_boxWList.push_back(50);
-            this->Canvas_boxHList.push_back(50);
+            this->Canvas_boxWList.push_back(200);
+            this->Canvas_boxHList.push_back(200);
         }
     }
     else if (numBlocks > this->Canvas_boxDraggingList.size()) {
@@ -186,8 +187,8 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
             this->Canvas_boxDraggingList.push_back(false);
             this->Canvas_boxXList.push_back(100);
             this->Canvas_boxYList.push_back(100*numBlocks/(numBlocks - i)); // - this->Canvas_boxDraggingList.size()));
-            this->Canvas_boxWList.push_back(50);
-            this->Canvas_boxHList.push_back(50);
+            this->Canvas_boxWList.push_back(200);
+            this->Canvas_boxHList.push_back(200);
         }
     }
 }
@@ -255,8 +256,10 @@ void BanyanChartFrame::OnZoomIn(wxCommandEvent& WXUNUSED(event)) {
     Refresh();
 }
 void BanyanChartFrame::OnZoomOut(wxCommandEvent& WXUNUSED(event)) {
-    this->Canvas_zoom -= 25;
-    Refresh();
+    if (this->Canvas_zoom - 25 >= 1) {
+        this->Canvas_zoom -= 25;
+        Refresh();
+    }
 }
 
 void BanyanChartFrame::OnAdd(wxCommandEvent& WXUNUSED(event)) {
@@ -325,8 +328,8 @@ void BanyanChartFrame::mouseDown(wxMouseEvent& event) {
     for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size(); ++index) {
         const int xLocation = this->Canvas_boxXList.at(index) + this->Canvas_frameX;
         const int yLocation = this->Canvas_boxYList.at(index) + this->Canvas_frameY;
-        if (event.GetPosition().x >= xLocation && event.GetPosition().x <= xLocation + this->Canvas_boxWList.at(index) &&
-            event.GetPosition().y >= yLocation && event.GetPosition().y <= yLocation + this->Canvas_boxHList.at(index))
+        if (event.GetPosition().x >= xLocation && event.GetPosition().x <= xLocation + this->Canvas_boxWList.at(index) * this->Canvas_zoom / 100.0 &&
+            event.GetPosition().y >= yLocation && event.GetPosition().y <= yLocation + this->Canvas_boxHList.at(index) * this->Canvas_zoom / 100.0)
         {
             this->Canvas_dragging = false;
             this->Canvas_boxDraggingList.at(index) = true;
@@ -403,20 +406,19 @@ void BanyanChartFrame::paintEvent(wxPaintEvent& event) {
 
 void BanyanChartFrame::Canvas_render(wxDC&  dc) {
     dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
-    dc.SetPen( wxPen( wxColor(255,175,175), 2 ) );
+    dc.SetPen(wxPen(wxColor(255,175,175), 1 * this->Canvas_zoom / 100.0 ));
     for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size() && index < this->File.getNumBlocks(); ++index) {
         const int xLocation = this->Canvas_boxXList.at(index) + this->Canvas_frameX;
         const int yLocation = this->Canvas_boxYList.at(index) + this->Canvas_frameY;
         if (index == this->Canvas_selectedBlock) {
-            dc.SetPen( wxPen( wxColor(255,75,75), 3 ) );
+            dc.SetPen(wxPen(wxColor(255,75,75), 2 * this->Canvas_zoom / 100.0 ));
         }
         dc.DrawRectangle(xLocation, yLocation, this->Canvas_boxWList.at(index)*this->Canvas_zoom / 100, this->Canvas_boxHList.at(index)*this->Canvas_zoom / 100);
         if (index == this->Canvas_selectedBlock) {
-            dc.SetPen( wxPen( wxColor(255,175,175), 2 ) );
+            dc.SetPen(wxPen(wxColor(255,175,175), 1 * this->Canvas_zoom / 100.0 ));
         }
-        wxFont font; // BOOKMARK
-        font.Scale(1);
-        dc.SetFont(font);
+        wxFont tempFont = font;
+        this->SetFont(tempFont.Scale(this->Canvas_zoom / 100.0));
         dc.DrawText(this->File.getBlockBody(index).c_str(), xLocation, yLocation);
     }
 }
