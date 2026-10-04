@@ -36,7 +36,11 @@ class BanyanChartFrame: public wxFrame
         unsigned int Canvas_zoom = 100;
         bool Canvas_dragging = false, unsaved = false;
         std::vector<bool> Canvas_boxDraggingList;
-        std::vector<int> Canvas_boxXList, Canvas_boxYList, Canvas_boxWList, Canvas_boxHList;
+        std::vector<double> Canvas_boxXList, Canvas_boxYList, Canvas_boxWList, Canvas_boxHList;
+
+        double Canvas_getXPosition(double location);
+        double Canvas_getYPosition(double location);
+        double Canvas_getProportions(double widthHeightThickness);
 
         void Canvas_render(wxDC& dc);
         void Canvas_initializeBoxes(bool=true);

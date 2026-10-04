@@ -195,6 +195,18 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
 
 
 
+double BanyanChartFrame::Canvas_getXPosition(double location) {
+    return (location + this->Canvas_frameX) * this->Canvas_zoom / 100.0;
+}
+double BanyanChartFrame::Canvas_getYPosition(double location) {
+    return (location + this->Canvas_frameY) * this->Canvas_zoom / 100.0;
+}
+double BanyanChartFrame::Canvas_getProportions(double widthHeightThickness) {
+    return widthHeightThickness * this->Canvas_zoom / 100.0;
+}
+
+
+
 void BanyanChartFrame::OnNew(wxCommandEvent& event) {
     if (this->unsaved) {
         if (wxMessageBox(_("Current content has not been saved! Proceed?"), _("Please confirm"), wxICON_QUESTION | wxYES_NO, this) == wxNO ) {
@@ -252,8 +264,10 @@ void BanyanChartFrame::OnSaveAs(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void BanyanChartFrame::OnZoomIn(wxCommandEvent& WXUNUSED(event)) {
-    this->Canvas_zoom += 25;
-    Refresh();
+    if (this->Canvas_zoom + 25 <= 500) {
+        this->Canvas_zoom += 25;
+        Refresh();
+    }
 }
 void BanyanChartFrame::OnZoomOut(wxCommandEvent& WXUNUSED(event)) {
     if (this->Canvas_zoom - 25 >= 1) {
@@ -302,49 +316,45 @@ void BanyanChartFrame::mouseMoved(wxMouseEvent& event) {
         int delta_x = event.GetPosition().x - this->Canvas_mousePrevX;
         int delta_y = event.GetPosition().y - this->Canvas_mousePrevY;
 
-        this->Canvas_frameX += delta_x;
-        this->Canvas_frameY += delta_y;
-
-        this->Canvas_mousePrevX = event.GetPosition().x;
-        this->Canvas_mousePrevY = event.GetPosition().y;
+        this->Canvas_frameX += delta_x * 100.0 / this->Canvas_zoom;
+        this->Canvas_frameY += delta_y * 100.0 / this->Canvas_zoom;
     }
-    for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size(); ++index) {
-        if (this->Canvas_boxDraggingList.at(index) && event.Dragging()) {
-            int delta_x = event.GetPosition().x - this->Canvas_mousePrevX;
-            int delta_y = event.GetPosition().y - this->Canvas_mousePrevY;
+    else {
+        for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size(); ++index) {
+            if (this->Canvas_boxDraggingList.at(index) && event.Dragging()) {
+                int delta_x = event.GetPosition().x - this->Canvas_mousePrevX;
+                int delta_y = event.GetPosition().y - this->Canvas_mousePrevY;
 
-            this->Canvas_boxXList.at(index) += delta_x;
-            this->Canvas_boxYList.at(index) += delta_y;
-
-            this->Canvas_mousePrevX = event.GetPosition().x;
-            this->Canvas_mousePrevY = event.GetPosition().y;
+                this->Canvas_boxXList.at(index) += delta_x * 100.0 / this->Canvas_zoom;
+                this->Canvas_boxYList.at(index) += delta_y * 100.0 / this->Canvas_zoom;
+            }
         }
     }
+    this->Canvas_mousePrevX = event.GetPosition().x;
+    this->Canvas_mousePrevY = event.GetPosition().y;
     Refresh();
 }
 
 void BanyanChartFrame::mouseDown(wxMouseEvent& event) {
     bool selectionMade = false;
     for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size(); ++index) {
-        const int xLocation = this->Canvas_boxXList.at(index) + this->Canvas_frameX;
-        const int yLocation = this->Canvas_boxYList.at(index) + this->Canvas_frameY;
-        if (event.GetPosition().x >= xLocation && event.GetPosition().x <= xLocation + this->Canvas_boxWList.at(index) * this->Canvas_zoom / 100.0 &&
-            event.GetPosition().y >= yLocation && event.GetPosition().y <= yLocation + this->Canvas_boxHList.at(index) * this->Canvas_zoom / 100.0)
+        const int xLocation = this->Canvas_getXPosition(this->Canvas_boxXList.at(index));
+        const int yLocation = this->Canvas_getYPosition(this->Canvas_boxYList.at(index));
+        if (event.GetPosition().x >= xLocation && event.GetPosition().x <= xLocation + this->Canvas_getProportions(this->Canvas_boxWList.at(index)) &&
+            event.GetPosition().y >= yLocation && event.GetPosition().y <= yLocation + this->Canvas_getProportions(this->Canvas_boxHList.at(index)))
         {
             this->Canvas_dragging = false;
             this->Canvas_boxDraggingList.at(index) = true;
-            this->Canvas_mousePrevX = event.GetPosition().x;
-            this->Canvas_mousePrevY = event.GetPosition().y;
             this->Canvas_selectedBlock = index;
             selectionMade = true;
         }
     }
     if (!selectionMade) {
-        this->Canvas_mousePrevX = event.GetPosition().x;
-        this->Canvas_mousePrevY = event.GetPosition().y;
         this->Canvas_dragging = true;
         Canvas_selectedBlock = -1;
     }
+    this->Canvas_mousePrevX = event.GetPosition().x;
+    this->Canvas_mousePrevY = event.GetPosition().y;
     Refresh();
 }
 
@@ -406,19 +416,28 @@ void BanyanChartFrame::paintEvent(wxPaintEvent& event) {
 
 void BanyanChartFrame::Canvas_render(wxDC&  dc) {
     dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
-    dc.SetPen(wxPen(wxColor(255,175,175), 1 * this->Canvas_zoom / 100.0 ));
+    dc.SetPen(wxPen(wxColor(255,175,175), this->Canvas_getProportions(1)));
     for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size() && index < this->File.getNumBlocks(); ++index) {
-        const int xLocation = this->Canvas_boxXList.at(index) + this->Canvas_frameX;
-        const int yLocation = this->Canvas_boxYList.at(index) + this->Canvas_frameY;
-        if (index == this->Canvas_selectedBlock) {
-            dc.SetPen(wxPen(wxColor(255,75,75), 2 * this->Canvas_zoom / 100.0 ));
+        double xLocation = this->Canvas_getXPosition(this->Canvas_boxXList.at(index));
+        double yLocation = this->Canvas_getYPosition(this->Canvas_boxYList.at(index));
+        double width = this->Canvas_getProportions(this->Canvas_boxWList.at(index));
+        double height = this->Canvas_getProportions(this->Canvas_boxHList.at(index));
+        if (xLocation + width > 0 && xLocation < this->GetClientSize().GetWidth()) {
+//            if (xLocation < 0) {
+//                width += xLocation;
+//                xLocation = 0;
+//                dc.DrawText("yo", 0, 0);
+//            }
+            if (index == this->Canvas_selectedBlock) {
+                dc.SetPen(wxPen(wxColor(255,75,75), this->Canvas_getProportions(2)));
+            }
+            dc.DrawRectangle(xLocation, yLocation, width, height);
+            if (index == this->Canvas_selectedBlock) {
+                dc.SetPen(wxPen(wxColor(255,175,175), this->Canvas_getProportions(1)));
+            }
+            wxFont tempFont = font;
+            this->SetFont(tempFont.Scale(this->Canvas_getProportions(1)));
+            dc.DrawText(this->File.getBlockBody(index).c_str(), xLocation, yLocation);
         }
-        dc.DrawRectangle(xLocation, yLocation, this->Canvas_boxWList.at(index)*this->Canvas_zoom / 100, this->Canvas_boxHList.at(index)*this->Canvas_zoom / 100);
-        if (index == this->Canvas_selectedBlock) {
-            dc.SetPen(wxPen(wxColor(255,175,175), 1 * this->Canvas_zoom / 100.0 ));
-        }
-        wxFont tempFont = font;
-        this->SetFont(tempFont.Scale(this->Canvas_zoom / 100.0));
-        dc.DrawText(this->File.getBlockBody(index).c_str(), xLocation, yLocation);
     }
 }
