@@ -116,7 +116,7 @@ BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
     Menu3->Append(MenuItem8);
     MenuBar1->Append(Menu3, _("Edit"));
     Menu5 = new wxMenu();
-    MenuItem9 = new wxMenuItem(Menu5, idMenuZoomIn, _("Zoom in\tCtrl-+"), _("Zoom into the canvas"), wxITEM_NORMAL);
+    MenuItem9 = new wxMenuItem(Menu5, idMenuZoomIn, _("Zoom in\tCtrl-="), _("Zoom into the canvas"), wxITEM_NORMAL);
     Menu5->Append(MenuItem9);
     MenuItem10 = new wxMenuItem(Menu5, idMenuZoomOut, _("Zoom out\tCtrl--"), _("Zoom out of the canvas"), wxITEM_NORMAL);
     Menu5->Append(MenuItem10);
@@ -280,7 +280,7 @@ void BanyanChartFrame::changeText(size_t blockIndex, size_t nodeIndex) {
         return;
     }
     this->changeText(textDialog.GetValue(), blockIndex, nodeIndex);
-}`
+}
 void BanyanChartFrame::doubleClick(wxMouseEvent& event) {
     size_t index = -1;
     for (size_t i = 0; i != -1 && i < this->Canvas_boxXList.size(); ++i) {

@@ -76,6 +76,7 @@ class BanyanChartFrame: public wxFrame
         void mouseWheelMoved(wxMouseEvent& event);
         void paintEvent(wxPaintEvent& event);
         void doubleClick(wxMouseEvent& event);
+        void keyPressed(wxKeyEvent& event);
         //*)
 
         //(*Identifiers(BanyanChartFrame)

@@ -77,7 +77,7 @@
 				<label>View</label>
 				<object class="wxMenuItem" name="idMenuZoomIn" variable="MenuItem9" member="yes">
 					<label>Zoom in</label>
-					<accel>Ctrl-+</accel>
+					<accel>Ctrl-=</accel>
 					<help>Zoom into the canvas</help>
 				</object>
 				<object class="wxMenuItem" name="idMenuZoomOut" variable="MenuItem10" member="yes">
