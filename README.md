@@ -5,7 +5,7 @@ Creates a `.byfc` (Banyan Flowchart) file.
 
 # Building
 
-`BanyanChart.cbp` is a [Code::Blocks](https://www.codeblocks.org/downloads/binaries/) solution file, so you will need that software to open the project. Converting to another solution format probably won't work, since this project uses the Code::Blocks-exclusive plugin [wxSmith](#Uses).
+`BanyanChart.cbp` is a [Code::Blocks](https://www.codeblocks.org/downloads/binaries/) solution file, so you will need that software to open the project. Converting to another solution format might work, as long as you have wxWidgets installed, (though [wxSmith](#Uses) will only work with Code::Blocks).
 
 ### Ubuntu
 
