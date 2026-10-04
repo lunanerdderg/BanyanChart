@@ -31,22 +31,24 @@ class BanyanChartFrame: public wxFrame
     private:
         wxFont font;
         FileParser File;
-        size_t Canvas_selectedBlock = -1, Canvas_selectedNode = -1;
+
+        const int boxWidth = 200;
+        const int boxHeight = 75;
         int Canvas_frameX = 0, Canvas_frameY = 0, Canvas_mousePrevX, Canvas_mousePrevY;
         unsigned int Canvas_zoom = 100;
         bool Canvas_dragging = false, unsaved = false;
-        std::vector<bool> Canvas_boxDraggingList;
+        std::vector<bool> Canvas_boxDraggingList, Canvas_selectedBlock, Canvas_selectedNode;
         std::vector<double> Canvas_boxXList, Canvas_boxYList, Canvas_boxWList, Canvas_boxHList;
 
-        double Canvas_getXPosition(double location);
-        double Canvas_getYPosition(double location);
-        double Canvas_getProportions(double widthHeightThickness);
+        double Canvas_getXPosition(double);
+        double Canvas_getYPosition(double);
+        double Canvas_getProportions(double, bool=false);
 
-        void Canvas_render(wxDC& dc);
+        void Canvas_render(wxDC&);
         void Canvas_initializeBoxes(bool=true);
 
-        void OnZoomIn(wxCommandEvent& event);
-        void OnZoomOut(wxCommandEvent& event);
+        void OnZoomIn(wxCommandEvent&);
+        void OnZoomOut(wxCommandEvent&);
         //(*Handlers(BanyanChartFrame)
         void OnNew(wxCommandEvent& event);
         void OnOpen(wxCommandEvent& event);
