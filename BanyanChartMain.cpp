@@ -169,6 +169,7 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
         this->Canvas_dragging = false;
         this->Canvas_frameX = 0;
         this->Canvas_frameY = 0;
+        this->Canvas_selectedBlock = {};
         this->Canvas_boxDraggingList = {};
         this->Canvas_boxXList = {};
         this->Canvas_boxYList = {};
@@ -319,8 +320,10 @@ void BanyanChartFrame::mouseMoved(wxMouseEvent& event) {
 
         this->Canvas_frameX += Canvas_getProportions(delta_x, true);
         this->Canvas_frameY += Canvas_getProportions(delta_y, true);
+
+        this->Canvas_boxMoved = true;
     }
-    else {
+    else if (!this->Canvas_dragging) {
         for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size(); ++index) {
             if (this->Canvas_boxDraggingList.at(index) && event.Dragging()) {
                 int delta_x = event.GetPosition().x - this->Canvas_mousePrevX;
@@ -328,6 +331,8 @@ void BanyanChartFrame::mouseMoved(wxMouseEvent& event) {
 
                 this->Canvas_boxXList.at(index) += Canvas_getProportions(delta_x, true);
                 this->Canvas_boxYList.at(index) += Canvas_getProportions(delta_y, true);
+
+                this->Canvas_boxMoved = true;
             }
         }
     }
@@ -337,44 +342,51 @@ void BanyanChartFrame::mouseMoved(wxMouseEvent& event) {
 }
 
 void BanyanChartFrame::mouseDown(wxMouseEvent& event) {
-    size_t prevSelected = -1;
-    bool ctrlPressed = event.ControlDown();
-    bool shiftPressed = event.ShiftDown();
-    for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size() && index < this->Canvas_selectedBlock.size(); ++index) {
+    bool selectionMade = false;
+    this->Canvas_boxDraggingList = this->Canvas_selectedBlock;
+    for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size() && index < this->Canvas_boxDraggingList.size(); ++index) {
         const int xLocation = this->Canvas_getXPosition(this->Canvas_boxXList.at(index));
         const int yLocation = this->Canvas_getYPosition(this->Canvas_boxYList.at(index));
         if (event.GetPosition().x >= xLocation && event.GetPosition().x <= xLocation + this->Canvas_getProportions(this->Canvas_boxWList.at(index)) &&
                 event.GetPosition().y >= yLocation && event.GetPosition().y <= yLocation + this->Canvas_getProportions(this->Canvas_boxHList.at(index))) {
             this->Canvas_dragging = false;
-            if (ctrlPressed || shiftPressed) {
-                this->Canvas_selectedBlock.at(index) = true;
-            }
-            else {
-                this->Canvas_selectedBlock.at(index) = !this->Canvas_selectedBlock.at(index);
-            }
-            if (!ctrlPressed && !shiftPressed && prevSelected != -1) {
-                this->Canvas_selectedBlock.at(prevSelected) = false;
-            }
-            prevSelected = index;
+            this->Canvas_boxDraggingList.at(index) = true;
+            selectionMade = true;
         }
     }
-    if (prevSelected == -1) {
+    if (!selectionMade) {
         this->Canvas_dragging = true;
-        for (size_t i = 0; i != -1 && i < this->Canvas_selectedBlock.size(); ++i) {
-            this->Canvas_selectedBlock.at(i) = false;
-        }
     }
-    this->Canvas_boxDraggingList = this->Canvas_selectedBlock;
     this->Canvas_mousePrevX = event.GetPosition().x;
     this->Canvas_mousePrevY = event.GetPosition().y;
     Refresh();
 }
 
 void BanyanChartFrame::mouseReleased(wxMouseEvent& event) {
-    this->Canvas_dragging = false;
+    bool ctrlPressed = event.ControlDown();
+    bool shiftPressed = event.ShiftDown();
     for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size(); ++index) {
         this->Canvas_boxDraggingList.at(index) = false;
+        if (!this->Canvas_boxMoved) {
+            const int xLocation = this->Canvas_getXPosition(this->Canvas_boxXList.at(index));
+            const int yLocation = this->Canvas_getYPosition(this->Canvas_boxYList.at(index));
+            if (event.GetPosition().x >= xLocation && event.GetPosition().x <= xLocation + this->Canvas_getProportions(this->Canvas_boxWList.at(index)) &&
+                    event.GetPosition().y >= yLocation && event.GetPosition().y <= yLocation + this->Canvas_getProportions(this->Canvas_boxHList.at(index))) {
+                if (ctrlPressed || shiftPressed) {
+                    this->Canvas_selectedBlock.at(index) = !this->Canvas_selectedBlock.at(index);
+                }
+                else {
+                    this->Canvas_selectedBlock.at(index) = true;
+                }
+            }
+            else if (!ctrlPressed && !shiftPressed) {
+                this->Canvas_selectedBlock.at(index) = false;
+            }
+        }
     }
+    this->Canvas_dragging = false;
+    this->Canvas_boxMoved = false;
+    Refresh();
 }
 
 void BanyanChartFrame::rightClick(wxMouseEvent& event) {
@@ -428,7 +440,7 @@ void BanyanChartFrame::paintEvent(wxPaintEvent& event) {
 
 void BanyanChartFrame::Canvas_render(wxDC&  dc) {
     dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
-    dc.SetPen(wxPen(wxColor(255,175,175), this->Canvas_getProportions(1)));
+    dc.SetPen(wxPen(wxColor(255,175,175), this->Canvas_getProportions()));
     for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size() && index < this->File.getNumBlocks(); ++index) {
         double xLocation = this->Canvas_getXPosition(this->Canvas_boxXList.at(index));
         double yLocation = this->Canvas_getYPosition(this->Canvas_boxYList.at(index));
@@ -440,7 +452,7 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
             }
             dc.DrawRectangle(xLocation, yLocation, width, height);
             if (this->Canvas_selectedBlock.at(index)) {
-                dc.SetPen(wxPen(wxColor(255,175,175), this->Canvas_getProportions(1)));
+                dc.SetPen(wxPen(wxColor(255,175,175), this->Canvas_getProportions()));
             }
             wxFont tempFont = font;
             this->SetFont(tempFont.Scale(this->Canvas_getProportions(1)));
