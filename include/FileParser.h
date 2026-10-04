@@ -36,6 +36,8 @@ class FileParser {
         // Set
         void setBlockLists(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>);
           // Block editing
+        void setText(std::string, size_t, size_t=0); void setText(const char[], size_t, size_t=0);
+        void setNodeAddress(size_t, size_t, size_t);
         void setFirstBlock(size_t);
         void addBlock(std::string=""); void addBlock(std::vector<std::string>, std::vector<size_t>); void addBlock(std::string, std::vector<std::string>, std::vector<size_t>);
         void addMultipleBlocks(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>);

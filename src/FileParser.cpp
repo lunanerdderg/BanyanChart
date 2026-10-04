@@ -136,6 +136,19 @@ void FileParser::setBlockLists(std::vector<std::vector<std::string>> newBlockTex
 
 // Blocks
 
+void FileParser::setText(std::string text, size_t blockIndex, size_t nodeIndex) {
+    if (blockIndex < this->blockTextList.size() && nodeIndex < this->blockTextList.at(blockIndex).size()) {
+        this->blockTextList.at(blockIndex).at(nodeIndex) = text;
+    }
+}
+void FileParser::setText(const char text[], size_t blockIndex, size_t nodeIndex) {
+    this->setText(text, blockIndex, nodeIndex);
+}
+void FileParser::setNodeAddress(size_t address, size_t blockIndex, size_t nodeIndex) {
+    if (nodeIndex != 0 && blockIndex < this->blockTextList.size() && nodeIndex < this->blockTextList.at(blockIndex).size()) {
+        this->blockAddressList.at(blockIndex).at(nodeIndex) = address;
+    }
+}
 void FileParser::setFirstBlock(size_t blockIndex) {
     this->firstBlock = blockIndex;
 }

@@ -48,10 +48,12 @@ const wxWindowID BanyanChartFrame::idMenuOpen = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuSave = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuSaveAs = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuQuit = wxNewId();
+const wxWindowID BanyanChartFrame::idMenuEditText = wxNewId();
+const wxWindowID BanyanChartFrame::idMenuAddBlock = wxNewId();
+const wxWindowID BanyanChartFrame::idMenuAddNode = wxNewId();
+const wxWindowID BanyanChartFrame::idMenuDelete = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuZoomIn = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuZoomOut = wxNewId();
-const wxWindowID BanyanChartFrame::idMenuAdd = wxNewId();
-const wxWindowID BanyanChartFrame::idMenuDelete = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuAbout = wxNewId();
 const wxWindowID BanyanChartFrame::ID_STATUSBAR1 = wxNewId();
 //*)
@@ -66,6 +68,7 @@ BEGIN_EVENT_TABLE(BanyanChartFrame,wxFrame)
     EVT_MOTION(BanyanChartFrame::mouseMoved)
     EVT_LEAVE_WINDOW(BanyanChartFrame::mouseLeftWindow)
     EVT_MOUSEWHEEL(BanyanChartFrame::mouseWheelMoved)
+    EVT_LEFT_DCLICK(BanyanChartFrame::doubleClick)
 END_EVENT_TABLE()
 
 BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
@@ -102,20 +105,22 @@ BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
     MenuItem1 = new wxMenuItem(Menu1, idMenuQuit, _("Quit\tCtrl-Q"), _("Quit the application"), wxITEM_NORMAL);
     Menu1->Append(MenuItem1);
     MenuBar1->Append(Menu1, _("&File"));
+    Menu3 = new wxMenu();
+    MenuItem12 = new wxMenuItem(Menu3, idMenuEditText, _("Edit text"), _("Edit the text of a block or node"), wxITEM_NORMAL);
+    Menu3->Append(MenuItem12);
+    MenuItem7 = new wxMenuItem(Menu3, idMenuAddBlock, _("Add block"), _("Add a block"), wxITEM_NORMAL);
+    Menu3->Append(MenuItem7);
+    MenuItem11 = new wxMenuItem(Menu3, idMenuAddNode, _("Add node"), _("Add a node to a block"), wxITEM_NORMAL);
+    Menu3->Append(MenuItem11);
+    MenuItem8 = new wxMenuItem(Menu3, idMenuDelete, _("Delete\tDelete"), _("Delete a block"), wxITEM_NORMAL);
+    Menu3->Append(MenuItem8);
+    MenuBar1->Append(Menu3, _("Edit"));
     Menu5 = new wxMenu();
     MenuItem9 = new wxMenuItem(Menu5, idMenuZoomIn, _("Zoom in\tCtrl-+"), _("Zoom into the canvas"), wxITEM_NORMAL);
     Menu5->Append(MenuItem9);
     MenuItem10 = new wxMenuItem(Menu5, idMenuZoomOut, _("Zoom out\tCtrl--"), _("Zoom out of the canvas"), wxITEM_NORMAL);
     Menu5->Append(MenuItem10);
     MenuBar1->Append(Menu5, _("View"));
-    Menu3 = new wxMenu();
-    MenuItem7 = new wxMenuItem(Menu3, idMenuAdd, _("Add"), _("Add a block"), wxITEM_NORMAL);
-    Menu3->Append(MenuItem7);
-    MenuItem8 = new wxMenuItem(Menu3, idMenuDelete, _("Delete\tDelete"), _("Delete a block"), wxITEM_NORMAL);
-    Menu3->Append(MenuItem8);
-    MenuBar1->Append(Menu3, _("Blocks"));
-    Menu4 = new wxMenu();
-    MenuBar1->Append(Menu4, _("Nodes"));
     Menu2 = new wxMenu();
     MenuItem2 = new wxMenuItem(Menu2, idMenuAbout, _("About\tF1"), _("Show info about this application"), wxITEM_NORMAL);
     Menu2->Append(MenuItem2);
@@ -128,7 +133,6 @@ BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
     StatusBar1->SetStatusStyles(1,__wxStatusBarStyles_1);
     SetStatusBar(StatusBar1);
     Layout();
-
     //*)
 
     Connect(idMenuNew, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnNew);
@@ -140,7 +144,9 @@ BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
     Connect(idMenuZoomIn, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnZoomIn);
     Connect(idMenuZoomOut, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnZoomOut);
 
-    Connect(idMenuAdd, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnAdd);
+    Connect(idMenuAddBlock, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnAddBlock);
+    Connect(idMenuAddNode, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnAddNode);
+    Connect(idMenuEditText, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnEditText);
     Connect(idMenuDelete, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnDelete);
 
     Connect(idMenuAbout, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnAbout);
@@ -190,8 +196,6 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
     }
 }
 
-
-
 double BanyanChartFrame::Canvas_getXPosition(double location) {
     return (location + this->Canvas_frameX) * this->Canvas_zoom / 100.0;
 }
@@ -218,7 +222,6 @@ void BanyanChartFrame::OnNew(wxCommandEvent& event) {
     Refresh();
     this->unsaved = false;
 }
-
 void BanyanChartFrame::OnOpen(wxCommandEvent& WXUNUSED(event)) {
     if (this->unsaved) {
         if (wxMessageBox(_("Current content has not been saved! Proceed?"), _("Please confirm"), wxICON_QUESTION | wxYES_NO, this) == wxNO ) {
@@ -235,7 +238,6 @@ void BanyanChartFrame::OnOpen(wxCommandEvent& WXUNUSED(event)) {
     Refresh();
     this->unsaved = false;
 }
-
 void BanyanChartFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
     if (File.getPath() == "") {
         wxFileDialog saveFileDialog(this, _("Save BanyanChart file"), "", "", "BanyanChart files (*.byfc)|*.byfc", wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
@@ -252,7 +254,6 @@ void BanyanChartFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
         this->unsaved = false;
     }
 }
-
 void BanyanChartFrame::OnSaveAs(wxCommandEvent& WXUNUSED(event)) {
     wxFileDialog saveFileDialog(this, _("Save BanyanChart file"), "", "", "BanyanChart files (*.byfc)|*.byfc", wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
     if (saveFileDialog.ShowModal() == wxID_CANCEL) {
@@ -263,24 +264,59 @@ void BanyanChartFrame::OnSaveAs(wxCommandEvent& WXUNUSED(event)) {
     this->unsaved = false;
 }
 
-void BanyanChartFrame::OnZoomIn(wxCommandEvent& WXUNUSED(event)) {
-    if (this->Canvas_zoom + 25 <= 400) {
-        this->Canvas_zoom += 25;
+void BanyanChartFrame::changeText(std::string text, size_t blockIndex, size_t nodeIndex) {
+    this->File.setText(text, blockIndex, nodeIndex);
+    this->unsaved = true;
+}
+void BanyanChartFrame::changeText(const char text[], size_t blockIndex, size_t nodeIndex) {
+    this->changeText(text, blockIndex, nodeIndex);
+}
+void BanyanChartFrame::changeText(wxString text, size_t blockIndex, size_t nodeIndex) {
+    this->changeText(text.ToStdString(), blockIndex, nodeIndex);
+}
+void BanyanChartFrame::changeText(size_t blockIndex, size_t nodeIndex) {
+    wxTextEntryDialog textDialog(this, _("Enter text"));
+    if (textDialog.ShowModal() == wxID_CANCEL) {
+        return;
+    }
+    this->changeText(textDialog.GetValue(), blockIndex, nodeIndex);
+}`
+void BanyanChartFrame::doubleClick(wxMouseEvent& event) {
+    size_t index = -1;
+    for (size_t i = 0; i != -1 && i < this->Canvas_boxXList.size(); ++i) {
+        const int xLocation = this->Canvas_getXPosition(this->Canvas_boxXList.at(i));
+        const int yLocation = this->Canvas_getYPosition(this->Canvas_boxYList.at(i));
+        if (event.GetPosition().x >= xLocation && event.GetPosition().x <= xLocation + this->Canvas_getProportions(this->Canvas_boxWList.at(i)) &&
+                event.GetPosition().y >= yLocation && event.GetPosition().y <= yLocation + this->Canvas_getProportions(this->Canvas_boxHList.at(i))) {
+            index = i;
+        }
+    }
+    if (index != -1) {
+        this->changeText(index);
         Refresh();
     }
 }
-void BanyanChartFrame::OnZoomOut(wxCommandEvent& WXUNUSED(event)) {
-    if (this->Canvas_zoom - 25 >= 1) {
-        this->Canvas_zoom -= 25;
+void BanyanChartFrame::OnEditText(wxCommandEvent& WXUNUSED(event)) {
+    if (this->Canvas_selectedBlock.size() > 0) {
+        wxTextEntryDialog textDialog(this, _("Enter text"));
+        if (textDialog.ShowModal() == wxID_CANCEL) {
+            return;
+        }
+        for (size_t index = 0; index != -1 && index < this->Canvas_selectedBlock.size(); ++index) {
+            if (this->Canvas_selectedBlock.at(index)) {
+                this->changeText(textDialog.GetValue().ToStdString(), index);
+            }
+        }
         Refresh();
     }
 }
-
-void BanyanChartFrame::OnAdd(wxCommandEvent& WXUNUSED(event)) {
+void BanyanChartFrame::OnAddBlock(wxCommandEvent& WXUNUSED(event)) {
     this->File.addBlock("");
     this->Canvas_initializeBoxes(false);
     Refresh();
     this->unsaved = true;
+}
+void BanyanChartFrame::OnAddNode(wxCommandEvent& WXUNUSED(event)) {
 }
 void BanyanChartFrame::OnDelete(wxCommandEvent& WXUNUSED(event)) {
     for (size_t i = this->Canvas_selectedBlock.size(); i != -1 && i < this->File.getNumBlocks(); --i) {
@@ -298,18 +334,30 @@ void BanyanChartFrame::OnDelete(wxCommandEvent& WXUNUSED(event)) {
     Refresh();
 }
 
-void BanyanChartFrame::OnQuit(wxCommandEvent& event) {
-    Close();
+void BanyanChartFrame::OnZoomIn(wxCommandEvent& WXUNUSED(event)) {
+    if (this->Canvas_zoom + 25 <= 400) {
+        this->Canvas_zoom += 25;
+        Refresh();
+    }
+}
+void BanyanChartFrame::OnZoomOut(wxCommandEvent& WXUNUSED(event)) {
+    if (this->Canvas_zoom - 25 >= 1) {
+        this->Canvas_zoom -= 25;
+        Refresh();
+    }
 }
 
 void BanyanChartFrame::OnAbout(wxCommandEvent& event) {
     wxString msg = wxbuildinfo(long_f);
     wxMessageBox(msg, _("Welcome to..."));
 }
-
+void BanyanChartFrame::OnQuit(wxCommandEvent& event) {
+    Close();
+}
 void BanyanChartFrame::OnClose(wxCloseEvent& event) {
     event.Skip(TRUE);
 }
+
 
 
 
