@@ -70,7 +70,7 @@ class BanyanChartFrame: public wxFrame
         const int boxWidth = 200, boxHeight = 75;
 
         void duplicate(std::vector<std::vector<bool>>);
-        void changeText(std::string, size_t, size_t=0); void changeText(wxString, size_t, size_t=0); void changeText(const char[], size_t, size_t=0); void changeText(size_t, size_t=0);
+        void changeText(std::string, size_t, size_t=0); void changeText(wxString, size_t, size_t=0); void changeText(const char[], size_t, size_t=0); void changeText(size_t, size_t=0,std::string="");
 
         // Canvas
         int Canvas_frameX = 0, Canvas_frameY = 0, Canvas_mousePrevX, Canvas_mousePrevY;

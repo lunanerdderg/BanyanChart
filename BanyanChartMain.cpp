@@ -337,25 +337,21 @@ void BanyanChartFrame::OnOpen(wxCommandEvent& WXUNUSED(event)) {
         }
     }
     wxFileDialog openFileDialog(this, _("Open BanyanChart file"), "", "", "BanyanChart files (*.byfc)|*.byfc", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
-    if (openFileDialog.ShowModal() == wxID_CANCEL) {
-        return;
+    if (openFileDialog.ShowModal() != wxID_CANCEL) {
+        this->File.newInstance(openFileDialog.GetPath());
+        this->Canvas_initializeBoxes(true);
+        Refresh();
+        this->unsaved = false;
     }
-
-    this->File.newInstance(openFileDialog.GetPath());
-    this->Canvas_initializeBoxes(true);
-    Refresh();
-    this->unsaved = false;
 }
 void BanyanChartFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
     if (File.getPath() == "") {
         wxFileDialog saveFileDialog(this, _("Save BanyanChart file"), "", "", "BanyanChart files (*.byfc)|*.byfc", wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
-        if (saveFileDialog.ShowModal() == wxID_CANCEL) {
-            return;
+        if (saveFileDialog.ShowModal() != wxID_CANCEL) {
+            this->File.setPath(saveFileDialog.GetPath());
+            this->File.save();
+            this->unsaved = false;
         }
-
-        this->File.setPath(saveFileDialog.GetPath());
-        this->File.save();
-        this->unsaved = false;
     }
     else {
         this->File.save();
@@ -364,12 +360,10 @@ void BanyanChartFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
 }
 void BanyanChartFrame::OnSaveAs(wxCommandEvent& WXUNUSED(event)) {
     wxFileDialog saveFileDialog(this, _("Save BanyanChart file"), "", "", "BanyanChart files (*.byfc)|*.byfc", wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
-    if (saveFileDialog.ShowModal() == wxID_CANCEL) {
-        return;
+    if (saveFileDialog.ShowModal() != wxID_CANCEL) {
+        this->File.save(saveFileDialog.GetPath());
+        this->unsaved = false;
     }
-
-    this->File.save(saveFileDialog.GetPath());
-    this->unsaved = false;
 }
 
 void BanyanChartFrame::OnCut(wxCommandEvent& WXUNUSED(event)) {
@@ -471,12 +465,11 @@ void BanyanChartFrame::changeText(const char text[], size_t blockIndex, size_t n
 void BanyanChartFrame::changeText(wxString text, size_t blockIndex, size_t nodeIndex) {
     this->changeText(text.ToStdString(), blockIndex, nodeIndex);
 }
-void BanyanChartFrame::changeText(size_t blockIndex, size_t nodeIndex) {
-    wxTextEntryDialog textDialog(this, _("Enter text"));
-    if (textDialog.ShowModal() == wxID_CANCEL) {
-        return;
+void BanyanChartFrame::changeText(size_t blockIndex, size_t nodeIndex, std::string contents) {
+    wxTextEntryDialog textDialog(this, _("Enter text"), _("Text Editor"), _(contents.c_str()));
+    if (textDialog.ShowModal() != wxID_CANCEL) {
+        this->changeText(textDialog.GetValue(), blockIndex, nodeIndex);
     }
-    this->changeText(textDialog.GetValue(), blockIndex, nodeIndex);
 }
 void BanyanChartFrame::doubleClick(wxMouseEvent& event) { // BOOKMARK (add node functionality)
     size_t index = -1;
@@ -489,24 +482,40 @@ void BanyanChartFrame::doubleClick(wxMouseEvent& event) { // BOOKMARK (add node 
         }
     }
     if (index != -1) {
-        this->changeText(index);
+        this->changeText(index, 0, this->File.getNodeText(index, 0).c_str());
         Refresh();
     }
 }
 void BanyanChartFrame::OnEditText(wxCommandEvent& WXUNUSED(event)) {
-    if (this->Canvas_selected.size() > 0 && this->Canvas_selected.at(0).size() > 0 && this->Canvas_selectionMade()) {
-        wxTextEntryDialog textDialog(this, _("Enter text"));
-        if (textDialog.ShowModal() == wxID_CANCEL) {
-            return;
-        }
-        for (size_t blockIndex = 0; blockIndex != -1 && blockIndex < this->Canvas_selected.size(); ++blockIndex) {
-            for (size_t nodeIndex = 0; nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(blockIndex).size(); ++nodeIndex) {
-                if (this->Canvas_selected.at(blockIndex).at(nodeIndex)) {
-                    this->changeText(textDialog.GetValue().ToStdString(), blockIndex, nodeIndex);
+    bool multipleSelections = false;
+    std::string content = "";
+    for (size_t blockIndex = 0; blockIndex != -1 && !multipleSelections && blockIndex < this->Canvas_selected.size(); ++blockIndex) {
+        for (size_t nodeIndex = 0; nodeIndex != -1 && !multipleSelections && nodeIndex < this->Canvas_selected.at(blockIndex).size(); ++nodeIndex) {
+            if (this->Canvas_selected.at(blockIndex).at(nodeIndex)) {
+                if (content == "") {
+                    content = this->File.getNodeText(blockIndex, nodeIndex);
+                }
+                else {
+                    multipleSelections = true;
                 }
             }
         }
-        Refresh();
+    }
+    if (multipleSelections || content != "") {
+        if (multipleSelections) {
+            content = "";
+        }
+        wxTextEntryDialog textDialog(this, _("Enter text"), _("Text Editor"), _(content.c_str()));
+        if (textDialog.ShowModal() != wxID_CANCEL) {
+            for (size_t blockIndex = 0; blockIndex != -1 && blockIndex < this->Canvas_selected.size(); ++blockIndex) {
+                for (size_t nodeIndex = 0; nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(blockIndex).size(); ++nodeIndex) {
+                    if (this->Canvas_selected.at(blockIndex).at(nodeIndex)) {
+                        this->changeText(textDialog.GetValue().ToStdString(), blockIndex, nodeIndex);
+                    }
+                }
+            }
+            Refresh();
+        }
     }
 }
 
