@@ -64,7 +64,8 @@ class FileParser {
         std::string getPath();
         size_t getFirstBlock();
         size_t getNumBlocks();
-        std::string getNodeText(size_t, size_t);
+        size_t getNumNodes(size_t);
+        std::string getNodeText(size_t, size_t=0);
         size_t getNodeAddress(size_t, size_t);
         std::string getBlockBody(size_t);
         std::vector<std::string> getBlockText(size_t);
@@ -79,7 +80,7 @@ class FileParser {
         void setFirstBlock(size_t);
         void addBlock(std::string=""); void addBlock(std::vector<std::string>, std::vector<size_t>); void addBlock(std::string, std::vector<std::string>, std::vector<size_t>);
         void addMultipleBlocks(std::vector<std::vector<std::string>>, std::vector<std::vector<size_t>>);
-        void removeBlock(size_t);
+        void removeBlock(size_t); // BOOKMARK (Add functionality to make nodes point to nothing if block they point to is removed [-2 rather than -1?])
         void removeMultipleBlocks(std::vector<size_t>);
         void duplicateBlock(size_t);
         void duplicateMultipleBlocks(std::vector<size_t>);

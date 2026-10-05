@@ -55,9 +55,25 @@
 			</object>
 			<object class="wxMenu" variable="Menu3" member="yes">
 				<label>Edit</label>
-				<object class="wxMenuItem" name="idMenuEditText" variable="MenuItem12" member="yes">
-					<label>Edit text</label>
-					<help>Edit the text of a block or node</help>
+				<object class="wxMenuItem" name="idMenuCut" variable="MenuItem14" member="yes">
+					<label>Cut</label>
+					<accel>Ctrl-X</accel>
+					<help>Copy blocks + nodes and delete</help>
+				</object>
+				<object class="wxMenuItem" name="idMenuCopy" variable="MenuItem15" member="yes">
+					<label>Copy</label>
+					<accel>Ctrl-C</accel>
+					<help>Copy blocks + nodes</help>
+				</object>
+				<object class="wxMenuItem" name="idMenuPaste" variable="MenuItem16" member="yes">
+					<label>Paste</label>
+					<accel>Ctrl-V</accel>
+					<help>Duplicate copied blocks + nodes</help>
+				</object>
+				<object class="wxMenuItem" name="idMenuDuplicate" variable="MenuItem13" member="yes">
+					<label>Duplicate</label>
+					<accel>Ctrl-D</accel>
+					<help>Duplicate all selected</help>
 				</object>
 				<object class="wxMenuItem" name="idMenuAddBlock" variable="MenuItem7" member="yes">
 					<label>Add block</label>
@@ -71,6 +87,10 @@
 					<label>Delete</label>
 					<accel>Delete</accel>
 					<help>Delete a block</help>
+				</object>
+				<object class="wxMenuItem" name="idMenuEditText" variable="MenuItem12" member="yes">
+					<label>Edit text</label>
+					<help>Edit the text of a block or node</help>
 				</object>
 			</object>
 			<object class="wxMenu" variable="Menu5" member="yes">

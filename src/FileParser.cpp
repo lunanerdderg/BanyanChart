@@ -114,11 +114,16 @@ size_t FileParser::getFirstBlock() {
 }
 
 size_t FileParser::getNumBlocks() {
-    size_t listSize = this->blockTextList.size();
-    if (listSize > this->blockAddressList.size()) {
-        listSize = this->blockAddressList.size();
+    if (this->blockTextList.size() > this->blockAddressList.size()) {
+        return this->blockAddressList.size();
     }
-    return listSize;
+    return this->blockTextList.size();
+}
+size_t FileParser::getNumNodes(size_t blockIndex) {
+    if (this->blockTextList.at(blockIndex).size() > this->blockAddressList.at(blockIndex).size()) {
+        return this->blockAddressList.at(blockIndex).size();
+    }
+    return this->blockTextList.at(blockIndex).size();
 }
 std::string FileParser::getNodeText(size_t blockIndex, size_t nodeIndex) {
     if (blockIndex < this->blockTextList.size() && nodeIndex < this->blockTextList.at(blockIndex).size()) {
@@ -147,10 +152,7 @@ std::vector<size_t> FileParser::getBlockAddress(size_t blockIndex) {
 }
 
 std::string FileParser::getBlockBody(size_t blockIndex) {
-    if (blockIndex < this->blockTextList.size() && this->blockTextList.at(blockIndex).size() > 0) {
-        return this->blockTextList.at(blockIndex).at(0);
-    }
-    return "";
+    return this->getNodeText(blockIndex);
 }
 std::vector<std::vector<std::string>> FileParser::getBlockTextList() {
     return this->blockTextList;
@@ -205,12 +207,12 @@ void FileParser::addBlock(std::string body, std::vector<std::string> blockTexts,
     this->addBlock(blockTexts, blockAddresses);
 }
 void FileParser::addMultipleBlocks(std::vector<std::vector<std::string>> blockTextLists, std::vector<std::vector<size_t>> blockAddressLists) {
-    for (size_t index = 0; index < this->getNumBlocks(); ++index) {
+    for (size_t index = 0; index < blockTextLists.size(); ++index) {
         this->addBlock(blockTextLists.at(index), blockAddressLists.at(index));
     }
 }
 
-void FileParser::removeBlock(size_t blockIndex) {
+void FileParser::removeBlock(size_t blockIndex) { // BOOKMARK (Add functionality to make nodes point to nothing if block they point to is removed [-2 rather than -1?])
     if (blockIndex < this->getNumBlocks()) {
         for (size_t index = 0; index != -1 && index < this->blockAddressList.size(); ++index) {
             for (size_t nodeIndex = this->blockAddressList.at(index).size() - 1; nodeIndex > 0; --nodeIndex) {

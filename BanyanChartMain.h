@@ -66,23 +66,29 @@ class BanyanChartFrame: public wxFrame
     private:
         wxFont font;
         FileParser File;
-
         bool unsaved = false;
         const int boxWidth = 200, boxHeight = 75;
 
+        void duplicate(std::vector<std::vector<bool>>);
         void changeText(std::string, size_t, size_t=0); void changeText(wxString, size_t, size_t=0); void changeText(const char[], size_t, size_t=0); void changeText(size_t, size_t=0);
 
         // Canvas
         int Canvas_frameX = 0, Canvas_frameY = 0, Canvas_mousePrevX, Canvas_mousePrevY;
         unsigned int Canvas_zoom = 100;
         bool Canvas_dragging = false, Canvas_boxMoved = false;
-        std::vector<bool> Canvas_boxDraggingList, Canvas_selectedBlock, Canvas_selectedNode;
-        std::vector<double> Canvas_boxXList, Canvas_boxYList, Canvas_boxWList, Canvas_boxHList;
+        std::vector<bool> Canvas_boxDraggingList = {};
+        std::vector<double> Canvas_boxXList = {}, Canvas_boxYList = {}, Canvas_boxWList = {}, Canvas_boxHList = {};
+        std::vector<std::vector<bool>> Canvas_selected = {}, Canvas_copied = {};
+        std::vector<std::vector<std::string>> Canvas_cutTextList = {};
+        std::vector<std::vector<size_t>> Canvas_cutAddressList = {};
 
+        bool Canvas_selectionMade(bool=false);
         double Canvas_getXPosition(double);
         double Canvas_getYPosition(double);
         double Canvas_getProportions(double=1, bool=false);
-
+        void Canvas_copySelected();
+        void Canvas_duplicate(bool=false);
+        void Canvas_deleteSelected();
         void Canvas_render(wxDC&);
         void Canvas_initializeBoxes(bool=true);
 
@@ -92,10 +98,14 @@ class BanyanChartFrame: public wxFrame
         void OnSave(wxCommandEvent& event);
         void OnSaveAs(wxCommandEvent& event);
 
-        void OnEditText(wxCommandEvent& event);
+        void OnCut(wxCommandEvent& event);
+        void OnCopy(wxCommandEvent& event);
+        void OnPaste(wxCommandEvent& event);
+        void OnDuplicate(wxCommandEvent& event);
         void OnAddBlock(wxCommandEvent& event);
         void OnAddNode(wxCommandEvent& event);
         void OnDelete(wxCommandEvent& event);
+        void OnEditText(wxCommandEvent& event);
 
         void OnZoomIn(wxCommandEvent&);
         void OnZoomOut(wxCommandEvent&);
@@ -121,10 +131,14 @@ class BanyanChartFrame: public wxFrame
         static const wxWindowID idMenuSave;
         static const wxWindowID idMenuSaveAs;
         static const wxWindowID idMenuQuit;
-        static const wxWindowID idMenuEditText;
+        static const wxWindowID idMenuCut;
+        static const wxWindowID idMenuCopy;
+        static const wxWindowID idMenuPaste;
+        static const wxWindowID idMenuDuplicate;
         static const wxWindowID idMenuAddBlock;
         static const wxWindowID idMenuAddNode;
         static const wxWindowID idMenuDelete;
+        static const wxWindowID idMenuEditText;
         static const wxWindowID idMenuZoomIn;
         static const wxWindowID idMenuZoomOut;
         static const wxWindowID idMenuAbout;
@@ -137,6 +151,10 @@ class BanyanChartFrame: public wxFrame
         wxMenuItem* MenuItem10;
         wxMenuItem* MenuItem11;
         wxMenuItem* MenuItem12;
+        wxMenuItem* MenuItem13;
+        wxMenuItem* MenuItem14;
+        wxMenuItem* MenuItem15;
+        wxMenuItem* MenuItem16;
         wxMenuItem* MenuItem3;
         wxMenuItem* MenuItem4;
         wxMenuItem* MenuItem5;

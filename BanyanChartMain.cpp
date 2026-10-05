@@ -83,10 +83,14 @@ const wxWindowID BanyanChartFrame::idMenuOpen = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuSave = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuSaveAs = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuQuit = wxNewId();
-const wxWindowID BanyanChartFrame::idMenuEditText = wxNewId();
+const wxWindowID BanyanChartFrame::idMenuCut = wxNewId();
+const wxWindowID BanyanChartFrame::idMenuCopy = wxNewId();
+const wxWindowID BanyanChartFrame::idMenuPaste = wxNewId();
+const wxWindowID BanyanChartFrame::idMenuDuplicate = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuAddBlock = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuAddNode = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuDelete = wxNewId();
+const wxWindowID BanyanChartFrame::idMenuEditText = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuZoomIn = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuZoomOut = wxNewId();
 const wxWindowID BanyanChartFrame::idMenuAbout = wxNewId();
@@ -108,7 +112,8 @@ END_EVENT_TABLE()
 
 BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
     File = FileParser();
-    this->Canvas_initializeBoxes();
+    this->Canvas_copied = {{}};
+    this->Canvas_initializeBoxes(true);
     this->font = this->GetFont();
 
     //(*Initialize(BanyanChartFrame)
@@ -141,14 +146,22 @@ BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
     Menu1->Append(MenuItem1);
     MenuBar1->Append(Menu1, _("&File"));
     Menu3 = new wxMenu();
-    MenuItem12 = new wxMenuItem(Menu3, idMenuEditText, _("Edit text"), _("Edit the text of a block or node"), wxITEM_NORMAL);
-    Menu3->Append(MenuItem12);
+    MenuItem14 = new wxMenuItem(Menu3, idMenuCut, _("Cut\tCtrl-X"), _("Copy blocks + nodes and delete"), wxITEM_NORMAL);
+    Menu3->Append(MenuItem14);
+    MenuItem15 = new wxMenuItem(Menu3, idMenuCopy, _("Copy\tCtrl-C"), _("Copy blocks + nodes"), wxITEM_NORMAL);
+    Menu3->Append(MenuItem15);
+    MenuItem16 = new wxMenuItem(Menu3, idMenuPaste, _("Paste\tCtrl-V"), _("Duplicate copied blocks + nodes"), wxITEM_NORMAL);
+    Menu3->Append(MenuItem16);
+    MenuItem13 = new wxMenuItem(Menu3, idMenuDuplicate, _("Duplicate\tCtrl-D"), _("Duplicate all selected"), wxITEM_NORMAL);
+    Menu3->Append(MenuItem13);
     MenuItem7 = new wxMenuItem(Menu3, idMenuAddBlock, _("Add block"), _("Add a block"), wxITEM_NORMAL);
     Menu3->Append(MenuItem7);
     MenuItem11 = new wxMenuItem(Menu3, idMenuAddNode, _("Add node"), _("Add a node to a block"), wxITEM_NORMAL);
     Menu3->Append(MenuItem11);
     MenuItem8 = new wxMenuItem(Menu3, idMenuDelete, _("Delete\tDelete"), _("Delete a block"), wxITEM_NORMAL);
     Menu3->Append(MenuItem8);
+    MenuItem12 = new wxMenuItem(Menu3, idMenuEditText, _("Edit text"), _("Edit the text of a block or node"), wxITEM_NORMAL);
+    Menu3->Append(MenuItem12);
     MenuBar1->Append(Menu3, _("Edit"));
     Menu5 = new wxMenu();
     MenuItem9 = new wxMenuItem(Menu5, idMenuZoomIn, _("Zoom in\tCtrl-="), _("Zoom into the canvas"), wxITEM_NORMAL);
@@ -179,22 +192,17 @@ BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
     Connect(idMenuZoomIn, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnZoomIn);
     Connect(idMenuZoomOut, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnZoomOut);
 
+    Connect(idMenuCut, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnCut);
+    Connect(idMenuCopy, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnCopy);
+    Connect(idMenuPaste, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnPaste);
+    Connect(idMenuDuplicate, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnDuplicate);
     Connect(idMenuAddBlock, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnAddBlock);
     Connect(idMenuAddNode, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnAddNode);
-    Connect(idMenuEditText, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnEditText);
     Connect(idMenuDelete, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnDelete);
+    Connect(idMenuEditText, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnEditText);
 
     Connect(idMenuAbout, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BanyanChartFrame::OnAbout);
 }
-/*
-    Canvas->Connect(wxEVT_PAINT, (wxObjectEventFunction)&BanyanChartFrame::paintEvent);
-    Canvas->Connect(wxEVT_LEFT_DOWN, (wxObjectEventFunction)&BanyanChartFrame::mouseDown);
-    Canvas->Connect(wxEVT_LEFT_UP, (wxObjectEventFunction)&BanyanChartFrame::mouseReleased);
-    Canvas->Connect(wxEVT_RIGHT_DOWN, (wxObjectEventFunction)&BanyanChartFrame::rightClick);
-    Canvas->Connect(wxEVT_MOTION, (wxObjectEventFunction)&BanyanChartFrame::mouseMoved);
-    Canvas->Connect(wxEVT_LEAVE_WINDOW, (wxObjectEventFunction)&BanyanChartFrame::mouseLeftWindow);
-    Canvas->Connect(wxEVT_MOUSEWHEEL, (wxObjectEventFunction)&BanyanChartFrame::mouseWheelMoved);
-*/
 BanyanChartFrame::~BanyanChartFrame() {
     //(*Destroy(BanyanChartFrame)
     //*)
@@ -203,6 +211,28 @@ BanyanChartFrame::~BanyanChartFrame() {
 
 
 
+bool BanyanChartFrame::Canvas_selectionMade(bool useCopied) {
+    if (useCopied) {
+        for (size_t blockIndex = 0; blockIndex != -1 && blockIndex < this->Canvas_copied.size(); ++blockIndex) {
+            for (size_t nodeIndex = 0; nodeIndex != -1 && nodeIndex < this->Canvas_copied.at(blockIndex).size(); ++nodeIndex) {
+                if (this->Canvas_copied.at(blockIndex).at(nodeIndex)) {
+                    return true;
+                }
+            }
+        }
+    }
+    else {
+        for (size_t blockIndex = 0; blockIndex != -1 && blockIndex < this->Canvas_selected.size(); ++blockIndex) {
+            for (size_t nodeIndex = 0; nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(blockIndex).size(); ++nodeIndex) {
+                if (this->Canvas_selected.at(blockIndex).at(nodeIndex)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
 void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
     size_t startNum = this->Canvas_boxDraggingList.size();
     size_t numBlocks = this->File.getNumBlocks();
@@ -210,7 +240,7 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
         this->Canvas_dragging = false;
         this->Canvas_frameX = 0;
         this->Canvas_frameY = 0;
-        this->Canvas_selectedBlock = {};
+        this->Canvas_selected = {};
         this->Canvas_boxDraggingList = {};
         this->Canvas_boxXList = {};
         this->Canvas_boxYList = {};
@@ -221,8 +251,11 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
     }
     if (numBlocks > this->Canvas_boxDraggingList.size()) {
         for (size_t i = startNum; i != -1 && i < numBlocks; ++i) { // - this->Canvas_boxDraggingList.size()));
-            this->Canvas_selectedBlock.push_back(false);
             this->Canvas_boxDraggingList.push_back(false);
+            this->Canvas_selected.push_back({false});
+            for (size_t nodeIndex = 1; nodeIndex < this->File.getNumNodes(i); ++nodeIndex) {
+                this->Canvas_selected.at(i).push_back(false);
+            }
             this->Canvas_boxXList.push_back(100);
             this->Canvas_boxYList.push_back(i*boxHeight*4/2+boxHeight/8);
             this->Canvas_boxWList.push_back(boxWidth);
@@ -244,6 +277,46 @@ double BanyanChartFrame::Canvas_getProportions(double widthHeightThickness, bool
     return widthHeightThickness * this->Canvas_zoom / 100.0;
 }
 
+void BanyanChartFrame::duplicate(std::vector<std::vector<bool>> selectionList) {
+    for (size_t blockIndex = 0; blockIndex != -1 && blockIndex < selectionList.size(); ++blockIndex) {
+        bool add = false;
+        std::vector<std::string> curBlockTexts = {""};
+        std::vector<size_t> curBlockAddresses = {0};
+        if (selectionList.at(blockIndex).at(0)) {
+            curBlockTexts.at(0) = File.getBlockBody(blockIndex);
+            add = true;
+        }
+        for (size_t nodeIndex = 1; nodeIndex != -1 && nodeIndex < selectionList.at(blockIndex).size(); ++nodeIndex) {
+            if (selectionList.at(blockIndex).at(nodeIndex)) {
+                curBlockTexts.push_back(this->File.getNodeText(blockIndex, nodeIndex));
+                if (nodeIndex == 0) {
+                    curBlockAddresses.push_back(0);
+                }
+                else {
+                    curBlockAddresses.push_back(this->File.getNodeAddress(blockIndex, nodeIndex));
+                }
+                add = true;
+            }
+        }
+        if (add) {
+            this->File.addBlock(curBlockTexts, curBlockAddresses);
+        }
+    }
+}
+void BanyanChartFrame::Canvas_duplicate(bool useCopied) {
+    if (useCopied && this->Canvas_copied.size() > 0 && this->Canvas_selectionMade(true)) {
+        this->duplicate(Canvas_copied);
+        this->Canvas_initializeBoxes(false);
+        Refresh();
+    }
+    else if (!useCopied && this->Canvas_selected.size() > 0 && this->Canvas_selectionMade()) {
+        this->duplicate(Canvas_selected);
+        this->Canvas_initializeBoxes(false);
+        Refresh();
+    }
+}
+
+
 
 
 void BanyanChartFrame::OnNew(wxCommandEvent& event) {
@@ -253,7 +326,7 @@ void BanyanChartFrame::OnNew(wxCommandEvent& event) {
         }
     }
     this->File.newInstance();
-    this->Canvas_initializeBoxes();
+    this->Canvas_initializeBoxes(true);
     Refresh();
     this->unsaved = false;
 }
@@ -269,7 +342,7 @@ void BanyanChartFrame::OnOpen(wxCommandEvent& WXUNUSED(event)) {
     }
 
     this->File.newInstance(openFileDialog.GetPath());
-    this->Canvas_initializeBoxes();
+    this->Canvas_initializeBoxes(true);
     Refresh();
     this->unsaved = false;
 }
@@ -299,6 +372,95 @@ void BanyanChartFrame::OnSaveAs(wxCommandEvent& WXUNUSED(event)) {
     this->unsaved = false;
 }
 
+void BanyanChartFrame::OnCut(wxCommandEvent& WXUNUSED(event)) {
+    if (this->Canvas_selectionMade()) {
+        this->Canvas_copied = {};
+        this->Canvas_cutTextList = {};
+        this->Canvas_cutAddressList = {};
+        for (size_t blockIndex = 0; blockIndex != -1 && blockIndex < this->Canvas_selected.size(); ++blockIndex) {
+            bool add = false;
+            std::vector<std::string> curBlockTexts = {""};
+            std::vector<size_t> curBlockAddresses = {0};
+            if (this->Canvas_selected.at(blockIndex).at(0)) {
+                curBlockTexts.at(0) = File.getBlockBody(blockIndex);
+                add = true;
+            }
+            for (size_t nodeIndex = 1; nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(blockIndex).size(); ++nodeIndex) {
+                if (this->Canvas_selected.at(blockIndex).at(nodeIndex)) {
+                    curBlockTexts.push_back(this->File.getNodeText(blockIndex, nodeIndex));
+                    if (nodeIndex == 0) {
+                        curBlockAddresses.push_back(0);
+                    }
+                    else {
+                        curBlockAddresses.push_back(this->File.getNodeAddress(blockIndex, nodeIndex));
+                    }
+                    add = true;
+                }
+            }
+            if (add) {
+                this->Canvas_cutTextList.push_back(curBlockTexts);
+                this->Canvas_cutAddressList.push_back(curBlockAddresses);
+            }
+        }
+        this->Canvas_deleteSelected();
+        Refresh();
+    }
+}
+void BanyanChartFrame::OnCopy(wxCommandEvent& WXUNUSED(event)) {
+    this->Canvas_copied = this->Canvas_selected;
+    this->Canvas_cutTextList = {};
+    this->Canvas_cutAddressList = {};
+}
+void BanyanChartFrame::OnPaste(wxCommandEvent& WXUNUSED(event)) {
+    if (this->Canvas_cutTextList.size() > 0 && this->Canvas_cutAddressList.size() > 0) {
+        this->File.addMultipleBlocks(this->Canvas_cutTextList, this->Canvas_cutAddressList);
+    }
+    else {
+        this->Canvas_duplicate(true);
+    }
+    this->Canvas_initializeBoxes(false);
+    Refresh();
+}
+void BanyanChartFrame::OnDuplicate(wxCommandEvent& WXUNUSED(event)) {
+    this->Canvas_duplicate();
+}
+void BanyanChartFrame::OnAddBlock(wxCommandEvent& WXUNUSED(event)) {
+    this->File.addBlock("");
+    this->Canvas_initializeBoxes(false);
+    Refresh();
+    this->unsaved = true;
+}
+void BanyanChartFrame::OnAddNode(wxCommandEvent& WXUNUSED(event)) { // BOOKMARK
+    Refresh();
+    this->unsaved = true;
+}
+void BanyanChartFrame::Canvas_deleteSelected() {
+    for (size_t i = this->Canvas_selected.size() - 1; i != -1 && i < this->File.getNumBlocks(); --i) {
+        if (this->Canvas_selected.at(i).at(0)) {
+            this->File.removeBlock(i);
+            this->Canvas_boxDraggingList.erase(this->Canvas_boxDraggingList.begin() + i);
+            this->Canvas_boxXList.erase(this->Canvas_boxXList.begin() + i);
+            this->Canvas_boxYList.erase(this->Canvas_boxYList.begin() + i);
+            this->Canvas_boxWList.erase(this->Canvas_boxWList.begin() + i);
+            this->Canvas_boxHList.erase(this->Canvas_boxHList.begin() + i);
+            this->Canvas_selected.erase(this->Canvas_selected.begin() + i);
+            this->unsaved = true;
+        }
+        else {
+            for (size_t nodeIndex = this->Canvas_selected.at(i).size() - 1; nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(i).size(); --nodeIndex) {
+                if (this->Canvas_selected.at(i).at(nodeIndex)) {
+                    this->File.removeNode(i, nodeIndex);
+                    this->Canvas_selected.at(i).erase(this->Canvas_selected.at(i).begin() + nodeIndex);
+                    this->unsaved = true;
+                }
+            }
+        }
+    }
+}
+void BanyanChartFrame::OnDelete(wxCommandEvent& WXUNUSED(event)) {
+    this->Canvas_deleteSelected();
+    Refresh();
+}
 void BanyanChartFrame::changeText(std::string text, size_t blockIndex, size_t nodeIndex) {
     this->File.setText(text, blockIndex, nodeIndex);
     this->unsaved = true;
@@ -316,7 +478,7 @@ void BanyanChartFrame::changeText(size_t blockIndex, size_t nodeIndex) {
     }
     this->changeText(textDialog.GetValue(), blockIndex, nodeIndex);
 }
-void BanyanChartFrame::doubleClick(wxMouseEvent& event) {
+void BanyanChartFrame::doubleClick(wxMouseEvent& event) { // BOOKMARK (add node functionality)
     size_t index = -1;
     for (size_t i = 0; i != -1 && i < this->Canvas_boxXList.size(); ++i) {
         const int xLocation = this->Canvas_getXPosition(this->Canvas_boxXList.at(i));
@@ -332,41 +494,20 @@ void BanyanChartFrame::doubleClick(wxMouseEvent& event) {
     }
 }
 void BanyanChartFrame::OnEditText(wxCommandEvent& WXUNUSED(event)) {
-    if (this->Canvas_selectedBlock.size() > 0) {
+    if (this->Canvas_selected.size() > 0 && this->Canvas_selected.at(0).size() > 0 && this->Canvas_selectionMade()) {
         wxTextEntryDialog textDialog(this, _("Enter text"));
         if (textDialog.ShowModal() == wxID_CANCEL) {
             return;
         }
-        for (size_t index = 0; index != -1 && index < this->Canvas_selectedBlock.size(); ++index) {
-            if (this->Canvas_selectedBlock.at(index)) {
-                this->changeText(textDialog.GetValue().ToStdString(), index);
+        for (size_t blockIndex = 0; blockIndex != -1 && blockIndex < this->Canvas_selected.size(); ++blockIndex) {
+            for (size_t nodeIndex = 0; nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(blockIndex).size(); ++nodeIndex) {
+                if (this->Canvas_selected.at(blockIndex).at(nodeIndex)) {
+                    this->changeText(textDialog.GetValue().ToStdString(), blockIndex, nodeIndex);
+                }
             }
         }
         Refresh();
     }
-}
-void BanyanChartFrame::OnAddBlock(wxCommandEvent& WXUNUSED(event)) {
-    this->File.addBlock("");
-    this->Canvas_initializeBoxes(false);
-    Refresh();
-    this->unsaved = true;
-}
-void BanyanChartFrame::OnAddNode(wxCommandEvent& WXUNUSED(event)) {
-}
-void BanyanChartFrame::OnDelete(wxCommandEvent& WXUNUSED(event)) {
-    for (size_t i = this->Canvas_selectedBlock.size(); i != -1 && i < this->File.getNumBlocks(); --i) {
-        if (this->Canvas_selectedBlock.at(i)) {
-            this->File.removeBlock(i);
-            this->Canvas_boxDraggingList.erase(this->Canvas_boxDraggingList.begin() + i);
-            this->Canvas_boxXList.erase(this->Canvas_boxXList.begin() + i);
-            this->Canvas_boxYList.erase(this->Canvas_boxYList.begin() + i);
-            this->Canvas_boxWList.erase(this->Canvas_boxWList.begin() + i);
-            this->Canvas_boxHList.erase(this->Canvas_boxHList.begin() + i);
-            this->Canvas_selectedBlock.erase(this->Canvas_selectedBlock.begin() + i);
-            this->unsaved = true;
-        }
-    }
-    Refresh();
 }
 
 void BanyanChartFrame::OnZoomIn(wxCommandEvent& WXUNUSED(event)) {
@@ -396,7 +537,7 @@ void BanyanChartFrame::OnClose(wxCloseEvent& event) {
 
 
 
-void BanyanChartFrame::mouseMoved(wxMouseEvent& event) {
+void BanyanChartFrame::mouseMoved(wxMouseEvent& event) { // BOOKMARK (Maybe make node connections by allowing them to be dragged to blocks?)
     if (this->Canvas_dragging && event.Dragging()) {
         int delta_x = event.GetPosition().x - this->Canvas_mousePrevX;
         int delta_y = event.GetPosition().y - this->Canvas_mousePrevY;
@@ -424,16 +565,26 @@ void BanyanChartFrame::mouseMoved(wxMouseEvent& event) {
     Refresh();
 }
 
-void BanyanChartFrame::mouseDown(wxMouseEvent& event) {
+void BanyanChartFrame::mouseDown(wxMouseEvent& event) { // BOOKMARK (Maybe make node connections by allowing them to be dragged to blocks?)
+    bool ctrlPressed = event.ControlDown();
+    bool shiftPressed = event.ShiftDown();
     bool selectionMade = false;
-    this->Canvas_boxDraggingList = this->Canvas_selectedBlock;
-    for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size() && index < this->Canvas_boxDraggingList.size(); ++index) {
+    size_t prevSelectedIndex = -1;
+    this->Canvas_boxDraggingList = {};
+    for (size_t index = 0; index != -1 && index < this->Canvas_selected.size(); ++index) {
+        this->Canvas_boxDraggingList.push_back(this->Canvas_selected.at(index).at(0));
         const int xLocation = this->Canvas_getXPosition(this->Canvas_boxXList.at(index));
         const int yLocation = this->Canvas_getYPosition(this->Canvas_boxYList.at(index));
         if (event.GetPosition().x >= xLocation && event.GetPosition().x <= xLocation + this->Canvas_getProportions(this->Canvas_boxWList.at(index)) &&
                 event.GetPosition().y >= yLocation && event.GetPosition().y <= yLocation + this->Canvas_getProportions(this->Canvas_boxHList.at(index))) {
             this->Canvas_dragging = false;
             this->Canvas_boxDraggingList.at(index) = true;
+            if (!ctrlPressed && !shiftPressed && prevSelectedIndex != -1) {
+                this->Canvas_boxDraggingList.at(prevSelectedIndex) = false;
+            }
+            if (!this->Canvas_selected.at(index).at(0)) {
+                prevSelectedIndex = index;
+            }
             selectionMade = true;
         }
     }
@@ -445,7 +596,7 @@ void BanyanChartFrame::mouseDown(wxMouseEvent& event) {
     Refresh();
 }
 
-void BanyanChartFrame::mouseReleased(wxMouseEvent& event) {
+void BanyanChartFrame::mouseReleased(wxMouseEvent& event) { // BOOKMARK (Add node selection functionality) (Maybe make node connections by allowing them to be dragged to blocks?)
     bool ctrlPressed = event.ControlDown();
     bool shiftPressed = event.ShiftDown();
     for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size(); ++index) {
@@ -454,16 +605,26 @@ void BanyanChartFrame::mouseReleased(wxMouseEvent& event) {
             const int xLocation = this->Canvas_getXPosition(this->Canvas_boxXList.at(index));
             const int yLocation = this->Canvas_getYPosition(this->Canvas_boxYList.at(index));
             if (event.GetPosition().x >= xLocation && event.GetPosition().x <= xLocation + this->Canvas_getProportions(this->Canvas_boxWList.at(index)) &&
-                    event.GetPosition().y >= yLocation && event.GetPosition().y <= yLocation + this->Canvas_getProportions(this->Canvas_boxHList.at(index))) {
-                if (ctrlPressed || shiftPressed) {
-                    this->Canvas_selectedBlock.at(index) = !this->Canvas_selectedBlock.at(index);
+                event.GetPosition().y >= yLocation && event.GetPosition().y <= yLocation + this->Canvas_getProportions(this->Canvas_boxHList.at(index)))
+                {
+                if (ctrlPressed) {
+                    this->Canvas_selected.at(index).at(0) = !this->Canvas_selected.at(index).at(0);
+                }
+                else if (shiftPressed) {
+                    for (size_t nodeIndex = this->Canvas_selected.at(index).size() - 1; nodeIndex != -1 && nodeIndex > 0 && nodeIndex < this->Canvas_selected.at(index).size(); --nodeIndex) {
+                        this->Canvas_selected.at(index).at(nodeIndex) = !this->Canvas_selected.at(index).at(0);
+                    }
                 }
                 else {
-                    this->Canvas_selectedBlock.at(index) = true;
+                    for (size_t nodeIndex = 0; nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(index).size(); ++nodeIndex) {
+                        this->Canvas_selected.at(index).at(nodeIndex) = true;
+                    }
                 }
             }
             else if (!ctrlPressed && !shiftPressed) {
-                this->Canvas_selectedBlock.at(index) = false;
+                for (size_t nodeIndex = 0; nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(index).size(); ++nodeIndex) {
+                    this->Canvas_selected.at(index).at(nodeIndex) = false;
+                }
             }
         }
     }
@@ -524,17 +685,17 @@ void BanyanChartFrame::paintEvent(wxPaintEvent& event) {
 void BanyanChartFrame::Canvas_render(wxDC&  dc) {
     dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
     dc.SetPen(wxPen(wxColor(255,175,175), this->Canvas_getProportions()));
-    for (size_t index = 0; index != -1 && index < this->Canvas_boxDraggingList.size() && index < this->File.getNumBlocks(); ++index) {
+    for (size_t index = 0; index != -1 && index < this->Canvas_selected.size() && index < this->File.getNumBlocks(); ++index) {
         double xLocation = this->Canvas_getXPosition(this->Canvas_boxXList.at(index));
         double yLocation = this->Canvas_getYPosition(this->Canvas_boxYList.at(index));
         double width = this->Canvas_getProportions(this->Canvas_boxWList.at(index));
         double height = this->Canvas_getProportions(this->Canvas_boxHList.at(index));
         if (xLocation + width > 0 && xLocation < this->GetClientSize().GetWidth()) {
-            if (this->Canvas_selectedBlock.at(index)) {
+            if (/*this->Canvas_selected.at(index).size() > 0 &&*/ this->Canvas_selected.at(index).at(0)) {
                 dc.SetPen(wxPen(wxColor(255,75,75), this->Canvas_getProportions(2)));
             }
             dc.DrawRectangle(xLocation, yLocation, width, height);
-            if (this->Canvas_selectedBlock.at(index)) {
+            if (this->Canvas_selected.at(index).at(0)) {
                 dc.SetPen(wxPen(wxColor(255,175,175), this->Canvas_getProportions()));
             }
             wxFont tempFont = font;
