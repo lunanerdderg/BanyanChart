@@ -5,6 +5,8 @@ Creates a `.byfc` (Banyan Flowchart) file.
 
 Install from the [releases](https://github.com/lunanerdderg/BanyanChart/releases). 
 
+This program is currently in pre-alpha form, but it's still functional.
+
 # Building
 
 `BanyanChart.cbp` is a [Code::Blocks](https://www.codeblocks.org/downloads/binaries/) solution file, so you will need that software to open the project. Converting to another solution format might work, as long as you have wxWidgets installed, (though [wxSmith](#Uses) will only work with Code::Blocks).
