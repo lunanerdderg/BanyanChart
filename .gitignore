@@ -80,3 +80,4 @@ vcpkg_installed/
 # test output & cache
 .cache/
 log.txt
+*.byfc
