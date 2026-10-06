@@ -64,6 +64,8 @@ class BanyanChartFrame: public wxFrame
         virtual ~BanyanChartFrame();
 
     private:
+        FILE* m_pLogFile;
+
         wxFont font;
         FileParser File;
         bool unsaved = false;
@@ -73,10 +75,10 @@ class BanyanChartFrame: public wxFrame
 
         // Canvas
         const int Canvas_blockWidth = 200, Canvas_blockHeight = 75;
-        int Canvas_frameX = 0, Canvas_frameY = 0, Canvas_mousePrevX, Canvas_mousePrevY;
+        int Canvas_width = 0, Canvas_frameX = 0, Canvas_frameY = 0, Canvas_mousePrevX, Canvas_mousePrevY;
         unsigned int Canvas_zoom = 100;
         size_t Canvas_nodeDraggedBlock = -1, Canvas_nodeDraggedNode = -1, Canvas_historyIndex = 0;
-        bool Canvas_dragging = false, Canvas_blockMoved = false, Canvas_mouseDown = false, Canvas_draggingNode = false;
+        bool Canvas_justInitialized = true, Canvas_dragging = false, Canvas_blockMoved = false, Canvas_mouseDown = false, Canvas_draggingNode = false;
         std::vector<bool> Canvas_blockDraggingList = {};
         std::vector<double> Canvas_blockXList = {}, Canvas_blockYList = {}, Canvas_blockWList = {}, Canvas_blockHList = {};
         std::vector<std::vector<bool>> Canvas_selected = {}, Canvas_copied = {};

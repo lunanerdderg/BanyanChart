@@ -366,32 +366,38 @@ void FileParser::update() {
         for (size_t lineIndex = fileContents.find("\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}"); !lastLineRead; lineIndex = fileContents.find("\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}\x{FF}")) {
             lastLineRead = (lineIndex == std::string::npos);
             line = fileContents.substr(0, lineIndex);
-            fileContents = fileContents.substr(lineIndex + 8);
             newBlockTextList.push_back( { { "" } } );
             newBlockAddressList.push_back( { { 0 } } );
-            if (line.at(0) == '\x{01}' ) {
-                this->firstBlock = lineCounter;
-                line = line.substr(1);
+            if (lineIndex + 8 < fileContents.size()) {
+                fileContents = fileContents.substr(lineIndex + 8);
             }
-
-            std::istringstream sin(line);
-
-            std::string element;
-            std::getline(sin, element, '\t');
-            newBlockTextList.back().at(0) = element;
-            while (sin.peek() != -1) {
-                newBlockAddressList.back().push_back(this->getSize_tFromBinary(sin));
-                if (std::getline(sin, element, '\t')) {
-                    newBlockTextList.back().push_back(element);
+            else {
+                lastLineRead = true;
+            }
+            if (line.size() > 0) {
+                if (line.at(0) == '\x{01}' ) {
+                    this->firstBlock = lineCounter;
+                    line = line.substr(1);
                 }
-                else {
-                    newBlockTextList.back().push_back("");
+
+                std::istringstream sin(line);
+
+                std::string element;
+                std::getline(sin, element, '\t');
+                newBlockTextList.back().at(0) = element;
+                while (sin.peek() != -1) {
+                    newBlockAddressList.back().push_back(this->getSize_tFromBinary(sin));
+                    if (std::getline(sin, element, '\t')) {
+                        newBlockTextList.back().push_back(element);
+                    }
+                    else {
+                        newBlockTextList.back().push_back("");
+                    }
                 }
             }
 
             ++lineCounter;
         }
-
         this->setBlockLists(newBlockTextList, newBlockAddressList);
     }
 }

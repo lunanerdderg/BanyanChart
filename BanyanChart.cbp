@@ -36,11 +36,13 @@
 				</Linker>
 			</Target>
 			<Environment>
+				<Variable name="DEBUG_FLAG" value="1" />
 				<Variable name="wx_msw_window_no_composited" value="1" />
 			</Environment>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-g" />
 			<Add option="`wx-config --cflags`" />
 			<Add option="-Winvalid-pch" />
 			<Add option="-include wx_pch.h" />

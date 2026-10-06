@@ -113,6 +113,16 @@ BEGIN_EVENT_TABLE(BanyanChartFrame,wxFrame)
 END_EVENT_TABLE()
 
 BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
+    m_pLogFile = fopen("log.txt", "w+");
+    if (m_pLogFile == NULL) {
+        return;
+    }
+    wxLogStderr* pFileLogger = new wxLogStderr(m_pLogFile);
+    delete wxLog::SetActiveTarget(pFileLogger);
+    wxLog::SetLogLevel(wxLOG_Info);
+    wxLog::SetVerbose(true);
+    wxLogDebug(L"Debug");
+
     File = FileParser();
     this->Canvas_copied = {{}};
     this->Canvas_initializeBoxes(true);
@@ -271,34 +281,33 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
     if (reset && numBlocks > 0) {
         std::vector<size_t> step = {this->File.getFirstBlock()}, nextStep = {}, previousIndeces = {};
 
-        for (size_t numSteps = 0; step != {}; ++numSteps) {
+        for (size_t numSteps = 0; step.size() > 0; ++numSteps) {
             // Each step
             for (size_t block = 0; block != -1 && block < step.size(); ++block) {
                 // Each block
-                if (std::find(previousIndeces.begin(), previousIndeces.end(), step.at(block)) == previousIndeces.end()) { // If block was not already seen
+                if (step.at(block) != -2 && std::find(previousIndeces.begin(), previousIndeces.end(), step.at(block)) == previousIndeces.end()) { // If block was not already seen
                     this->Canvas_blockDraggingList.at(step.at(block)) = false;
                     this->Canvas_selected.at(step.at(block)) = {false};
                     for (size_t nodeIndex = 1; nodeIndex < this->File.getNumNodes(step.at(block)); ++nodeIndex) {
-                        this->Canvas_selected.at(step.at(block)).push_back(false);
+                        if (this->File.getNodeAddress(step.at(block), nodeIndex) != -2) {
+                            this->Canvas_selected.at(step.at(block)).push_back(false);
+                        }
                     }
-                    this->Canvas_blockXList.at(step.at(block)) = (block + 1)*this->GetSize() / ((step.size()*this->Canvas_blockWidth) + ((step.size() + 1)*this->Canvas_blockWidth/2.0));
-                    this->Canvas_blockYList.at(step.at(block)) = (numSteps + 1)*this->Canvas_blockHeight*2;
+                    this->Canvas_blockXList.at(step.at(block)) = (block*2 + 1)*this->Canvas_width / (step.size()*2 + 1.0);
+                    this->Canvas_blockYList.at(step.at(block)) = (numSteps*2 + 1)*this->Canvas_blockHeight * 3 / 4.0;
                     this->Canvas_blockWList.at(step.at(block)) = this->Canvas_blockWidth;
                     this->Canvas_blockHList.at(step.at(block)) = this->Canvas_blockHeight;
 
                     previousIndeces.push_back(step.at(block));
-                    vector<size_t> tempAddressList = this->File.getBlockAddressList(step.at(block));
-                    tempAddressList.erase(tempAddressList.begin());
-                    nextStep += tempAddressList;
+                    std::vector<size_t> tempAddressList = this->File.getBlockAddress(step.at(block));
+
+                    nextStep.insert(nextStep.end(), tempAddressList.begin() + 1, tempAddressList.end());
                 }
             }
             // Each step
             step = nextStep;
             nextStep = {};
         }
-
-    //                this->Canvas_blockXList.at(step.at(blockindex)) = (index+1)*(this->GetSize() / (step.at(block).size()*4 / 3));
-    //                this->Canvas_blockYList.at(step.at(block)) = (counter+1)*this->Canvas_blockHeight*2;
     }
     else {
         size_t startNum = this->Canvas_blockDraggingList.size();
@@ -415,13 +424,12 @@ void BanyanChartFrame::OnOpen(wxCommandEvent& WXUNUSED(event)) {
         }
     }
     wxFileDialog openFileDialog(this, _("Open BanyanChart file"), "", "", "BanyanChart files (*.byfc)|*.byfc", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
-    if (openFileDialog.ShowModal() != wxID_CANCEL) {
+    if (openFileDialog.ShowModal() == wxID_CANCEL) { return; }
         this->File.newInstance(openFileDialog.GetPath());
         this->Canvas_resetHistory();
         this->Canvas_initializeBoxes(true);
         Refresh();
         this->unsaved = false;
-    }
 }
 void BanyanChartFrame::OnSave(wxCommandEvent& WXUNUSED(event)) {
     if (File.getPath() == "") {
@@ -886,6 +894,11 @@ void BanyanChartFrame::paintEvent(wxPaintEvent& event) {
 
 
 void BanyanChartFrame::Canvas_render(wxDC&  dc) {
+    this->Canvas_width = dc.GetSize().GetWidth();
+    if (this->Canvas_justInitialized) {
+        this->Canvas_initializeBoxes(true);
+        this->Canvas_justInitialized = false;
+    }
     dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
     for (size_t blockIndex = 0; blockIndex != -1 && blockIndex < this->Canvas_selected.size() && blockIndex < this->File.getNumBlocks(); ++blockIndex) {
         size_t nodeListSize = this->Canvas_selected.at(blockIndex).size();
