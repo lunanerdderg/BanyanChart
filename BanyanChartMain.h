@@ -67,22 +67,23 @@ class BanyanChartFrame: public wxFrame
         wxFont font;
         FileParser File;
         bool unsaved = false;
-        const int boxWidth = 200, boxHeight = 75;
 
         void duplicate(std::vector<std::vector<bool>>);
         void changeText(std::string, size_t, size_t=0); void changeText(wxString, size_t, size_t=0); void changeText(const char[], size_t, size_t=0); void changeText(size_t, size_t=0,std::string="");
 
         // Canvas
+        const int Canvas_blockWidth = 200, Canvas_blockHeight = 75;
         int Canvas_frameX = 0, Canvas_frameY = 0, Canvas_mousePrevX, Canvas_mousePrevY;
         unsigned int Canvas_zoom = 100;
-        bool Canvas_dragging = false, Canvas_boxMoved = false;
-        std::vector<bool> Canvas_boxDraggingList = {};
-        std::vector<double> Canvas_boxXList = {}, Canvas_boxYList = {}, Canvas_boxWList = {}, Canvas_boxHList = {};
+        bool Canvas_dragging = false, Canvas_draggingNode = false, Canvas_blockMoved = false;
+        std::vector<bool> Canvas_blockDraggingList = {};
+        std::vector<double> Canvas_blockXList = {}, Canvas_blockYList = {}, Canvas_blockWList = {}, Canvas_blockHList = {};
         std::vector<std::vector<bool>> Canvas_selected = {}, Canvas_copied = {};
         std::vector<std::vector<std::string>> Canvas_cutTextList = {};
         std::vector<std::vector<size_t>> Canvas_cutAddressList = {};
 
         bool Canvas_selectionMade(bool=false);
+        bool Canvas_collision(int, int, size_t); bool Canvas_collision(int, int, size_t, size_t);
         double Canvas_getXPosition(double);
         double Canvas_getYPosition(double);
         double Canvas_getProportions(double=1, bool=false);

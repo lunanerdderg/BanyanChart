@@ -70,6 +70,7 @@
 					<accel>Ctrl-V</accel>
 					<help>Duplicate copied blocks + nodes</help>
 				</object>
+				<object class="separator" />
 				<object class="wxMenuItem" name="idMenuDuplicate" variable="MenuItem13" member="yes">
 					<label>Duplicate</label>
 					<accel>Ctrl-D</accel>
@@ -83,6 +84,7 @@
 					<label>Add node</label>
 					<help>Add a node to a block</help>
 				</object>
+				<object class="separator" />
 				<object class="wxMenuItem" name="idMenuDelete" variable="MenuItem8" member="yes">
 					<label>Delete</label>
 					<accel>Delete</accel>

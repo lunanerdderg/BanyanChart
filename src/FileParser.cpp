@@ -212,13 +212,12 @@ void FileParser::addMultipleBlocks(std::vector<std::vector<std::string>> blockTe
     }
 }
 
-void FileParser::removeBlock(size_t blockIndex) { // BOOKMARK (Add functionality to make nodes point to nothing if block they point to is removed [-2 rather than -1?])
+void FileParser::removeBlock(size_t blockIndex) {
     if (blockIndex < this->getNumBlocks()) {
         for (size_t index = 0; index != -1 && index < this->blockAddressList.size(); ++index) {
             for (size_t nodeIndex = this->blockAddressList.at(index).size() - 1; nodeIndex > 0; --nodeIndex) {
                 if (this->blockAddressList.at(index).at(nodeIndex) == blockIndex) {
-                    this->blockTextList.at(index).erase(this->blockTextList.at(index).begin() + nodeIndex);
-                    this->blockAddressList.at(index).erase(this->blockAddressList.at(index).begin() + nodeIndex);
+                    this->blockAddressList.at(index).at(nodeIndex) = -2;
                 }
                 else if (index >= blockIndex) {
                     --this->blockAddressList.at(index).at(nodeIndex);
