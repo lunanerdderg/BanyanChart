@@ -55,6 +55,17 @@
 			</object>
 			<object class="wxMenu" variable="Menu3" member="yes">
 				<label>Edit</label>
+				<object class="wxMenuItem" name="idMenuUndo" variable="MenuItem17" member="yes">
+					<label>Undo</label>
+					<accel>Ctrl-Z</accel>
+					<help>Undo last change</help>
+				</object>
+				<object class="wxMenuItem" name="idMenuRedo" variable="MenuItem18" member="yes">
+					<label>Redo</label>
+					<accel>Ctrl-Y</accel>
+					<help>Redo previously undone change</help>
+				</object>
+				<object class="separator" />
 				<object class="wxMenuItem" name="idMenuCut" variable="MenuItem14" member="yes">
 					<label>Cut</label>
 					<accel>Ctrl-X</accel>

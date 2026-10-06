@@ -75,13 +75,15 @@ class BanyanChartFrame: public wxFrame
         const int Canvas_blockWidth = 200, Canvas_blockHeight = 75;
         int Canvas_frameX = 0, Canvas_frameY = 0, Canvas_mousePrevX, Canvas_mousePrevY;
         unsigned int Canvas_zoom = 100;
-        size_t Canvas_nodeDraggedBlock = -1, Canvas_nodeDraggedNode = -1;
+        size_t Canvas_nodeDraggedBlock = -1, Canvas_nodeDraggedNode = -1, Canvas_historyIndex = 0;
         bool Canvas_dragging = false, Canvas_blockMoved = false, Canvas_mouseDown = false, Canvas_draggingNode = false;
         std::vector<bool> Canvas_blockDraggingList = {};
         std::vector<double> Canvas_blockXList = {}, Canvas_blockYList = {}, Canvas_blockWList = {}, Canvas_blockHList = {};
         std::vector<std::vector<bool>> Canvas_selected = {}, Canvas_copied = {};
         std::vector<std::vector<std::string>> Canvas_cutTextList = {};
         std::vector<std::vector<size_t>> Canvas_cutAddressList = {};
+        std::vector<std::vector<std::vector<std::string>>> Canvas_textHistory = {};
+        std::vector<std::vector<std::vector<size_t>>> Canvas_addressHistory = {};
 
         bool Canvas_selectionMade(bool=false);
         bool Canvas_collision(int, int, size_t); bool Canvas_collision(int, int, size_t, size_t);
@@ -93,6 +95,8 @@ class BanyanChartFrame: public wxFrame
         void Canvas_deleteSelected();
         void Canvas_render(wxDC&);
         void Canvas_initializeBoxes(bool=true);
+        void Canvas_resetHistory();
+        void Canvas_saveStateToHistory();
 
         // ///////////////////////////
         void OnNew(wxCommandEvent& event);
@@ -100,6 +104,8 @@ class BanyanChartFrame: public wxFrame
         void OnSave(wxCommandEvent& event);
         void OnSaveAs(wxCommandEvent& event);
 
+        void OnUndo(wxCommandEvent& event);
+        void OnRedo(wxCommandEvent& event);
         void OnCut(wxCommandEvent& event);
         void OnCopy(wxCommandEvent& event);
         void OnPaste(wxCommandEvent& event);
@@ -133,6 +139,8 @@ class BanyanChartFrame: public wxFrame
         static const wxWindowID idMenuSave;
         static const wxWindowID idMenuSaveAs;
         static const wxWindowID idMenuQuit;
+        static const wxWindowID idMenuUndo;
+        static const wxWindowID idMenuRedo;
         static const wxWindowID idMenuCut;
         static const wxWindowID idMenuCopy;
         static const wxWindowID idMenuPaste;
@@ -157,6 +165,8 @@ class BanyanChartFrame: public wxFrame
         wxMenuItem* MenuItem14;
         wxMenuItem* MenuItem15;
         wxMenuItem* MenuItem16;
+        wxMenuItem* MenuItem17;
+        wxMenuItem* MenuItem18;
         wxMenuItem* MenuItem3;
         wxMenuItem* MenuItem4;
         wxMenuItem* MenuItem5;
