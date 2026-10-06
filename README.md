@@ -3,7 +3,7 @@
 
 Creates a `.byfc` (Banyan Flowchart) file.
 
-Install from the [releases](https://github.com/lunanerdderg/BanyanChart/releases/latest). 
+Install from the [releases](https://github.com/lunanerdderg/BanyanChart/releases). 
 
 # Building
 
