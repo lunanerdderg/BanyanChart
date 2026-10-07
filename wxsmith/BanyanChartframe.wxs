@@ -89,10 +89,12 @@
 				</object>
 				<object class="wxMenuItem" name="idMenuAddBlock" variable="MenuItem7" member="yes">
 					<label>Add block</label>
+					<accel>Ctrl-Enter</accel>
 					<help>Add a block</help>
 				</object>
 				<object class="wxMenuItem" name="idMenuAddNode" variable="MenuItem11" member="yes">
 					<label>Add node</label>
+					<accel>Shift-Enter</accel>
 					<help>Add a node to a block</help>
 				</object>
 				<object class="separator" />

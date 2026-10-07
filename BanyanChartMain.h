@@ -92,6 +92,7 @@ class BanyanChartFrame: public wxFrame
         double Canvas_getXPosition(double);
         double Canvas_getYPosition(double);
         double Canvas_getProportions(double=1, bool=false);
+        wxString Canvas_wrapText(wxDC&, std::string, int, int);
         void Canvas_copySelected();
         void Canvas_duplicate(bool=false);
         void Canvas_deleteSelected();
