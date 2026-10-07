@@ -1,7 +1,7 @@
 # reset-pull.sh
 # upload.sh
 # windows-upload.txt
-# Test/
+Test/
 *.layout
 template.byfc
 .tutorial
