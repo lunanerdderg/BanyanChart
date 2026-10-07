@@ -534,7 +534,7 @@ void BanyanChartFrame::OnDuplicate(wxCommandEvent& WXUNUSED(event)) {
     this->Canvas_saveStateToHistory();
 }
 void BanyanChartFrame::OnAddBlock(wxCommandEvent& WXUNUSED(event)) {
-    this->File.addBlock("");
+    this->File.addBlock(" ");
     this->Canvas_saveStateToHistory();
     this->Canvas_initializeBoxes(false);
     Refresh();
@@ -546,7 +546,7 @@ void BanyanChartFrame::OnAddNode(wxCommandEvent& WXUNUSED(event)) { // BOOKMARK
         for (size_t nodeIndex = 0; continueLooping && nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(blockIndex).size(); ++nodeIndex) {
             if (this->Canvas_selected.at(blockIndex).at(nodeIndex)) {
                 this->Canvas_selected.at(blockIndex).push_back(false);
-                this->File.addNode(blockIndex, "", -2);
+                this->File.addNode(blockIndex, " ", -2);
                 continueLooping = false;
             }
         }
