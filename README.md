@@ -5,7 +5,7 @@ Creates a `.byfc` (Banyan Flowchart) file.
 
 Install from the [releases](https://github.com/lunanerdderg/BanyanChart/releases). 
 
-This program is currently in pre-alpha form, but it's still functional.
+This program is currently in pre-alpha form, but it's still functional. Still, quite buggy. Issues are appreciated.
 
 # Building
 
