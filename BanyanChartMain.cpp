@@ -661,14 +661,14 @@ void BanyanChartFrame::OnEditText(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void BanyanChartFrame::OnZoomIn(wxCommandEvent& WXUNUSED(event)) {
-    if (this->Canvas_zoom + 25 <= 400) {
-        this->Canvas_zoom += 25;
+    if (this->Canvas_zoom + 50 <= 400) {
+        this->Canvas_zoom += 50;
         Refresh();
     }
 }
 void BanyanChartFrame::OnZoomOut(wxCommandEvent& WXUNUSED(event)) {
-    if (this->Canvas_zoom - 25 >= 1) {
-        this->Canvas_zoom -= 25;
+    if (this->Canvas_zoom - 50 >= 1) {
+        this->Canvas_zoom -= 50;
         Refresh();
     }
 }
