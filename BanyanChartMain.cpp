@@ -596,7 +596,12 @@ void BanyanChartFrame::changeText(wxString text, size_t blockIndex, size_t nodeI
 void BanyanChartFrame::changeText(size_t blockIndex, size_t nodeIndex, std::string contents) {
     wxTextEntryDialog textDialog(this, _("Enter text"), _("Text Editor"), _(contents.c_str()), wxCANCEL | wxOK | wxTE_MULTILINE);
     if (textDialog.ShowModal() != wxID_CANCEL) {
-        this->changeText(textDialog.GetValue(), blockIndex, nodeIndex);
+        if (textDialog.GetValue().ToStdString() == "") {
+            this->changeText(wxString(' '), blockIndex, nodeIndex);
+        }
+        else {
+            this->changeText(textDialog.GetValue(), blockIndex, nodeIndex);
+        }
     }
 }
 void BanyanChartFrame::doubleClick(wxMouseEvent& event) {
@@ -640,7 +645,12 @@ void BanyanChartFrame::OnEditText(wxCommandEvent& WXUNUSED(event)) {
             for (size_t blockIndex = 0; blockIndex != -1 && blockIndex < this->Canvas_selected.size(); ++blockIndex) {
                 for (size_t nodeIndex = 0; nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(blockIndex).size(); ++nodeIndex) {
                     if (this->Canvas_selected.at(blockIndex).at(nodeIndex)) {
-                        this->changeText(textDialog.GetValue().ToStdString(), blockIndex, nodeIndex);
+                        if (textDialog.GetValue().ToStdString() == "") {
+                            this->changeText(wxString(' '), blockIndex, nodeIndex);
+                        }
+                        else {
+                            this->changeText(textDialog.GetValue().ToStdString(), blockIndex, nodeIndex);
+                        }
                     }
                 }
             }
