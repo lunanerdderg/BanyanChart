@@ -113,10 +113,8 @@ BEGIN_EVENT_TABLE(BanyanChartFrame,wxFrame)
 END_EVENT_TABLE()
 
 BanyanChartFrame::BanyanChartFrame(wxWindow* parent,wxWindowID id) {
-//    m_pLogFile = fopen("log.txt", "w+");
-//    if (m_pLogFile == NULL) {
-//        return;
-//    }
+//    m_pLogFile = fopen("log.txt", "w+"); // LOGGING
+//    if (m_pLogFile == NULL) {return;}
 //    wxLogStderr* pFileLogger = new wxLogStderr(m_pLogFile);
 //    delete wxLog::SetActiveTarget(pFileLogger);
 //    wxLog::SetLogLevel(wxLOG_Info);
@@ -269,45 +267,57 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
         this->Canvas_blockWList = {};
         this->Canvas_blockHList = {};
 
-        if (numBlocks > 0) {
-            this->Canvas_selected.resize(numBlocks);
-            this->Canvas_blockDraggingList.resize(numBlocks);
-            this->Canvas_blockXList.resize(numBlocks);
-            this->Canvas_blockYList.resize(numBlocks);
-            this->Canvas_blockWList.resize(numBlocks);
-            this->Canvas_blockHList.resize(numBlocks);
-        }
+//        if (numBlocks > 0) {
+//            this->Canvas_selected.resize(numBlocks);
+//            this->Canvas_blockDraggingList.resize(numBlocks);
+//            this->Canvas_blockXList.resize(numBlocks);
+//            this->Canvas_blockYList.resize(numBlocks);
+//            this->Canvas_blockWList.resize(numBlocks);
+//            this->Canvas_blockHList.resize(numBlocks);
+//        }
     }
     if (reset && numBlocks > 0) {
-        std::vector<size_t> step = {this->File.getFirstBlock()}, nextStep = {}, previousIndeces = {};
-
-        for (size_t numSteps = 0; step.size() > 0; ++numSteps) {
-            // Each step
-            for (size_t block = 0; block != -1 && block < step.size(); ++block) {
-                // Each block
-                if (step.at(block) != -2 && std::find(previousIndeces.begin(), previousIndeces.end(), step.at(block)) == previousIndeces.end()) { // If block was not already seen
-                    this->Canvas_blockDraggingList.at(step.at(block)) = false;
-                    this->Canvas_selected.at(step.at(block)) = {false};
-                    for (size_t nodeIndex = 1; nodeIndex < this->File.getNumNodes(step.at(block)); ++nodeIndex) {
-                        if (this->File.getNodeAddress(step.at(block), nodeIndex) != -2) {
-                            this->Canvas_selected.at(step.at(block)).push_back(false);
-                        }
-                    }
-                    this->Canvas_blockXList.at(step.at(block)) = (block*2 + 1)*this->Canvas_width / (step.size()*2 + 1.0);
-                    this->Canvas_blockYList.at(step.at(block)) = (numSteps*2 + 1)*this->Canvas_blockHeight * 3 / 4.0;
-                    this->Canvas_blockWList.at(step.at(block)) = this->Canvas_blockWidth;
-                    this->Canvas_blockHList.at(step.at(block)) = this->Canvas_blockHeight;
-
-                    previousIndeces.push_back(step.at(block));
-                    std::vector<size_t> tempAddressList = this->File.getBlockAddress(step.at(block));
-
-                    nextStep.insert(nextStep.end(), tempAddressList.begin() + 1, tempAddressList.end());
-                }
+//        std::vector<size_t> step = {this->File.getFirstBlock()}, nextStep = {}, previousIndeces = {};
+//
+//        for (size_t numSteps = 0; step.size() > 0; ++numSteps) {
+//            // Each step
+//            for (size_t block = 0; block != -1 && block < step.size(); ++block) {
+//                // Each block
+//                if (step.at(block) != -2 && std::find(previousIndeces.begin(), previousIndeces.end(), step.at(block)) == previousIndeces.end()) { // If block was not already seen
+//                    this->Canvas_blockDraggingList.at(step.at(block)) = false;
+//                    this->Canvas_selected.at(step.at(block)) = {false};
+//                    for (size_t nodeIndex = 1; nodeIndex < this->File.getNumNodes(step.at(block)); ++nodeIndex) {
+//                        if (this->File.getNodeAddress(step.at(block), nodeIndex) != -2) {
+//                            this->Canvas_selected.at(step.at(block)).push_back(false);
+//                        }
+//                    }
+//                    this->Canvas_blockXList.at(step.at(block)) = (block*2 + 1)*this->Canvas_width / (step.size()*2 + 1.0);
+//                    this->Canvas_blockYList.at(step.at(block)) = (numSteps*2 + 1)*this->Canvas_blockHeight * 3 / 4.0;
+//                    this->Canvas_blockWList.at(step.at(block)) = this->Canvas_blockWidth;
+//                    this->Canvas_blockHList.at(step.at(block)) = this->Canvas_blockHeight;
+//
+//                    previousIndeces.push_back(step.at(block));
+//                    std::vector<size_t> tempAddressList = this->File.getBlockAddress(step.at(block));
+//
+//                    nextStep.insert(nextStep.end(), tempAddressList.begin() + 1, tempAddressList.end());
+//                }
+//            }
+//            // Each step
+//            step = nextStep;
+//            nextStep = {};
+//        }
+        for (size_t i = 0; i != -1 && i < numBlocks; ++i) {
+            this->Canvas_blockDraggingList.push_back(false);
+            this->Canvas_selected.push_back({false});
+            for (size_t nodeIndex = 1; nodeIndex < this->File.getNumNodes(i); ++nodeIndex) {
+                this->Canvas_selected.at(i).push_back(false);
             }
-            // Each step
-            step = nextStep;
-            nextStep = {};
+            this->Canvas_blockXList.push_back(100);
+            this->Canvas_blockYList.push_back(i*this->Canvas_blockHeight*2);
+            this->Canvas_blockWList.push_back(this->Canvas_blockWidth);
+            this->Canvas_blockHList.push_back(this->Canvas_blockHeight);
         }
+
     }
     else {
         size_t startNum = this->Canvas_blockDraggingList.size();
@@ -335,6 +345,7 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
             this->Canvas_blockHList.push_back(this->Canvas_blockHeight);
         }
     }
+    this->Canvas_justEditedText = true;
 }
 
 void BanyanChartFrame::Canvas_resetHistory() {
@@ -467,6 +478,7 @@ void BanyanChartFrame::OnUndo(wxCommandEvent& WXUNUSED(event)) {
         this->File.setBlockLists(this->Canvas_textHistory.at(this->Canvas_historyIndex), this->Canvas_addressHistory.at(this->Canvas_historyIndex));
         this->Canvas_initializeBoxes(true);
         Refresh();
+        Update();
     }
 }
 void BanyanChartFrame::OnRedo(wxCommandEvent& WXUNUSED(event)) {
@@ -475,6 +487,7 @@ void BanyanChartFrame::OnRedo(wxCommandEvent& WXUNUSED(event)) {
         this->File.setBlockLists(this->Canvas_textHistory.at(this->Canvas_historyIndex), this->Canvas_addressHistory.at(this->Canvas_historyIndex));
         this->Canvas_initializeBoxes(true);
         Refresh();
+        Update();
     }
 }
 
@@ -511,6 +524,7 @@ void BanyanChartFrame::OnCut(wxCommandEvent& WXUNUSED(event)) {
         this->Canvas_deleteSelected();
         this->Canvas_saveStateToHistory();
         Refresh();
+        Update();
     }
 }
 void BanyanChartFrame::OnCopy(wxCommandEvent& WXUNUSED(event)) {
@@ -528,6 +542,7 @@ void BanyanChartFrame::OnPaste(wxCommandEvent& WXUNUSED(event)) {
     this->Canvas_saveStateToHistory();
     this->Canvas_initializeBoxes(false);
     Refresh();
+    Update();
 }
 void BanyanChartFrame::OnDuplicate(wxCommandEvent& WXUNUSED(event)) {
     this->Canvas_duplicate();
@@ -546,6 +561,7 @@ void BanyanChartFrame::OnAddNode(wxCommandEvent& WXUNUSED(event)) { // BOOKMARK
         for (size_t nodeIndex = 0; continueLooping && nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(blockIndex).size(); ++nodeIndex) {
             if (this->Canvas_selected.at(blockIndex).at(nodeIndex)) {
                 this->Canvas_selected.at(blockIndex).push_back(false);
+                this->Canvas_wrappedTextList.at(blockIndex).push_back(wxString(' '));
                 this->File.addNode(blockIndex, " ", -2);
                 continueLooping = false;
             }
@@ -565,6 +581,7 @@ void BanyanChartFrame::Canvas_deleteSelected() {
             this->Canvas_blockWList.erase(this->Canvas_blockWList.begin() + i);
             this->Canvas_blockHList.erase(this->Canvas_blockHList.begin() + i);
             this->Canvas_selected.erase(this->Canvas_selected.begin() + i);
+            this->Canvas_wrappedTextList.erase(this->Canvas_wrappedTextList.begin() + i);
             this->unsaved = true;
         }
         else {
@@ -572,6 +589,7 @@ void BanyanChartFrame::Canvas_deleteSelected() {
                 if (this->Canvas_selected.at(i).at(nodeIndex)) {
                     this->File.removeNode(i, nodeIndex);
                     this->Canvas_selected.at(i).erase(this->Canvas_selected.at(i).begin() + nodeIndex);
+                    this->Canvas_wrappedTextList.at(i).erase(this->Canvas_wrappedTextList.at(i).begin() + nodeIndex);
                     this->unsaved = true;
                 }
             }
@@ -586,6 +604,7 @@ void BanyanChartFrame::OnDelete(wxCommandEvent& WXUNUSED(event)) {
 void BanyanChartFrame::changeText(std::string text, size_t blockIndex, size_t nodeIndex) {
     this->File.setText(text, blockIndex, nodeIndex);
     this->unsaved = true;
+    this->Canvas_justEditedText = true;
 }
 void BanyanChartFrame::changeText(const char text[], size_t blockIndex, size_t nodeIndex) {
     this->changeText(text, blockIndex, nodeIndex);
@@ -664,12 +683,14 @@ void BanyanChartFrame::OnZoomIn(wxCommandEvent& WXUNUSED(event)) {
     if (this->Canvas_zoom + 50 <= 400) {
         this->Canvas_zoom += 50;
         Refresh();
+        Update();
     }
 }
 void BanyanChartFrame::OnZoomOut(wxCommandEvent& WXUNUSED(event)) {
     if (this->Canvas_zoom - 50 >= 1) {
         this->Canvas_zoom -= 50;
         Refresh();
+        Update();
     }
 }
 
@@ -722,74 +743,81 @@ bool BanyanChartFrame::Canvas_collision(int xLocation, int yLocation, size_t blo
 }
 
 void BanyanChartFrame::mouseMoved(wxMouseEvent& event) {
-    if (!this->Canvas_draggingNode && this->Canvas_dragging && event.Dragging()) {
-        int delta_x = event.GetPosition().x - this->Canvas_mousePrevX;
-        int delta_y = event.GetPosition().y - this->Canvas_mousePrevY;
-
-        this->Canvas_frameX += Canvas_getProportions(delta_x, true);
-        this->Canvas_frameY += Canvas_getProportions(delta_y, true);
-
-        this->Canvas_blockMoved = true;
+    if (this->Canvas_mouseDown) {
+        this->Canvas_mouseMovingAndDown = true;
     }
-    else if (!this->Canvas_dragging && !this->Canvas_draggingNode) {
-        for (size_t index = 0; index != -1 && index < this->Canvas_blockDraggingList.size(); ++index) {
-            for (size_t nodeIndex = 1; nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(index).size(); ++nodeIndex) {
-                if (this->Canvas_mouseDown && ((this->Canvas_nodeDraggedBlock == index && this->Canvas_nodeDraggedNode == nodeIndex) || this->Canvas_selected.at(index).at(nodeIndex)) && this->Canvas_collision(event.GetPosition().x, event.GetPosition().y, index, nodeIndex)) {
-                    this->Canvas_dragging = false;
-                    this->Canvas_draggingNode = true;
-                    Refresh();
-                    return; // EXIT FUNCTION EARLY
+    if (this->Canvas_mouseMovingAndDown) {
+        if (!this->Canvas_draggingNode && this->Canvas_dragging && event.Dragging()) {
+            int delta_x = event.GetPosition().x - this->Canvas_mousePrevX;
+            int delta_y = event.GetPosition().y - this->Canvas_mousePrevY;
+
+            this->Canvas_frameX += Canvas_getProportions(delta_x, true);
+            this->Canvas_frameY += Canvas_getProportions(delta_y, true);
+
+            this->Canvas_blockMoved = true;
+        }
+        else if (this->Canvas_mouseDown && !this->Canvas_dragging && !this->Canvas_draggingNode) {
+            for (size_t index = 0; index != -1 && index < this->Canvas_blockDraggingList.size(); ++index) {
+                for (size_t nodeIndex = 1; nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(index).size(); ++nodeIndex) {
+                    if (((this->Canvas_nodeDraggedBlock == index && this->Canvas_nodeDraggedNode == nodeIndex) || this->Canvas_selected.at(index).at(nodeIndex)) && this->Canvas_collision(event.GetPosition().x, event.GetPosition().y, index, nodeIndex)) {
+                        this->Canvas_dragging = false;
+                        this->Canvas_draggingNode = true;
+                        Refresh();
+                        Update();
+                        return; // EXIT FUNCTION EARLY
+                    }
+                }
+                if (this->Canvas_blockDraggingList.at(index) && event.Dragging()) {
+                    int delta_x = event.GetPosition().x - this->Canvas_mousePrevX;
+                    int delta_y = event.GetPosition().y - this->Canvas_mousePrevY;
+
+                    this->Canvas_blockXList.at(index) += Canvas_getProportions(delta_x, true);
+                    this->Canvas_blockYList.at(index) += Canvas_getProportions(delta_y, true);
+
+                    this->Canvas_blockMoved = true;
                 }
             }
-            if (this->Canvas_blockDraggingList.at(index) && event.Dragging()) {
-                int delta_x = event.GetPosition().x - this->Canvas_mousePrevX;
-                int delta_y = event.GetPosition().y - this->Canvas_mousePrevY;
-
-                this->Canvas_blockXList.at(index) += Canvas_getProportions(delta_x, true);
-                this->Canvas_blockYList.at(index) += Canvas_getProportions(delta_y, true);
-
-                this->Canvas_blockMoved = true;
-            }
         }
+        this->Canvas_mousePrevX = event.GetPosition().x;
+        this->Canvas_mousePrevY = event.GetPosition().y;
+        Refresh();
+        Update();
     }
-    this->Canvas_mousePrevX = event.GetPosition().x;
-    this->Canvas_mousePrevY = event.GetPosition().y;
-    Refresh();
 }
 void BanyanChartFrame::mouseDown(wxMouseEvent& event) {
     this->Canvas_mouseDown = true;
-    if (!this->Canvas_draggingNode) {
-        bool ctrlPressed = event.ControlDown();
-        bool shiftPressed = event.ShiftDown();
-        bool selectionMade = false;
-        size_t prevSelectedBlockIndex = -1;
-        this->Canvas_blockDraggingList = {};
-        for (size_t blockIndex = 0; blockIndex != -1 && blockIndex < this->Canvas_selected.size(); ++blockIndex) {
-            this->Canvas_blockDraggingList.push_back(false);
-            if (this->Canvas_selected.at(blockIndex).at(0)) {
-                this->Canvas_blockDraggingList.back() = true;
-            }
-            if (this->Canvas_collision(event.GetPosition().x, event.GetPosition().y, blockIndex)) {
-                this->Canvas_dragging = false;
-                if (!ctrlPressed && !shiftPressed && prevSelectedBlockIndex != -1) {
-                    this->Canvas_blockDraggingList.at(prevSelectedBlockIndex) = false;
+    if (!this->Canvas_draggingNode && !this->Canvas_mouseMovingAndDown) {
+        if (!this->Canvas_dragging) {
+            bool ctrlPressed = event.ControlDown(), shiftPressed = event.ShiftDown(), selectionMade = false;
+            size_t prevSelectedBlockIndex = -1;
+            this->Canvas_blockDraggingList = {};
+            for (size_t blockIndex = 0; !selectionMade && blockIndex != -1 && blockIndex < this->Canvas_selected.size(); ++blockIndex) {
+                this->Canvas_blockDraggingList.push_back(false);
+                if (this->Canvas_selected.at(blockIndex).at(0)) {
+                    this->Canvas_blockDraggingList.back() = true;
                 }
-                this->Canvas_blockDraggingList.at(blockIndex) = true;
-                if (!this->Canvas_selected.at(blockIndex).at(0)) {
-                    prevSelectedBlockIndex = blockIndex;
-                }
-                selectionMade = true;
-            }
-            for (size_t nodeIndex = this->Canvas_selected.at(blockIndex).size() - 1; nodeIndex > 0 && nodeIndex < this->Canvas_selected.at(blockIndex).size(); --nodeIndex) {
-                if (this->Canvas_collision(event.GetPosition().x, event.GetPosition().y, blockIndex, nodeIndex)) {
-                    this->Canvas_nodeDraggedBlock = blockIndex;
-                    this->Canvas_nodeDraggedNode = nodeIndex;
+                if (this->Canvas_collision(event.GetPosition().x, event.GetPosition().y, blockIndex)) {
+                    this->Canvas_dragging = false;
+                    if (!ctrlPressed && !shiftPressed && prevSelectedBlockIndex != -1) {
+                        this->Canvas_blockDraggingList.at(prevSelectedBlockIndex) = false;
+                    }
+                    this->Canvas_blockDraggingList.at(blockIndex) = true;
+                    if (!this->Canvas_selected.at(blockIndex).at(0)) {
+                        prevSelectedBlockIndex = blockIndex;
+                    }
                     selectionMade = true;
                 }
+                for (size_t nodeIndex = this->Canvas_selected.at(blockIndex).size() - 1; !selectionMade && nodeIndex > 0 && nodeIndex < this->Canvas_selected.at(blockIndex).size(); --nodeIndex) {
+                    if (this->Canvas_collision(event.GetPosition().x, event.GetPosition().y, blockIndex, nodeIndex)) {
+                        this->Canvas_nodeDraggedBlock = blockIndex;
+                        this->Canvas_nodeDraggedNode = nodeIndex;
+                        selectionMade = true;
+                    }
+                }
             }
-        }
-        if (!selectionMade) {
-            this->Canvas_dragging = true;
+            if (!selectionMade) {
+                this->Canvas_dragging = true;
+            }
         }
         this->Canvas_mousePrevX = event.GetPosition().x;
         this->Canvas_mousePrevY = event.GetPosition().y;
@@ -801,56 +829,63 @@ void BanyanChartFrame::mouseReleased(wxMouseEvent& event) { // BOOKMARK (Maybe m
     this->Canvas_mouseDown = false;
     bool ctrlPressed = event.ControlDown();
     bool shiftPressed = event.ShiftDown();
-    for (size_t blockIndex = this->Canvas_selected.size() - 1; blockIndex != -1 && blockIndex < this->Canvas_selected.size(); --blockIndex) {
-        if (!this->Canvas_draggingNode) {
-            this->Canvas_blockDraggingList.at(blockIndex) = false;
-        }
-        if (!this->Canvas_draggingNode && !this->Canvas_blockMoved) {
-            for (size_t nodeIndex = this->Canvas_selected.at(blockIndex).size() - 1; nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(blockIndex).size(); --nodeIndex) {
-                if (this->Canvas_collision(event.GetPosition().x, event.GetPosition().y, blockIndex, nodeIndex)) {
-                    if (ctrlPressed) {
-                        this->Canvas_selected.at(blockIndex).at(nodeIndex) = !this->Canvas_selected.at(blockIndex).at(nodeIndex);
-                    }
-                    else if (shiftPressed) {
-                        bool newNodeValue = !this->Canvas_selected.at(blockIndex).at(nodeIndex);
-                        for (size_t newNodeIndex = 0; newNodeIndex != -1 && newNodeIndex < this->Canvas_selected.at(blockIndex).size(); ++newNodeIndex) {
-                            this->Canvas_selected.at(blockIndex).at(newNodeIndex) = newNodeValue;
+//    if (!this->Canvas_mouseMovingAndDown) {
+        size_t canvasSelectedSize = this->Canvas_selected.size();
+        for (size_t blockIndex = canvasSelectedSize - 1; blockIndex != -1 && blockIndex < canvasSelectedSize; --blockIndex) {
+            if (!this->Canvas_draggingNode) {
+                for (size_t newBlockIndex = Canvas_blockDraggingList.size() - 1; newBlockIndex != -1 && newBlockIndex < blockIndex; ++newBlockIndex) {
+                    this->Canvas_blockDraggingList.push_back(false);
+                }
+                this->Canvas_blockDraggingList.at(blockIndex) = false;
+            }
+            if (shiftPressed && this->Canvas_collision(event.GetPosition().x, event.GetPosition().y, blockIndex)) {
+                bool newNodeValue = !this->Canvas_selected.at(blockIndex).at(0);
+                for (size_t newNodeIndex = 0; newNodeIndex != -1 && newNodeIndex < this->Canvas_selected.at(blockIndex).size(); ++newNodeIndex) {
+                    this->Canvas_selected.at(blockIndex).at(newNodeIndex) = newNodeValue;
+                }
+            }
+            else if (!shiftPressed && !this->Canvas_draggingNode && !this->Canvas_blockMoved) {
+                for (size_t nodeIndex = this->Canvas_selected.at(blockIndex).size() - 1; nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(blockIndex).size(); --nodeIndex) {
+                    if (this->Canvas_collision(event.GetPosition().x, event.GetPosition().y, blockIndex, nodeIndex)) {
+                        if (ctrlPressed) {
+                            this->Canvas_selected.at(blockIndex).at(nodeIndex) = !this->Canvas_selected.at(blockIndex).at(nodeIndex);
                         }
-                    }
-                    else {
-                        for (size_t prevSelectedIndex = 0; prevSelectedIndex != -1 && prevSelectedIndex < this->Canvas_selected.size(); ++prevSelectedIndex) {
-                            for (size_t prevNodeIndex = 0; prevNodeIndex != -1 && prevNodeIndex < this->Canvas_selected.at(prevSelectedIndex).size(); ++prevNodeIndex) {
-                                this->Canvas_selected.at(prevSelectedIndex).at(prevNodeIndex) = false;
+                        else {
+                            for (size_t prevSelectedIndex = 0; prevSelectedIndex != -1 && prevSelectedIndex < canvasSelectedSize; ++prevSelectedIndex) {
+                                for (size_t prevNodeIndex = 0; prevNodeIndex != -1 && prevNodeIndex < this->Canvas_selected.at(prevSelectedIndex).size(); ++prevNodeIndex) {
+                                    this->Canvas_selected.at(prevSelectedIndex).at(prevNodeIndex) = false;
+                                }
                             }
+                            this->Canvas_selected.at(blockIndex).at(nodeIndex) = true;
+                            this->Canvas_dragging = false;
+                            this->Canvas_blockMoved = false;
+                            Refresh();
+                            return; // EXIT FUNCTION EARLY
                         }
-                        this->Canvas_selected.at(blockIndex).at(nodeIndex) = true;
-                        this->Canvas_dragging = false;
-                        this->Canvas_blockMoved = false;
-                        Refresh();
-                        return; // EXIT FUNCTION EARLY
                     }
-                }
-                else if (!ctrlPressed && !shiftPressed) {
-                    this->Canvas_selected.at(blockIndex).at(nodeIndex) = false;
-                }
-            }
-        }
-        else if (this->Canvas_draggingNode && !ctrlPressed && !shiftPressed && this->Canvas_collision(event.GetPosition().x, event.GetPosition().y, blockIndex)) {
-            for (size_t targetBlockIndex = 0; targetBlockIndex != -1 && targetBlockIndex < this->Canvas_selected.size(); ++targetBlockIndex) {
-                for (size_t targetNodeIndex = 1; targetNodeIndex != -1 && targetNodeIndex < this->Canvas_selected.at(targetBlockIndex).size(); ++targetNodeIndex) {
-                    if ((this->Canvas_nodeDraggedBlock == targetBlockIndex && this->Canvas_nodeDraggedNode == targetNodeIndex) || this->Canvas_selected.at(targetBlockIndex).at(targetNodeIndex)) {
-                        this->File.setNodeAddress(blockIndex, targetBlockIndex, targetNodeIndex);
+                    else if (!ctrlPressed && !shiftPressed) {
+                        this->Canvas_selected.at(blockIndex).at(nodeIndex) = false;
                     }
                 }
             }
-            this->Canvas_saveStateToHistory();
+            else if (this->Canvas_draggingNode && !ctrlPressed && !shiftPressed && this->Canvas_collision(event.GetPosition().x, event.GetPosition().y, blockIndex)) {
+                for (size_t targetBlockIndex = 0; targetBlockIndex != -1 && targetBlockIndex < canvasSelectedSize; ++targetBlockIndex) {
+                    for (size_t targetNodeIndex = 1; targetNodeIndex != -1 && targetNodeIndex < this->Canvas_selected.at(targetBlockIndex).size(); ++targetNodeIndex) {
+                        if ((this->Canvas_nodeDraggedBlock == targetBlockIndex && this->Canvas_nodeDraggedNode == targetNodeIndex) || this->Canvas_selected.at(targetBlockIndex).at(targetNodeIndex)) {
+                            this->File.setNodeAddress(blockIndex, targetBlockIndex, targetNodeIndex);
+                        }
+                    }
+                }
+                this->Canvas_saveStateToHistory();
+            }
+    //        else if (!ctrlPressed && !shiftPressed) {
+    //            for (size_t nodeIndex = 0; nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(blockIndex).size(); ++nodeIndex) {
+    //                this->Canvas_selected.at(blockIndex).at(nodeIndex) = false;
+    //            }
+    //        }
         }
-//        else if (!ctrlPressed && !shiftPressed) {
-//            for (size_t nodeIndex = 0; nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(blockIndex).size(); ++nodeIndex) {
-//                this->Canvas_selected.at(blockIndex).at(nodeIndex) = false;
-//            }
-//        }
-    }
+//    }
+    this->Canvas_mouseMovingAndDown = false;
     this->Canvas_nodeDraggedBlock = -1;
     this->Canvas_nodeDraggedNode = -1;
     this->Canvas_draggingNode = false;
@@ -863,9 +898,9 @@ void BanyanChartFrame::rightClick(wxMouseEvent& event) {
 }
 
 void BanyanChartFrame::mouseLeftWindow(wxMouseEvent& event) {
-    for (size_t index = 0; index != -1 && index < this->Canvas_blockDraggingList.size(); ++index) {
-        this->Canvas_blockDraggingList.at(index) = false;
-    }
+//    for (size_t index = 0; index != -1 && index < this->Canvas_blockDraggingList.size(); ++index) {
+//        this->Canvas_blockDraggingList.at(index) = false;
+//    }
 }
 
 void BanyanChartFrame::mouseWheelMoved(wxMouseEvent& event) {
@@ -899,6 +934,7 @@ void BanyanChartFrame::mouseWheelMoved(wxMouseEvent& event) {
         }
     }
     Refresh();
+    Update();
 }
 
 void BanyanChartFrame::paintEvent(wxPaintEvent& event) {
@@ -947,6 +983,9 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
         this->Canvas_justInitialized = false;
     }
     dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+    if (this->Canvas_justEditedText) {
+        this->Canvas_wrappedTextList = {};
+    }
     for (size_t blockIndex = 0; blockIndex != -1 && blockIndex < this->Canvas_selected.size() && blockIndex < this->File.getNumBlocks(); ++blockIndex) {
         size_t nodeListSize = this->Canvas_selected.at(blockIndex).size();
         const double blockXLocation = this->Canvas_getXPosition(this->Canvas_blockXList.at(blockIndex));
@@ -958,6 +997,14 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
         }
         else {
             blockHeight = this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex));
+        }
+        if (this->Canvas_justEditedText) {
+            if (nodeListSize > 1) {
+                this->Canvas_wrappedTextList.push_back({this->Canvas_wrapText(dc, this->File.getBlockBody(blockIndex), this->Canvas_getProportions(this->Canvas_blockWList.at(blockIndex)), this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex) * 3 / 4))});
+            }
+            else {
+                this->Canvas_wrappedTextList.push_back({this->Canvas_wrapText(dc, this->File.getBlockBody(blockIndex), this->Canvas_getProportions(this->Canvas_blockWList.at(blockIndex)), this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex)))});
+            }
         }
         if (blockXLocation + this->Canvas_blockWidth > 0 && blockXLocation < this->GetClientSize().GetWidth() && blockYLocation + blockHeight > 0 && blockYLocation < this->GetClientSize().GetHeight()) {
             // Boxes
@@ -973,11 +1020,12 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
             }
             wxFont tempFont = font;
             this->SetFont(tempFont.Scale(this->Canvas_getProportions()));
+            this->Canvas_wrappedTextList.at(blockIndex).at(0);
             if (nodeListSize > 1) {
-                dc.DrawText(this->Canvas_wrapText(dc, this->File.getBlockBody(blockIndex), this->Canvas_getProportions(this->Canvas_blockWList.at(blockIndex)), this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex) * 3 / 4)), blockXLocation, blockYLocation);
+                dc.DrawText(this->Canvas_wrappedTextList.at(blockIndex).at(0), blockXLocation, blockYLocation);
             }
             else {
-                dc.DrawText(this->Canvas_wrapText(dc, this->File.getBlockBody(blockIndex), this->Canvas_getProportions(this->Canvas_blockWList.at(blockIndex)), this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex))), blockXLocation, blockYLocation);
+                dc.DrawText(this->Canvas_wrappedTextList.at(blockIndex).at(0), blockXLocation, blockYLocation);
             }
             // Nodes
             if (nodeListSize > 1) {
@@ -1004,16 +1052,34 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
                     dc.DrawRectangle(nodeXLocation, nodeYLocation, nodeWidth, nodeHeight);
 //                    wxFont tempFont = font;
 //                    this->SetFont(tempFont.Scale(this->Canvas_getProportions() * 3 / 4.0));
-                    int width = 0, height = 0;
-                    wxString nodeText = this->File.getNodeText(blockIndex, nodeIndex);
-                    dc.GetTextExtent(nodeText, &width, &height);
-                    while (width >= nodeWidth && height >= nodeHeight && nodeText.Len() > 1) {
-                        nodeText = nodeText.Left(nodeText.Len() - 1);
-                        dc.GetTextExtent(nodeText, &width, &height);
+                    if (this->Canvas_justEditedText) {
+                        int width = 0, height = 0;
+                        this->Canvas_wrappedTextList.at(blockIndex).push_back(this->File.getNodeText(blockIndex, nodeIndex));
+                        dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
+                        while (width >= nodeWidth && height >= nodeHeight && this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() > 1) {
+                            this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Left(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() - 1);
+                            dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
+                        }
                     }
-                    dc.DrawText(nodeText, nodeXLocation, nodeYLocation);
+                    dc.DrawText(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), nodeXLocation, nodeYLocation);
+                }
+            }
+        }
+        else if (this->Canvas_justEditedText) {
+            if (nodeListSize > 1) {
+                const double nodeWidth = this->Canvas_getProportions(this->Canvas_blockWList.at(blockIndex) / (nodeListSize - 1));
+                const double nodeHeight = this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex) / 4);
+                for (size_t nodeIndex = 1; nodeIndex != -1 && nodeIndex < nodeListSize && nodeIndex < this->File.getNumNodes(blockIndex); ++nodeIndex) {
+                    int width = 0, height = 0;
+                    this->Canvas_wrappedTextList.at(blockIndex).push_back(this->File.getNodeText(blockIndex, nodeIndex));
+                    dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
+                    while (width >= nodeWidth && height >= nodeHeight && this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() > 1) {
+                        this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Left(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() - 1);
+                        dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
+                    }
                 }
             }
         }
     }
+    this->Canvas_justEditedText = false;
 }

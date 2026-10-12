@@ -78,10 +78,11 @@ class BanyanChartFrame: public wxFrame
         int Canvas_width = 0, Canvas_frameX = 0, Canvas_frameY = 0, Canvas_mousePrevX, Canvas_mousePrevY;
         unsigned int Canvas_zoom = 100;
         size_t Canvas_nodeDraggedBlock = -1, Canvas_nodeDraggedNode = -1, Canvas_historyIndex = 0;
-        bool Canvas_justInitialized = true, Canvas_dragging = false, Canvas_blockMoved = false, Canvas_mouseDown = false, Canvas_draggingNode = false;
+        bool Canvas_justInitialized = true, Canvas_justEditedText = true, Canvas_dragging = false, Canvas_mouseMovingAndDown = false, Canvas_blockMoved = false, Canvas_mouseDown = false, Canvas_draggingNode = false;
         std::vector<bool> Canvas_blockDraggingList = {};
         std::vector<double> Canvas_blockXList = {}, Canvas_blockYList = {}, Canvas_blockWList = {}, Canvas_blockHList = {};
         std::vector<std::vector<bool>> Canvas_selected = {}, Canvas_copied = {};
+        std::vector<std::vector<wxString>> Canvas_wrappedTextList = {};
         std::vector<std::vector<std::string>> Canvas_cutTextList = {};
         std::vector<std::vector<size_t>> Canvas_cutAddressList = {};
         std::vector<std::vector<std::vector<std::string>>> Canvas_textHistory = {};
