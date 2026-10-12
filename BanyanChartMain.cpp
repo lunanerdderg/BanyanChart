@@ -266,58 +266,65 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
         this->Canvas_blockYList = {};
         this->Canvas_blockWList = {};
         this->Canvas_blockHList = {};
-
-//        if (numBlocks > 0) {
-//            this->Canvas_selected.resize(numBlocks);
-//            this->Canvas_blockDraggingList.resize(numBlocks);
-//            this->Canvas_blockXList.resize(numBlocks);
-//            this->Canvas_blockYList.resize(numBlocks);
-//            this->Canvas_blockWList.resize(numBlocks);
-//            this->Canvas_blockHList.resize(numBlocks);
-//        }
     }
+    this->Canvas_selected.resize(numBlocks);
+    this->Canvas_blockDraggingList.resize(numBlocks);
+    this->Canvas_blockXList.resize(numBlocks);
+    this->Canvas_blockYList.resize(numBlocks);
+    this->Canvas_blockWList.resize(numBlocks);
+    this->Canvas_blockHList.resize(numBlocks);
+
     if (reset && numBlocks > 0) {
-//        std::vector<size_t> step = {this->File.getFirstBlock()}, nextStep = {}, previousIndeces = {};
-//
-//        for (size_t numSteps = 0; step.size() > 0; ++numSteps) {
-//            // Each step
-//            for (size_t block = 0; block != -1 && block < step.size(); ++block) {
-//                // Each block
-//                if (step.at(block) != -2 && std::find(previousIndeces.begin(), previousIndeces.end(), step.at(block)) == previousIndeces.end()) { // If block was not already seen
-//                    this->Canvas_blockDraggingList.at(step.at(block)) = false;
-//                    this->Canvas_selected.at(step.at(block)) = {false};
-//                    for (size_t nodeIndex = 1; nodeIndex < this->File.getNumNodes(step.at(block)); ++nodeIndex) {
-//                        if (this->File.getNodeAddress(step.at(block), nodeIndex) != -2) {
-//                            this->Canvas_selected.at(step.at(block)).push_back(false);
-//                        }
-//                    }
-//                    this->Canvas_blockXList.at(step.at(block)) = (block*2 + 1)*this->Canvas_width / (step.size()*2 + 1.0);
-//                    this->Canvas_blockYList.at(step.at(block)) = (numSteps*2 + 1)*this->Canvas_blockHeight * 3 / 4.0;
-//                    this->Canvas_blockWList.at(step.at(block)) = this->Canvas_blockWidth;
-//                    this->Canvas_blockHList.at(step.at(block)) = this->Canvas_blockHeight;
-//
-//                    previousIndeces.push_back(step.at(block));
-//                    std::vector<size_t> tempAddressList = this->File.getBlockAddress(step.at(block));
-//
-//                    nextStep.insert(nextStep.end(), tempAddressList.begin() + 1, tempAddressList.end());
-//                }
-//            }
-//            // Each step
-//            step = nextStep;
-//            nextStep = {};
-//        }
-        for (size_t i = 0; i != -1 && i < numBlocks; ++i) {
-            this->Canvas_blockDraggingList.push_back(false);
-            this->Canvas_selected.push_back({false});
-            for (size_t nodeIndex = 1; nodeIndex < this->File.getNumNodes(i); ++nodeIndex) {
-                this->Canvas_selected.at(i).push_back(false);
+        std::vector<size_t> step = {this->File.getFirstBlock()}, nextStep = {}, previousIndeces = {};
+
+        for (size_t numSteps = 0; step.size() > 0; ++numSteps) {
+            // Each step
+            size_t numStepsDisplayed = 0;
+            size_t stepSize = step.size();
+            size_t numStepsThatWereValid = 0;
+            for (size_t block = 0; block != -1 && block < stepSize; ++block) {
+                if (step.at(block) != -2 && std::find(previousIndeces.begin(), previousIndeces.end(), step.at(block)) == previousIndeces.end()) { // If block was not already seen
+                    ++numStepsThatWereValid;
+                }
             }
-            this->Canvas_blockXList.push_back(100);
-            this->Canvas_blockYList.push_back(i*this->Canvas_blockHeight*2);
-            this->Canvas_blockWList.push_back(this->Canvas_blockWidth);
-            this->Canvas_blockHList.push_back(this->Canvas_blockHeight);
+            for (size_t block = 0; block != -1 && block < stepSize; ++block) {
+                // Each block
+                if (step.at(block) != -2 && std::find(previousIndeces.begin(), previousIndeces.end(), step.at(block)) == previousIndeces.end()) { // If block was not already seen
+                    this->Canvas_blockDraggingList.at(step.at(block)) = false;
+                    this->Canvas_selected.at(step.at(block)) = {false};
+                    for (size_t nodeIndex = 1; nodeIndex < this->File.getNumNodes(step.at(block)); ++nodeIndex) {
+                        if (this->File.getNodeAddress(step.at(block), nodeIndex) != -2) {
+                            this->Canvas_selected.at(step.at(block)).push_back(false);
+                        } // this->Canvas_width / 8.0 - (stepSize*this->Canvas_blockWidth * 4)/(6.0)
+                    } // this->Canvas_width / 8.0
+                    this->Canvas_blockXList.at(step.at(block)) = (numStepsDisplayed*this->Canvas_blockWidth * 4 / 3.0) + this->Canvas_width / 2.0 - (numStepsThatWereValid*this->Canvas_blockWidth * 4)/6.0;
+                    this->Canvas_blockYList.at(step.at(block)) = numSteps*this->Canvas_blockHeight * 4 / 3.0;
+                    this->Canvas_blockWList.at(step.at(block)) = this->Canvas_blockWidth;
+                    this->Canvas_blockHList.at(step.at(block)) = this->Canvas_blockHeight;
+
+                    previousIndeces.push_back(step.at(block));
+                    std::vector<size_t> tempAddressList = this->File.getBlockAddress(step.at(block));
+
+                    nextStep.insert(nextStep.end(), tempAddressList.begin() + 1, tempAddressList.end());
+                    ++numStepsDisplayed;
+                }
+            }
+            // Each step
+            step = nextStep;
+            nextStep = {};
         }
 
+//        for (size_t i = 0; i != -1 && i < numBlocks; ++i) {
+//            this->Canvas_blockDraggingList.push_back(false);
+//            this->Canvas_selected.push_back({false});
+//            for (size_t nodeIndex = 1; nodeIndex < this->File.getNumNodes(i); ++nodeIndex) {
+//                this->Canvas_selected.at(i).push_back(false);
+//            }
+//            this->Canvas_blockXList.push_back(100);
+//            this->Canvas_blockYList.push_back(i*this->Canvas_blockHeight*2);
+//            this->Canvas_blockWList.push_back(this->Canvas_blockWidth);
+//            this->Canvas_blockHList.push_back(this->Canvas_blockHeight);
+//        }
     }
     else {
         size_t startNum = this->Canvas_blockDraggingList.size();
