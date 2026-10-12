@@ -267,16 +267,14 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
         this->Canvas_blockWList = {};
         this->Canvas_blockHList = {};
     }
+    if (reset && numBlocks > 0) {
     this->Canvas_selected.resize(numBlocks);
     this->Canvas_blockDraggingList.resize(numBlocks);
     this->Canvas_blockXList.resize(numBlocks);
     this->Canvas_blockYList.resize(numBlocks);
     this->Canvas_blockWList.resize(numBlocks);
     this->Canvas_blockHList.resize(numBlocks);
-
-    if (reset && numBlocks > 0) {
         std::vector<size_t> step = {this->File.getFirstBlock()}, nextStep = {}, previousIndeces = {};
-
         for (size_t numSteps = 0; step.size() > 0; ++numSteps) {
             // Each step
             size_t numStepsDisplayed = 0;
@@ -295,10 +293,10 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
                     for (size_t nodeIndex = 1; nodeIndex < this->File.getNumNodes(step.at(block)); ++nodeIndex) {
                         if (this->File.getNodeAddress(step.at(block), nodeIndex) != -2) {
                             this->Canvas_selected.at(step.at(block)).push_back(false);
-                        } // this->Canvas_width / 8.0 - (stepSize*this->Canvas_blockWidth * 4)/(6.0)
-                    } // this->Canvas_width / 8.0
-                    this->Canvas_blockXList.at(step.at(block)) = (numStepsDisplayed*this->Canvas_blockWidth * 4 / 3.0) + this->Canvas_width / 2.0 - (numStepsThatWereValid*this->Canvas_blockWidth * 4)/6.0;
-                    this->Canvas_blockYList.at(step.at(block)) = numSteps*this->Canvas_blockHeight * 4 / 3.0;
+                        }
+                    }
+                    this->Canvas_blockXList.at(step.at(block)) = (numStepsDisplayed*this->Canvas_blockWidth * 4 / 3.0) + this->Canvas_width / 2.0 - (((numStepsThatWereValid-1)*this->Canvas_blockWidth * 4) / 3.0 + this->Canvas_blockWidth) / 2.0;
+                    this->Canvas_blockYList.at(step.at(block)) = numSteps*this->Canvas_blockHeight * 16 / 9.0;
                     this->Canvas_blockWList.at(step.at(block)) = this->Canvas_blockWidth;
                     this->Canvas_blockHList.at(step.at(block)) = this->Canvas_blockHeight;
 
@@ -327,6 +325,7 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
 //        }
     }
     else {
+        int lowestCoords = 0;
         size_t startNum = this->Canvas_blockDraggingList.size();
         for (size_t i = 0; i != -1 && i < startNum && i < numBlocks; ++i) { // - this->Canvas_blockDraggingList.size()));
             this->Canvas_blockDraggingList.at(i) = false;
@@ -339,15 +338,19 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
                     this->Canvas_selected.at(i).push_back(false);
                 }
             }
+            if (lowestCoords < this->Canvas_blockYList.at(i)) {
+                lowestCoords = this->Canvas_blockYList.at(i);
+            }
         }
         for (size_t i = startNum; i != -1 && i < numBlocks; ++i) { // - this->Canvas_blockDraggingList.size()));
+            lowestCoords += this->Canvas_blockHeight * 16 / 9.0;
             this->Canvas_blockDraggingList.push_back(false);
             this->Canvas_selected.push_back({false});
             for (size_t nodeIndex = 1; nodeIndex < this->File.getNumNodes(i); ++nodeIndex) {
                 this->Canvas_selected.at(i).push_back(false);
             }
-            this->Canvas_blockXList.push_back(100);
-            this->Canvas_blockYList.push_back(i*this->Canvas_blockHeight*2);
+            this->Canvas_blockXList.push_back((this->Canvas_width - this->Canvas_blockWidth) / 2.0);
+            this->Canvas_blockYList.push_back(lowestCoords);
             this->Canvas_blockWList.push_back(this->Canvas_blockWidth);
             this->Canvas_blockHList.push_back(this->Canvas_blockHeight);
         }
