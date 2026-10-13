@@ -268,6 +268,8 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
         this->Canvas_blockHList = {};
     }
     if (reset && numBlocks > 0) {
+        this->Canvas_justEditedText = -2;
+
         this->Canvas_selected.resize(numBlocks);
         this->Canvas_blockDraggingList.resize(numBlocks);
         this->Canvas_blockXList.resize(numBlocks);
@@ -355,7 +357,6 @@ void BanyanChartFrame::Canvas_initializeBoxes(bool reset) {
             this->Canvas_blockHList.push_back(this->Canvas_blockHeight);
         }
     }
-    this->Canvas_justEditedText = true;
 }
 
 void BanyanChartFrame::Canvas_resetHistory() {
@@ -614,7 +615,7 @@ void BanyanChartFrame::OnDelete(wxCommandEvent& WXUNUSED(event)) {
 void BanyanChartFrame::changeText(std::string text, size_t blockIndex, size_t nodeIndex) {
     this->File.setText(text, blockIndex, nodeIndex);
     this->unsaved = true;
-    this->Canvas_justEditedText = true;
+    this->Canvas_justEditedText = blockIndex;
 }
 void BanyanChartFrame::changeText(const char text[], size_t blockIndex, size_t nodeIndex) {
     this->changeText(text, blockIndex, nodeIndex);
@@ -692,7 +693,7 @@ void BanyanChartFrame::OnEditText(wxCommandEvent& WXUNUSED(event)) {
 void BanyanChartFrame::OnZoomIn(wxCommandEvent& WXUNUSED(event)) {
     if (this->Canvas_zoom + 50 <= 400) {
         this->Canvas_zoom += 50;
-//        this->Canvas_justEditedText = true;
+//        this->Canvas_justEditedText = -2;
         Refresh();
         Update();
     }
@@ -700,7 +701,7 @@ void BanyanChartFrame::OnZoomIn(wxCommandEvent& WXUNUSED(event)) {
 void BanyanChartFrame::OnZoomOut(wxCommandEvent& WXUNUSED(event)) {
     if (this->Canvas_zoom - 50 >= 1) {
         this->Canvas_zoom -= 50;
-//        this->Canvas_justEditedText = true;
+//        this->Canvas_justEditedText = -2;
         Refresh();
         Update();
     }
@@ -997,7 +998,7 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
         this->Canvas_justInitialized = false;
     }
     dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
-    if (this->Canvas_justEditedText) {
+    if (this->Canvas_justEditedText == -2) {
         this->Canvas_wrappedTextList = {};
     }
     for (size_t blockIndex = 0; blockIndex != -1 && blockIndex < this->Canvas_selected.size() && blockIndex < this->File.getNumBlocks(); ++blockIndex) {
@@ -1019,12 +1020,20 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
 //        else {
             this->SetFont(tempFont.Scale(this->Canvas_getProportions()));
 //        }
-        if (this->Canvas_justEditedText) {
+        if (this->Canvas_justEditedText == -2) {
             if (nodeListSize > 1) {
                 this->Canvas_wrappedTextList.push_back({this->Canvas_wrapText(dc, this->File.getBlockBody(blockIndex), this->Canvas_getProportions(this->Canvas_blockWList.at(blockIndex)), this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex) * 3 / 4))});
             }
             else {
                 this->Canvas_wrappedTextList.push_back({this->Canvas_wrapText(dc, this->File.getBlockBody(blockIndex), this->Canvas_getProportions(this->Canvas_blockWList.at(blockIndex)), this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex)))});
+            }
+        }
+        else if (this->Canvas_justEditedText != -1 && this->Canvas_justEditedText == blockIndex && this->Canvas_wrappedTextList.at(blockIndex).size() > 0) {
+            if (nodeListSize > 1) {
+                this->Canvas_wrappedTextList.at(blockIndex).at(0) = {this->Canvas_wrapText(dc, this->File.getBlockBody(blockIndex), this->Canvas_getProportions(this->Canvas_blockWList.at(blockIndex)), this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex) * 3 / 4))};
+            }
+            else {
+                this->Canvas_wrappedTextList.at(blockIndex).at(0) = {this->Canvas_wrapText(dc, this->File.getBlockBody(blockIndex), this->Canvas_getProportions(this->Canvas_blockWList.at(blockIndex)), this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex)))};
             }
         }
         if (blockXLocation + this->Canvas_blockWidth > 0 && blockXLocation < this->GetClientSize().GetWidth() && blockYLocation + blockHeight > 0 && blockYLocation < this->GetClientSize().GetHeight()) {
@@ -1074,9 +1083,18 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
                         dc.SetPen(wxPen(wxColor(255,175,175), this->Canvas_getProportions()));
                     }
                     dc.DrawRectangle(nodeXLocation, nodeYLocation, nodeWidth, nodeHeight);
-                    if (this->Canvas_justEditedText) {
+                    if (this->Canvas_justEditedText == -2) {
                         int width = 0, height = 0;
                         this->Canvas_wrappedTextList.at(blockIndex).push_back(this->File.getNodeText(blockIndex, nodeIndex));
+                        dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
+                        while (width >= nodeWidth && height >= nodeHeight && this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() > 1) {
+                            this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Left(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() - 1);
+                            dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
+                        }
+                    }
+                    else if (this->Canvas_justEditedText != -1 && this->Canvas_justEditedText == blockIndex) {
+                        int width = 0, height = 0;
+                        this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = this->File.getNodeText(blockIndex, nodeIndex);
                         dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
                         while (width >= nodeWidth && height >= nodeHeight && this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() > 1) {
                             this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Left(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() - 1);
@@ -1087,7 +1105,7 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
                 }
             }
         }
-        else if (this->Canvas_justEditedText) {
+        else if (this->Canvas_justEditedText == -2) {
             if (nodeListSize > 1) {
                 const double nodeWidth = this->Canvas_getProportions(this->Canvas_blockWList.at(blockIndex) / (nodeListSize - 1));
                 const double nodeHeight = this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex) / 4);
@@ -1102,6 +1120,19 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
                 }
             }
         }
+        else if (this->Canvas_justEditedText != -1 && this->Canvas_justEditedText == blockIndex && nodeListSize > 1) {
+            const double nodeWidth = this->Canvas_getProportions(this->Canvas_blockWList.at(blockIndex) / (nodeListSize - 1));
+            const double nodeHeight = this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex) / 4);
+            for (size_t nodeIndex = 1; nodeIndex != -1 && nodeIndex < nodeListSize && nodeIndex < this->File.getNumNodes(blockIndex) && nodeIndex < this->Canvas_wrappedTextList.at(blockIndex).size(); ++nodeIndex) {
+                int width = 0, height = 0;
+                this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = this->File.getNodeText(blockIndex, nodeIndex);
+                dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
+                while (width >= nodeWidth && height >= nodeHeight && this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() > 1) {
+                    this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Left(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() - 1);
+                    dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
+                }
+            }
+        }
     }
-    this->Canvas_justEditedText = false;
+    this->Canvas_justEditedText = -1;
 }
