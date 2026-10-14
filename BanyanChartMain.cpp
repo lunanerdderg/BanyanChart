@@ -563,10 +563,14 @@ void BanyanChartFrame::OnAddBlock(wxCommandEvent& WXUNUSED(event)) {
     this->File.addBlock(" ");
     this->Canvas_saveStateToHistory();
     this->Canvas_initializeBoxes(false);
+    this->Canvas_justEditedText = this->Canvas_selected.size() - 1;
+    this->Canvas_wrappedTextList.push_back({wxString(' ')});
     Refresh();
     this->unsaved = true;
 }
 void BanyanChartFrame::OnAddNode(wxCommandEvent& WXUNUSED(event)) { // BOOKMARK
+    size_t textBlockIndex = -2;
+    size_t numNodesAdded = 0;
     for (size_t blockIndex = 0; blockIndex != -1 && blockIndex < this->Canvas_selected.size(); ++blockIndex) {
         bool continueLooping = true;
         for (size_t nodeIndex = 0; continueLooping && nodeIndex != -1 && nodeIndex < this->Canvas_selected.at(blockIndex).size(); ++nodeIndex) {
@@ -575,8 +579,16 @@ void BanyanChartFrame::OnAddNode(wxCommandEvent& WXUNUSED(event)) { // BOOKMARK
                 this->Canvas_wrappedTextList.at(blockIndex).push_back(wxString(' '));
                 this->File.addNode(blockIndex, " ", -2);
                 continueLooping = false;
+                ++numNodesAdded;
+                textBlockIndex = blockIndex;
             }
         }
+    }
+    if (numNodesAdded == 1) {
+        this->Canvas_justEditedText = textBlockIndex;
+    }
+    else if (numNodesAdded > 1) {
+        this->Canvas_justEditedText = -2;
     }
     this->Canvas_saveStateToHistory();
     Refresh();
@@ -922,10 +934,10 @@ void BanyanChartFrame::mouseWheelMoved(wxMouseEvent& event) {
     if (event.GetWheelAxis() == wxMOUSE_WHEEL_HORIZONTAL) {
 //        if ( ( event.GetWheelRotation() >= 0 && !event.IsWheelInverted() ) || ( event.GetWheelRotation() < 0 && event.IsWheelInverted() ) ) {
         if (event.GetWheelRotation() < 0) {
-            this->Canvas_frameX += -100 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
+            this->Canvas_frameX += -200 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
         }
         else {
-            this->Canvas_frameX -= 100 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
+            this->Canvas_frameX -= 200 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
         }
     }
     else if (event.GetWheelAxis() == wxMOUSE_WHEEL_VERTICAL) {
@@ -941,10 +953,10 @@ void BanyanChartFrame::mouseWheelMoved(wxMouseEvent& event) {
         else {
 //            if ( ( event.GetWheelRotation() >= 0 && !event.IsWheelInverted() ) || ( event.GetWheelRotation() < 0 && event.IsWheelInverted() ) ) {
             if (event.GetWheelRotation() >= 0) {
-                this->Canvas_frameY += 100 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
+                this->Canvas_frameY += 200 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
             }
             else {
-                this->Canvas_frameY -= -100 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
+                this->Canvas_frameY -= -200 * event.GetWheelRotation() / (5 * this->Canvas_zoom);
             }
         }
     }
@@ -959,35 +971,35 @@ void BanyanChartFrame::paintEvent(wxPaintEvent& event) {
 
 
 wxString BanyanChartFrame::Canvas_wrapText(wxDC &dc, std::string text, int maxWidth, int maxHeight) {
-    wxString result = "";
-    wxString fullText = text;
-    wxString curText = text;
-    size_t curStoredWidth = 1;
-    int fullWidth = 0, curWidth = 0, fullHeight = 0;
-    dc.GetTextExtent(fullText, &fullWidth, &fullHeight);
-//    int counter = 0;
-    if (fullWidth < maxWidth || text.size() <= 1) {
-        return fullText;
+    wxString oneCharacterString = '.';
+    wxString result = text;
+//    return result;
+    int curWidth = maxWidth + 1, curHeight = 0;
+    if (text.size() <= 1) {
+        return wxString(text);
     }
-    while (fullWidth > maxWidth && curStoredWidth < curText.Len() && curStoredWidth > 0 /*&& counter < 33*/) {
-        for (size_t i = 1; i != -1 && (curText.at(curText.Len() - i) != ' ' || curWidth > maxWidth); ++i) {
-            curStoredWidth = curText.Len() - i;
-            dc.GetTextExtent(curText.Left(curStoredWidth), &curWidth, &fullHeight);
+    for (size_t index = result.size(); index != -1 && index <= result.size(); --index) {
+        dc.GetTextExtent(result.Left(index), &curWidth, &curHeight);
+        if (curWidth <= maxWidth) {
+            result.insert(index, "\n");
+            dc.GetTextExtent(oneCharacterString, &curWidth, &curHeight);
+            if (curWidth > maxWidth) {
+                break;
+            }
+            dc.GetTextExtent(result, &curWidth, &curHeight);
+            if (curWidth <= maxWidth) {
+                break;
+            }
+            index = result.size() + 1;
         }
-        result += curText.substr(0, curStoredWidth);
-        result += '\n';
-        curText = curText.substr(curStoredWidth);
-        fullText = result + curText;
-        dc.GetTextExtent(fullText, &fullWidth, &fullHeight);
-//        ++counter;
     }
-    result = fullText;
-    dc.GetTextExtent(result, &fullWidth, &fullHeight);
-    while (fullHeight >= maxHeight && result.Len() > 1) {
-        result = result.Left(result.Len() - 1);
-        dc.GetTextExtent(result, &fullWidth, &fullHeight);
+    size_t resultIndex = result.size();
+    dc.GetTextExtent(result, &curWidth, &curHeight);
+    for (size_t index = resultIndex; index != -1 && index <= result.size() && curHeight > maxHeight; --index) {
+        dc.GetTextExtent(result.Left(index), &curWidth, &curHeight);
+        resultIndex = index;
     }
-    return result;
+    return result.Left(resultIndex);
 }
 
 
@@ -1022,7 +1034,7 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
 //        }
         if (this->Canvas_justEditedText == -2) {
             if (nodeListSize > 1) {
-                this->Canvas_wrappedTextList.push_back({this->Canvas_wrapText(dc, this->File.getBlockBody(blockIndex), this->Canvas_getProportions(this->Canvas_blockWList.at(blockIndex)), this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex) * 3 / 4))});
+                this->Canvas_wrappedTextList.push_back({this->Canvas_wrapText(dc, this->File.getBlockBody(blockIndex), this->Canvas_getProportions(this->Canvas_blockWList.at(blockIndex)), this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex) * 3 / 4.0))});
             }
             else {
                 this->Canvas_wrappedTextList.push_back({this->Canvas_wrapText(dc, this->File.getBlockBody(blockIndex), this->Canvas_getProportions(this->Canvas_blockWList.at(blockIndex)), this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex)))});
@@ -1085,16 +1097,16 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
                     dc.DrawRectangle(nodeXLocation, nodeYLocation, nodeWidth, nodeHeight);
                     if (this->Canvas_justEditedText == -2) {
                         int width = 0, height = 0;
-                        this->Canvas_wrappedTextList.at(blockIndex).push_back(this->File.getNodeText(blockIndex, nodeIndex));
+                        this->Canvas_wrappedTextList.at(blockIndex).push_back(wxString(this->File.getNodeText(blockIndex, nodeIndex)));
                         dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
                         while (width >= nodeWidth && height >= nodeHeight && this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() > 1) {
                             this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Left(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() - 1);
                             dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
                         }
                     }
-                    else if (this->Canvas_justEditedText != -1 && this->Canvas_justEditedText == blockIndex) {
+                    else if (this->Canvas_justEditedText != -1 && this->Canvas_justEditedText == blockIndex && nodeIndex < this->Canvas_wrappedTextList.at(blockIndex).size()) {
                         int width = 0, height = 0;
-                        this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = this->File.getNodeText(blockIndex, nodeIndex);
+                        this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = wxString(this->File.getNodeText(blockIndex, nodeIndex));
                         dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
                         while (width >= nodeWidth && height >= nodeHeight && this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() > 1) {
                             this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Left(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() - 1);
@@ -1111,7 +1123,7 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
                 const double nodeHeight = this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex) / 4);
                 for (size_t nodeIndex = 1; nodeIndex != -1 && nodeIndex < nodeListSize && nodeIndex < this->File.getNumNodes(blockIndex); ++nodeIndex) {
                     int width = 0, height = 0;
-                    this->Canvas_wrappedTextList.at(blockIndex).push_back(this->File.getNodeText(blockIndex, nodeIndex));
+                    this->Canvas_wrappedTextList.at(blockIndex).push_back(wxString(this->File.getNodeText(blockIndex, nodeIndex)));
                     dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
                     while (width >= nodeWidth && height >= nodeHeight && this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() > 1) {
                         this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Left(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() - 1);
@@ -1124,12 +1136,14 @@ void BanyanChartFrame::Canvas_render(wxDC&  dc) {
             const double nodeWidth = this->Canvas_getProportions(this->Canvas_blockWList.at(blockIndex) / (nodeListSize - 1));
             const double nodeHeight = this->Canvas_getProportions(this->Canvas_blockHList.at(blockIndex) / 4);
             for (size_t nodeIndex = 1; nodeIndex != -1 && nodeIndex < nodeListSize && nodeIndex < this->File.getNumNodes(blockIndex) && nodeIndex < this->Canvas_wrappedTextList.at(blockIndex).size(); ++nodeIndex) {
-                int width = 0, height = 0;
-                this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = this->File.getNodeText(blockIndex, nodeIndex);
-                dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
-                while (width >= nodeWidth && height >= nodeHeight && this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() > 1) {
-                    this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Left(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() - 1);
+                if (nodeIndex < this->Canvas_wrappedTextList.at(blockIndex).size()) {
+                    int width = 0, height = 0;
+                    this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = wxString(this->File.getNodeText(blockIndex, nodeIndex));
                     dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
+                    while (width >= nodeWidth && height >= nodeHeight && this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() > 1) {
+                        this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex) = this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Left(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex).Len() - 1);
+                        dc.GetTextExtent(this->Canvas_wrappedTextList.at(blockIndex).at(nodeIndex), &width, &height);
+                    }
                 }
             }
         }
