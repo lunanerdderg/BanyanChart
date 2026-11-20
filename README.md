@@ -1,6 +1,3 @@
-<sub>_[(How version numbering works in all my programs.)](https://github.com/lunanerdderg/lunanerdderg.github.io/blob/main/version-numbering.md)_</sub> | 
-<sub>_[(My policy on A.I. in my programs.)](https://github.com/lunanerdderg/lunanerdderg.github.io/blob/main/ai-use-policy.txt)_</sub>
-
 Creates a `.byfc` (Banyan Flowchart) file.
 
 Install from the [releases](https://github.com/lunanerdderg/BanyanChart/releases/latest).
@@ -18,6 +15,9 @@ This project requires installation of `libwxgtk3.2-dev` if you run Ubuntu. It is
 ```
 sudo apt update && sudo apt install -y libwxgtk3.2-dev libwxgtk-media3.2-dev libwxgtk-webview3.2-dev
 ```
+
+<sub>_[(How version numbering works in all my programs.)](https://github.com/lunanerdderg/lunanerdderg.github.io/blob/main/version-numbering.md)_</sub> | 
+<sub>_[(My policy on A.I. in my programs.)](https://github.com/lunanerdderg/lunanerdderg.github.io/blob/main/ai-use-policy.txt)_</sub>
 
 # License
 
