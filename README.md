@@ -4,6 +4,9 @@ Install from the [releases](https://github.com/lunanerdderg/BanyanChart/releases
 
 This program is currently in pre-alpha form, but it's still functional. Quite buggy, though. Issues are appreciated. Pre-alphas are currently exclusive to Linux, but that will change.
 
+<sub>_[(How version numbering works in all my programs.)](https://github.com/lunanerdderg/lunanerdderg.github.io/blob/main/version-numbering.md)_</sub> | 
+<sub>_[(My policy on A.I. in my programs.)](https://github.com/lunanerdderg/lunanerdderg.github.io/blob/main/ai-use-policy.txt)_</sub>
+
 # Building
 
 `BanyanChart.cbp` is a [Code::Blocks](https://www.codeblocks.org/downloads/binaries/) solution file, so you will need that software to open the project. Converting to another solution format might work, as long as you have wxWidgets installed, (though [wxSmith](#Uses) will only work with Code::Blocks).
@@ -15,9 +18,6 @@ This project requires installation of `libwxgtk3.2-dev` if you run Ubuntu. It is
 ```
 sudo apt update && sudo apt install -y libwxgtk3.2-dev libwxgtk-media3.2-dev libwxgtk-webview3.2-dev
 ```
-
-<sub>_[(How version numbering works in all my programs.)](https://github.com/lunanerdderg/lunanerdderg.github.io/blob/main/version-numbering.md)_</sub> | 
-<sub>_[(My policy on A.I. in my programs.)](https://github.com/lunanerdderg/lunanerdderg.github.io/blob/main/ai-use-policy.txt)_</sub>
 
 # License
 
